@@ -1,0 +1,178 @@
+.TH "DynamicLibraryVisualization/offscreen.c" 3 "Wed Oct 25 2017" "Version 0.1" "Numerical Hydrodynamics MPI+CUDA Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+DynamicLibraryVisualization/offscreen.c \- This file contains the descriptions of the functions which save rendered images to files: ppm, png, mpeg\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'offscreen\&.h'\fP
+.br
+\fC#include <assert\&.h>\fP
+.br
+\fC#include <stdio\&.h>\fP
+.br
+\fC#include <stdlib\&.h>\fP
+.br
+\fC#include <string\&.h>\fP
+.br
+\fC#include <OpenGL/gl3\&.h>\fP
+.br
+\fC#include <GLFW/glfw3\&.h>\fP
+.br
+\fC#include <png\&.h>\fP
+.br
+\fC#include <libavcodec/avcodec\&.h>\fP
+.br
+\fC#include <libavutil/imgutils\&.h>\fP
+.br
+\fC#include <libavutil/opt\&.h>\fP
+.br
+\fC#include <libswscale/swscale\&.h>\fP
+.br
+
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBConstants\fP { \fBSCREENSHOT_MAX_FILENAME\fP = 256 }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBscreenshot_ppm\fP (const char *filename, unsigned int width, unsigned int height, GLubyte **pixels)"
+.br
+.RI "Take a screen-shot with glReadPixels and save to a file in PPM format\&. "
+.ti -1c
+.RI "void \fBscreenshot_png\fP (const char *filename, unsigned int width, unsigned int height, GLubyte **pixels, png_byte **png_bytes, png_byte ***png_rows)"
+.br
+.ti -1c
+.RI "void \fBffmpeg_encoder_set_frame_yuv_from_rgb\fP (uint8_t *rgb)"
+.br
+.ti -1c
+.RI "void \fBffmpeg_encoder_start\fP (const char *filename, enum AVCodecID codec_id, int fps, int width, int height)"
+.br
+.ti -1c
+.RI "void \fBffmpeg_encoder_finish\fP (void)"
+.br
+.ti -1c
+.RI "void \fBffmpeg_encoder_encode_frame\fP (uint8_t *rgb)"
+.br
+.ti -1c
+.RI "void \fBffmpeg_encoder_glread_rgb\fP (uint8_t **rgb, GLubyte **pixels, unsigned int width, unsigned int height)"
+.br
+.ti -1c
+.RI "void \fBset_output_windowsize\fP (unsigned short window_size)"
+.br
+.RI "Set's up the environment (window size) for the output image or video\&. "
+.ti -1c
+.RI "void \fBinit_output\fP (enum \fBOUTPUT_OPTION\fP output)"
+.br
+.RI "Set's up the environment (output option)\&. "
+.ti -1c
+.RI "void \fBdeinit_output\fP (enum \fBOUTPUT_OPTION\fP output)"
+.br
+.RI "Deinitializes the environment\&. (Necessary for MPEG option since the encoder has to close the file appropriately)\&. "
+.ti -1c
+.RI "void \fBwriteframe_output\fP (enum \fBOUTPUT_OPTION\fP output)"
+.br
+.RI "Either creates an image or writes a frame to a video file (depending on the output option)\&. "
+.in -1c
+.SH "Detailed Description"
+.PP 
+This file contains the descriptions of the functions which save rendered images to files: ppm, png, mpeg\&. 
+
+
+.PP
+\fBAuthor:\fP
+.RS 4
+Eugene Kolesnikov 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+11/10/2017 
+.RE
+.PP
+
+.PP
+Definition in file \fBoffscreen\&.c\fP\&.
+.SH "Function Documentation"
+.PP 
+.SS "void deinit_output (enum \fBOUTPUT_OPTION\fP output)"
+
+.PP
+Deinitializes the environment\&. (Necessary for MPEG option since the encoder has to close the file appropriately)\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIoutput\fP -- type of an output\&. 
+.RE
+.PP
+
+.PP
+Definition at line 262 of file offscreen\&.c\&.
+.SS "void init_output (enum \fBOUTPUT_OPTION\fP output)"
+
+.PP
+Set's up the environment (output option)\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIoutput\fP -- type of an output\&. 
+.RE
+.PP
+
+.PP
+Definition at line 249 of file offscreen\&.c\&.
+.SS "void screenshot_ppm (const char * filename, unsigned int width, unsigned int height, GLubyte ** pixels)"
+
+.PP
+Take a screen-shot with glReadPixels and save to a file in PPM format\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfilename\fP -- file path to save to, without extension\&. 
+.br
+\fIwidth\fP -- screen width in pixels 
+.br
+\fIheight\fP -- screen height in pixels 
+.br
+\fIpixels\fP -- intermediate buffer to avoid repeated mallocs across multiple calls\&. Contents of this buffer do not matter\&. May be NULL, in which case it is initialized\&. The memory of the buffer must be freed if the function won't be called anymore\&. 
+.RE
+.PP
+
+.PP
+Definition at line 46 of file offscreen\&.c\&.
+.SS "void set_output_windowsize (unsigned short window_size)"
+
+.PP
+Set's up the environment (window size) for the output image or video\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwindow_size\fP -- width and height of the result image or video\&. 
+.RE
+.PP
+
+.PP
+Definition at line 239 of file offscreen\&.c\&.
+.SS "void writeframe_output (enum \fBOUTPUT_OPTION\fP output)"
+
+.PP
+Either creates an image or writes a frame to a video file (depending on the output option)\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIoutput\fP -- type of an output\&. 
+.RE
+.PP
+
+.PP
+Definition at line 279 of file offscreen\&.c\&.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Numerical Hydrodynamics MPI+CUDA Project from the source code\&.

@@ -1,15 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/* 
- * File:   offscreen.c
- * Author: eugene
- * 
- * Created on October 11, 2017, 5:54 PM
- */
+/**
+* @file offscreen.c
+* @brief This file contains the descriptions of the functions which save rendered
+ * images to files: ppm, png, mpeg.
+* @author Eugene Kolesnikov 
+* @date 11/10/2017 
+*/
 
 #include "offscreen.h"
 
@@ -39,14 +34,14 @@ static unsigned int WIDTH = 1000;
 static unsigned int nframes = 0;
 
 // PPM
-/*
-Take screenshot with glReadPixels and save to a file in PPM format.
--   filename: file path to save to, without extension
--   width: screen width in pixels
--   height: screen height in pixels
--   pixels: intermediate buffer to avoid repeated mallocs across multiple calls.
-    Contents of this buffer do not matter. May be NULL, in which case it is initialized.
-    You must `free` it when you won't be calling this function anymore.
+/**
+ * @brief Take a screen-shot with glReadPixels and save to a file in PPM format.
+ * @param filename -- file path to save to, without extension.
+ * @param width -- screen width in pixels
+ * @param height -- screen height in pixels
+ * @param pixels -- intermediate buffer to avoid repeated mallocs across multiple calls.
+ * Contents of this buffer do not matter. May be NULL, in which case it is initialized.
+ * The memory of the buffer must be freed if the function won't be called anymore.
 */
 void screenshot_ppm(const char *filename, unsigned int width,
         unsigned int height, GLubyte **pixels) {
@@ -68,7 +63,10 @@ void screenshot_ppm(const char *filename, unsigned int width,
 
 
 // LIBPNG
-/* Adapted from https://github.com/cirosantilli/cpp-cheat/blob/19044698f91fefa9cb75328c44f7a487d336b541/png/open_manipulate_write.c */
+/**
+ * @brief Take a screen-shot with glReadPixels and save to a file in PNG format.
+ * Adapted from https://github.com/cirosantilli/cpp-cheat/blob/19044698f91fefa9cb75328c44f7a487d336b541/png/open_manipulate_write.c
+*/
 static png_byte *png_bytes = NULL;
 static png_byte **png_rows = NULL;
 void screenshot_png(const char *filename, unsigned int width, unsigned int height,
@@ -234,12 +232,20 @@ void ffmpeg_encoder_glread_rgb(uint8_t **rgb, GLubyte **pixels, unsigned int wid
     }
 }
 
+/**
+ * @brief Set's up the environment (window size) for the output image or video.
+ * @param window_size -- width and height of the result image or video.
+*/
 void set_output_windowsize(unsigned short window_size)
 {
     WIDTH = window_size;
     HEIGHT = window_size;
 }
 
+/**
+ * @brief Set's up the environment (output option).
+ * @param output -- type of an output.
+*/
 void init_output(enum OUTPUT_OPTION output)
 {
     const char* filepath = "output.mpg"; // \TODO: read from a configuration file
@@ -248,6 +254,11 @@ void init_output(enum OUTPUT_OPTION output)
     }
 }
 
+/**
+ * @brief Deinitializes the environment. (Necessary for MPEG option since
+  * the encoder has to close the file appropriately).
+ * @param output -- type of an output.
+*/
 void deinit_output(enum OUTPUT_OPTION output)
 {
     free(pixels);
@@ -260,6 +271,11 @@ void deinit_output(enum OUTPUT_OPTION output)
     }
 }
 
+/**
+ * @brief Either creates an image or writes a frame to a video file (depending
+  * on the output option).
+ * @param output -- type of an output.
+*/
 void writeframe_output(enum OUTPUT_OPTION output)
 {
     char filename[SCREENSHOT_MAX_FILENAME];

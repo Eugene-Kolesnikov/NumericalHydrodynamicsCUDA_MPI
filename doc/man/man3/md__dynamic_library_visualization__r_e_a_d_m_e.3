@@ -1,0 +1,18 @@
+.TH "md__dynamic_library_visualization__r_e_a_d_m_e" 3 "Wed Oct 25 2017" "Version 0.1" "Numerical Hydrodynamics MPI+CUDA Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+md__dynamic_library_visualization__r_e_a_d_m_eDynamic Library of Visualization (DLV) 
+ \- In this particular case, DLV uses OpenGL to render the field and saves it to one of the following files: ppm, png, mpeg (for videos)\&. Since the software solves 2D problems, the Visualization is a 2D image (static or dynamic depending on the problem), which is generated using OpenGL 4\&.x and GLFW 3 as an interface generation library\&.
+.PP
+Interface functions:
+.PP
+.PP
+.nf
+bool DLV_init(size_t N_X, size_t N_Y, enum OUTPUT_OPTION outOption);
+bool DLV_visualize(void* field, size_t N_X, size_t N_Y);
+bool DLV_terminate();
+.fi
+.PP
+.PP
+The field should be normalized to [0,1] before sending it to the \fCDLV_visualize\fP function\&. The DLV renders the field on a square $[0,1]^2$\&. \\[ DLV: [0,1] -> [0,1]^3 \\] 

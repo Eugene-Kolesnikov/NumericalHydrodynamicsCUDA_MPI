@@ -1,0 +1,89 @@
+.TH "md__r_e_a_d_m_e" 3 "Thu Oct 12 2017" "Version 0.1" "Numerical Hydrodynamics MPI+CUDA Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+md__r_e_a_d_m_eNumerical Hydrodynamics MPI+CUDA Project 
+ \- 
+.SS "Description of the simulation software"
+.PP
+The idea of the software is its modularity, which in this particular case means that it consists of 3 absolutely independent sections:
+.PP
+.IP "\(bu" 2
+\fBMain System (MS)\fP, which is responsible for all data transportation among nodes, logic of the program, CPU-GPU-MPI interconnection and logging system;
+.IP "\(bu" 2
+\fBDynamic Library of Visualization (DLV)\fP\&. It has a pre-defined interface (MS calls a particular function with pre-defined arguments each time the visualization of a frame is needed)\&. It is up to the DLV to decide how exactly to represent the data;
+.IP "\(bu" 2
+\fBDynamic Library of Initialization and Computational Kernel (DLICK)\fP\&. Two problem-specific functions: initialization and scheme are also are separated to another module\&.
+.IP "\(bu" 2
+\fBDynamic library of models\fP\&. The module which contains different cell structures and necessary back-end functions which are required for different models\&.
+.IP "\(bu" 2
+\fBConfiguration file\fP\&. CPU-GPU-MPI parameters, as well as algorithm and scheme specific parameters
+.PP
+.PP
+.SS "Main System (MS)"
+.PP
+The main section of the program is the only one that the user can not change\&. If DLV and DLICK are just dynamic libraries with predefined interface, they therefore can be changed with another libraries which have the same interface, and the program will perfectly work, whereas MS is the executable part of the code which can't be changed by a user\&.
+.PP
+Because the software is developed using CPU-GPU-MPI interaction, it uses a lot of different parameters, which can and must be chosen specifically for each problem\&. Therefore, there is a special configuration file, which contains all necessary variables which can be modified by a user\&.
+.PP
+Initialization of the MS is done each time the program launches by parsing the configure file, so there is no need to recompile the program in order to update parameters\&.
+.PP
+.SS "Dynamic Library of Visualization (DLV)"
+.PP
+In this particular case, DLV uses OpenGL to render the field and saves it to one of the following files: ppm, png, mpeg (for videos)\&. Since the software solves 2D problems, the Visualization is a 2D image (static or dynamic depending on the problem), which is generated using OpenGL 4\&.x and GLFW 3 as an interface generation library\&.
+.PP
+Interface functions:
+.PP
+.PP
+.nf
+bool DLV_init(size_t N_X, size_t N_Y, enum OUTPUT_OPTION outOption);
+bool DLV_visualize(void* field, size_t N_X, size_t N_Y);
+bool DLV_terminate();
+.fi
+.PP
+.PP
+The field should be normalized to [0,1] before sending it to the \fCDLV_visualize\fP function\&. The DLV renders the field on a square $[0,1]^2$\&. \\[ DLV: [0,1] -> [0,1]^3 \\]
+.PP
+.SS "Dynamic Library of Initialization and Computational Kernel (DLICK)"
+.PP
+This is the main computational module, since different models have a lot of different schemes (ways of using the model to solve a particular problem, as well as boundary conditions)\&. Moreover, this module also contains manually defined initialization functions\&.
+.PP
+.SS "Dynamic Library of Models (DLM)"
+.PP
+Different algorithms require different models of grid nodes, therefore several of this structures are implemented in order for the user to choose the one for his problem\&.
+.PP
+Unfortunately, it seems impossible to separate models from the MS, because different schemes and algorithms require different set of parameters in grid cells, which at the same time requires to use different structs in the code\&. Exchange of this structs in real time seems way too much difficult to implement, since it requires to work with virtual classes, inheritance, and polymorphism\&. Even though these mechanisms are very easy on their own, it is quite challenging to understand how they will be transfered among cpu nodes and gpu devices\&. One can be said for sure, using polymorphism is much more computationally difficult than just using C-style structures\&.
+.PP
+.SS "Configuration file"
+.PP
+.PP
+.nf
+TAU = 1\&.0e-5 % time step
+TOTAL_TIME = 5\&.0e+0 % total time from 0 to TOTAL_TIME with the step TAU
+STEP_LENGTH = 100 % loop steps skipping before each visualization
+N_X -- discretization of the grid along the X direction
+N_Y -- discretization of the grid along the Y direction
+CUDA_X_THREADS -- number of threads in a CUDA block along the X direction
+CUDA_Y_THREADS -- number of threads in a CUDA block along the Y direction
+MPI_NODES_X -- MPI nodes along the X direciton
+MPI_NODES_Y -- MPI nodes along the Y direciton
+\&.\&.\&.
+.fi
+.PP
+ In order to create \fCMPI_NODES_X * MPI_NODES_Y\fP MPI nodes, the program calls another program using \fCsys()\fP function\&. Maybe it's better to create a GUI for the configuration file\&.
+.PP
+.SS "Computational sequence"
+.PP
+.IP "1." 4
+Pre-processing:
+.IP "2." 4
+Processing:
+.IP "3." 4
+Post-processing:
+.PP
+.PP
+#TODO:
+.IP "\(bu" 2
+Learn how to use Doxygen 
+.PP
+

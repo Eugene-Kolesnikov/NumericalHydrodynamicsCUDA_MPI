@@ -1,0 +1,245 @@
+.TH "FieldObject" 3 "Wed Oct 25 2017" "Version 0.1" "Numerical Hydrodynamics MPI+CUDA Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+FieldObject \- The class which is responsible for rendering the field and storing all necessary environmental variables\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <FieldObject\&.hpp>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBinit\fP (size_t N_X, size_t N_Y)"
+.br
+.RI "Initializes buffer objects, generates the field mesh, index mesh and uploads it to the GPU, compiles shaders\&. "
+.ti -1c
+.RI "void \fBrender\fP (void *field, size_t N_X, size_t N_Y)"
+.br
+.RI "Renders the field\&. "
+.ti -1c
+.RI "void \fBsetOutputOption\fP (enum \fBOUTPUT_OPTION\fP outOption)"
+.br
+.RI "Set up the a type of the output: PPM, PNG, MPEG\&. "
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBcreateMeshPositionVBO\fP (size_t N_X, size_t N_Y)"
+.br
+.RI "Generates the field mesh [-0\&.9, 0\&.9]^2\&. "
+.ti -1c
+.RI "void \fBcreateMeshIndexBuffer\fP (size_t N_X, size_t N_Y)"
+.br
+.RI "Generates the index mesh for rendering\&. "
+.ti -1c
+.RI "void \fBupdateField\fP (void *field, size_t N_X, size_t N_Y)"
+.br
+.RI "Re-uploads updated field characteristics (ex\&. density, velocity, energy)\&. "
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "GLuint \fB_vao\fP"
+.br
+.ti -1c
+.RI "GLuint \fB_vbo\fP"
+.br
+.ti -1c
+.RI "GLuint \fB_fieldValBuffer\fP"
+.br
+.ti -1c
+.RI "GLuint \fB_indexBuffer\fP"
+.br
+.ti -1c
+.RI "size_t \fB_index_buf_count\fP"
+.br
+.ti -1c
+.RI "GLfloat * \fB_data\fP"
+.br
+.ti -1c
+.RI "size_t \fB_dataSize\fP"
+.br
+.ti -1c
+.RI "GLuint \fB_programID\fP"
+.br
+.ti -1c
+.RI "enum \fBOUTPUT_OPTION\fP \fB_output_option\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+The class which is responsible for rendering the field and storing all necessary environmental variables\&. 
+
+
+.PP
+\fBAuthor:\fP
+.RS 4
+Eugene Kolesnikov 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+8/10/2017 
+.RE
+.PP
+
+.PP
+Definition at line 23 of file FieldObject\&.hpp\&.
+.SH "Member Function Documentation"
+.PP 
+.SS "void FieldObject::createMeshIndexBuffer (size_t N_X, size_t N_Y)\fC [protected]\fP"
+
+.PP
+Generates the index mesh for rendering\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIN_X\fP -- amount of grid cells along the X direction\&. 
+.br
+\fIN_Y\fP -- amount of grid cells along the Y direction\&. 
+.RE
+.PP
+Generate the index buffer
+.PP
+Generate the index mesh and automatically upload to the GPU 
+.PP
+Definition at line 155 of file FieldObject\&.cpp\&.
+.SS "void FieldObject::createMeshPositionVBO (size_t N_X, size_t N_Y)\fC [protected]\fP"
+
+.PP
+Generates the field mesh [-0\&.9, 0\&.9]^2\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIN_X\fP -- amount of grid cells along the X direction\&. 
+.br
+\fIN_Y\fP -- amount of grid cells along the Y direction\&. 
+.RE
+.PP
+Generate the mesh
+.PP
+Generate the array buffer and upload the mesh to the GPU
+.PP
+Generate the empty array buffer of the field information and upload to the GPU 
+.PP
+Definition at line 111 of file FieldObject\&.cpp\&.
+.SS "void FieldObject::init (size_t N_X, size_t N_Y)"
+
+.PP
+Initializes buffer objects, generates the field mesh, index mesh and uploads it to the GPU, compiles shaders\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIN_X\fP -- amount of grid cells along the X direction\&. 
+.br
+\fIN_Y\fP -- amount of grid cells along the Y direction\&. 
+.RE
+.PP
+Generate the Vertex Array Buffer
+.PP
+Load and compile shaders 
+.PP
+Definition at line 39 of file FieldObject\&.cpp\&.
+.SS "void FieldObject::render (void * field, size_t N_X, size_t N_Y)"
+
+.PP
+Renders the field\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfield\fP -- pointer to the field\&. 
+.br
+\fIN_X\fP -- amount of grid cells along the X direction\&. 
+.br
+\fIN_Y\fP -- amount of grid cells along the Y direction\&. 
+.RE
+.PP
+Update the field information
+.PP
+Bind buffers, shader program, vertex attribute pointers
+.PP
+Render the field
+.PP
+Save the rendered image to the file of the output style
+.PP
+Unbind buffers, pointers, shaders 
+.PP
+Definition at line 65 of file FieldObject\&.cpp\&.
+.SS "void FieldObject::setOutputOption (enum \fBOUTPUT_OPTION\fP outOption)"
+
+.PP
+Set up the a type of the output: PPM, PNG, MPEG\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIoutOption\fP -- the type of the output\&. 
+.RE
+.PP
+
+.PP
+Definition at line 214 of file FieldObject\&.cpp\&.
+.SS "void FieldObject::updateField (void * field, size_t N_X, size_t N_Y)\fC [protected]\fP"
+
+.PP
+Re-uploads updated field characteristics (ex\&. density, velocity, energy)\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfield\fP -- pointer to the field\&. 
+.br
+\fIN_X\fP -- amount of grid cells along the X direction\&. 
+.br
+\fIN_Y\fP -- amount of grid cells along the Y direction\&. 
+.RE
+.PP
+
+.PP
+Definition at line 193 of file FieldObject\&.cpp\&.
+.SH "Member Data Documentation"
+.PP 
+.SS "GLfloat* FieldObject::_data\fC [protected]\fP"
+Pointer to an array which stores the information (ex\&. density, velocity, energy) of the generated field mesh\&. 
+.PP
+Definition at line 82 of file FieldObject\&.hpp\&.
+.SS "size_t FieldObject::_dataSize\fC [protected]\fP"
+Number of points in the generated field mesh\&. 
+.PP
+Definition at line 83 of file FieldObject\&.hpp\&.
+.SS "GLuint FieldObject::_fieldValBuffer\fC [protected]\fP"
+Vertex Buffer Object which stores the field information (ex\&. density, velocity, energy) in points which are stored in _vbo\&. _vbo and _fieldValBuffer are split because the first buffer is static and the other one is dynamic\&. 
+.PP
+Definition at line 77 of file FieldObject\&.hpp\&.
+.SS "size_t FieldObject::_index_buf_count\fC [protected]\fP"
+Number of indeces\&. 
+.PP
+Definition at line 81 of file FieldObject\&.hpp\&.
+.SS "GLuint FieldObject::_indexBuffer\fC [protected]\fP"
+Vertex Buffer Object which stores indeces which are used to render the field 
+.PP
+Definition at line 80 of file FieldObject\&.hpp\&.
+.SS "enum \fBOUTPUT_OPTION\fP FieldObject::_output_option\fC [protected]\fP"
+Type of the output: save in an image (PPM, PNG) or generate a video file (MPEG)\&. 
+.PP
+Definition at line 85 of file FieldObject\&.hpp\&.
+.SS "GLuint FieldObject::_programID\fC [protected]\fP"
+Environment with compiled shaders\&. 
+.PP
+Definition at line 84 of file FieldObject\&.hpp\&.
+.SS "GLuint FieldObject::_vao\fC [protected]\fP"
+Vertex Array Object -- OpenGL Object that stores all of the state needed to supply vertex data 
+.PP
+Definition at line 75 of file FieldObject\&.hpp\&.
+.SS "GLuint FieldObject::_vbo\fC [protected]\fP"
+Vertex Buffer Object which stores the 2D field without the field information (ex\&. density, velocity, energy) 
+.PP
+Definition at line 76 of file FieldObject\&.hpp\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Numerical Hydrodynamics MPI+CUDA Project from the source code\&.

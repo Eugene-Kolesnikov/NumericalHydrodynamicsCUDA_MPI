@@ -1,0 +1,181 @@
+\hypertarget{_unit_tests_2_unit_test_triangle_2interface_8h}{}\section{Dynamic\+Library\+Visualization/\+Unit\+Tests/\+Unit\+Test\+Triangle/interface.h File Reference}
+\label{_unit_tests_2_unit_test_triangle_2interface_8h}\index{Dynamic\+Library\+Visualization/\+Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Dynamic\+Library\+Visualization/\+Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}}
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON} \{ \newline
+\hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615ac271a6034e77f707fe192841a95de390}{P\+PM}, 
+\hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615ac271a6034e77f707fe192841a95de390}{P\+PM}, 
+\hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615a842c5fc4bbe3f780e57c76d1a3cafe9f}{P\+NG}, 
+\hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615a842c5fc4bbe3f780e57c76d1a3cafe9f}{P\+NG}, 
+\newline
+\hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615af1ce886c03e016afe243226af6e25564}{M\+P\+EG}, 
+\hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615af1ce886c03e016afe243226af6e25564}{M\+P\+EG}, 
+\hyperlink{_unit_tests_2_unit_test_potential_field_2interface_8h_a29ac838d689ab5ed87b591138936e615ac271a6034e77f707fe192841a95de390}{P\+PM}, 
+\hyperlink{_unit_tests_2_unit_test_potential_field_2interface_8h_a29ac838d689ab5ed87b591138936e615a842c5fc4bbe3f780e57c76d1a3cafe9f}{P\+NG}, 
+\newline
+\hyperlink{_unit_tests_2_unit_test_potential_field_2interface_8h_a29ac838d689ab5ed87b591138936e615af1ce886c03e016afe243226af6e25564}{M\+P\+EG}, 
+\hyperlink{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615ac271a6034e77f707fe192841a95de390}{P\+PM}, 
+\hyperlink{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615a842c5fc4bbe3f780e57c76d1a3cafe9f}{P\+NG}, 
+\hyperlink{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615af1ce886c03e016afe243226af6e25564}{M\+P\+EG}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{_unit_tests_2_unit_test_triangle_2interface_8h_a4f9004bf1abf1f896f3317a8837b4c8c}{D\+L\+V\+\_\+init} (size\+\_\+t N\+\_\+X, size\+\_\+t N\+\_\+Y, enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON} out\+Option)
+\begin{DoxyCompactList}\small\item\em The server node calls the {\ttfamily D\+L\+V\+\_\+init} function once before the computations start in order to initialize the environment\+: create the window where Open\+GL will render the field, allocate necessary memory, initialize environmental variables, set the output method (P\+PM, P\+NG, M\+P\+EG). \end{DoxyCompactList}\item 
+bool \hyperlink{_unit_tests_2_unit_test_triangle_2interface_8h_a574b683f637118843396eff34c354002}{D\+L\+V\+\_\+visualize} (void $\ast$field, size\+\_\+t N\+\_\+X, size\+\_\+t N\+\_\+Y)
+\begin{DoxyCompactList}\small\item\em The server node calls the {\ttfamily D\+L\+V\+\_\+visualize} function each time it is necessary to plot hydrodynamics fields\+: density, velocity,... (depends on the computational model). The decision of what property of the field must be rendered is specified in the D\+LV library. \end{DoxyCompactList}\item 
+bool \hyperlink{_unit_tests_2_unit_test_triangle_2interface_8h_afe37ec7f94000a6b21bdd1306e244499}{D\+L\+V\+\_\+terminate} ()
+\begin{DoxyCompactList}\small\item\em The server node calls the {\ttfamily D\+L\+V\+\_\+terminate} function once when the computations has already finished to deinitialize the environment. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615}\label{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615}} 
+\index{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}!O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON@{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON}}
+\index{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON@{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON}!Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}}
+\subsubsection{\texorpdfstring{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON}{OUTPUT\_OPTION}}
+{\footnotesize\ttfamily enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{P\+PM@{P\+PM}!Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}}\index{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}!P\+PM@{P\+PM}}}\mbox{\Hypertarget{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615ac271a6034e77f707fe192841a95de390}\label{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615ac271a6034e77f707fe192841a95de390}} 
+P\+PM&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{P\+PM@{P\+PM}!Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}}\index{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}!P\+PM@{P\+PM}}}\mbox{\Hypertarget{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615ac271a6034e77f707fe192841a95de390}\label{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615ac271a6034e77f707fe192841a95de390}} 
+P\+PM&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{P\+NG@{P\+NG}!Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}}\index{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}!P\+NG@{P\+NG}}}\mbox{\Hypertarget{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615a842c5fc4bbe3f780e57c76d1a3cafe9f}\label{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615a842c5fc4bbe3f780e57c76d1a3cafe9f}} 
+P\+NG&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{P\+NG@{P\+NG}!Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}}\index{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}!P\+NG@{P\+NG}}}\mbox{\Hypertarget{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615a842c5fc4bbe3f780e57c76d1a3cafe9f}\label{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615a842c5fc4bbe3f780e57c76d1a3cafe9f}} 
+P\+NG&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{M\+P\+EG@{M\+P\+EG}!Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}}\index{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}!M\+P\+EG@{M\+P\+EG}}}\mbox{\Hypertarget{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615af1ce886c03e016afe243226af6e25564}\label{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615af1ce886c03e016afe243226af6e25564}} 
+M\+P\+EG&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{M\+P\+EG@{M\+P\+EG}!Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}}\index{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}!M\+P\+EG@{M\+P\+EG}}}\mbox{\Hypertarget{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615af1ce886c03e016afe243226af6e25564}\label{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615af1ce886c03e016afe243226af6e25564}} 
+M\+P\+EG&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{P\+PM@{P\+PM}!Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}}\index{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}!P\+PM@{P\+PM}}}\mbox{\Hypertarget{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615ac271a6034e77f707fe192841a95de390}\label{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615ac271a6034e77f707fe192841a95de390}} 
+P\+PM&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{P\+NG@{P\+NG}!Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}}\index{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}!P\+NG@{P\+NG}}}\mbox{\Hypertarget{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615a842c5fc4bbe3f780e57c76d1a3cafe9f}\label{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615a842c5fc4bbe3f780e57c76d1a3cafe9f}} 
+P\+NG&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{M\+P\+EG@{M\+P\+EG}!Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}}\index{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}!M\+P\+EG@{M\+P\+EG}}}\mbox{\Hypertarget{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615af1ce886c03e016afe243226af6e25564}\label{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615af1ce886c03e016afe243226af6e25564}} 
+M\+P\+EG&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{P\+PM@{P\+PM}!Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}}\index{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}!P\+PM@{P\+PM}}}\mbox{\Hypertarget{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615ac271a6034e77f707fe192841a95de390}\label{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615ac271a6034e77f707fe192841a95de390}} 
+P\+PM&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{P\+NG@{P\+NG}!Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}}\index{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}!P\+NG@{P\+NG}}}\mbox{\Hypertarget{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615a842c5fc4bbe3f780e57c76d1a3cafe9f}\label{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615a842c5fc4bbe3f780e57c76d1a3cafe9f}} 
+P\+NG&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{M\+P\+EG@{M\+P\+EG}!Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}}\index{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}!M\+P\+EG@{M\+P\+EG}}}\mbox{\Hypertarget{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615af1ce886c03e016afe243226af6e25564}\label{_unit_tests_2_unit_test_triangle_2interface_8h_a29ac838d689ab5ed87b591138936e615af1ce886c03e016afe243226af6e25564}} 
+M\+P\+EG&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line 17 of file interface.\+h.
+
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{_unit_tests_2_unit_test_triangle_2interface_8h_a4f9004bf1abf1f896f3317a8837b4c8c}\label{_unit_tests_2_unit_test_triangle_2interface_8h_a4f9004bf1abf1f896f3317a8837b4c8c}} 
+\index{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}!D\+L\+V\+\_\+init@{D\+L\+V\+\_\+init}}
+\index{D\+L\+V\+\_\+init@{D\+L\+V\+\_\+init}!Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}}
+\subsubsection{\texorpdfstring{D\+L\+V\+\_\+init()}{DLV\_init()}}
+{\footnotesize\ttfamily bool D\+L\+V\+\_\+init (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{N\+\_\+X,  }\item[{size\+\_\+t}]{N\+\_\+Y,  }\item[{enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON}}]{out\+Option }\end{DoxyParamCaption})}
+
+
+
+The server node calls the {\ttfamily D\+L\+V\+\_\+init} function once before the computations start in order to initialize the environment\+: create the window where Open\+GL will render the field, allocate necessary memory, initialize environmental variables, set the output method (P\+PM, P\+NG, M\+P\+EG). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em N\+\_\+X} & -- discretization of the grid along the X direction. \\
+\hline
+{\em N\+\_\+Y} & -- discretization of the grid along the Y direction. \\
+\hline
+{\em out\+Option} & -- parameter specifies what output is expected from the D\+LV\+: \textquotesingle{}P\+PM\textquotesingle{} creates a .ppm image file, \textquotesingle{}P\+NG\textquotesingle{} creates a .png image file, \textquotesingle{}M\+P\+EG\textquotesingle{} creates a .mpeg video file. In the last case, the function initializes the file for further writing frames into it. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a bool parameter which indicates if the function performed successfully (true) or not (false). 
+\end{DoxyReturn}
+Create the window with an Open\+GL context of the \textquotesingle{}\hyperlink{class_main_window}{Main\+Window}\textquotesingle{} class
+
+Set up the background color of the window (Dark blue)
+
+Allocate memory for the \hyperlink{class_field_object}{Field\+Object}
+
+Set up the output method
+
+Initialize the Filed\+Object
+
+Return F\+A\+IL if any runtime exception caught 
+
+Definition at line 33 of file interface.\+cpp.
+
+\mbox{\Hypertarget{_unit_tests_2_unit_test_triangle_2interface_8h_afe37ec7f94000a6b21bdd1306e244499}\label{_unit_tests_2_unit_test_triangle_2interface_8h_afe37ec7f94000a6b21bdd1306e244499}} 
+\index{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}!D\+L\+V\+\_\+terminate@{D\+L\+V\+\_\+terminate}}
+\index{D\+L\+V\+\_\+terminate@{D\+L\+V\+\_\+terminate}!Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}}
+\subsubsection{\texorpdfstring{D\+L\+V\+\_\+terminate()}{DLV\_terminate()}}
+{\footnotesize\ttfamily bool D\+L\+V\+\_\+terminate (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+The server node calls the {\ttfamily D\+L\+V\+\_\+terminate} function once when the computations has already finished to deinitialize the environment. 
+
+\begin{DoxyReturn}{Returns}
+a bool parameter which indicates if the function performed successfully (true) or not (false). 
+\end{DoxyReturn}
+Delete the \hyperlink{class_field_object}{Field\+Object}, close the \hyperlink{class_main_window}{Main\+Window}
+
+Return F\+A\+IL if any runtime exception caught 
+
+Definition at line 86 of file interface.\+cpp.
+
+\mbox{\Hypertarget{_unit_tests_2_unit_test_triangle_2interface_8h_a574b683f637118843396eff34c354002}\label{_unit_tests_2_unit_test_triangle_2interface_8h_a574b683f637118843396eff34c354002}} 
+\index{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}!D\+L\+V\+\_\+visualize@{D\+L\+V\+\_\+visualize}}
+\index{D\+L\+V\+\_\+visualize@{D\+L\+V\+\_\+visualize}!Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h@{Unit\+Tests/\+Unit\+Test\+Triangle/interface.\+h}}
+\subsubsection{\texorpdfstring{D\+L\+V\+\_\+visualize()}{DLV\_visualize()}}
+{\footnotesize\ttfamily bool D\+L\+V\+\_\+visualize (\begin{DoxyParamCaption}\item[{void $\ast$}]{field,  }\item[{size\+\_\+t}]{N\+\_\+X,  }\item[{size\+\_\+t}]{N\+\_\+Y }\end{DoxyParamCaption})}
+
+
+
+The server node calls the {\ttfamily D\+L\+V\+\_\+visualize} function each time it is necessary to plot hydrodynamics fields\+: density, velocity,... (depends on the computational model). The decision of what property of the field must be rendered is specified in the D\+LV library. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em field} & -- pointer to the field. \\
+\hline
+{\em N\+\_\+X} & -- discretization of the grid along the X direction. \\
+\hline
+{\em N\+\_\+Y} & -- discretization of the grid along the Y direction. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a bool parameter which indicates if the function performed successfully (true) or not (false). 
+\end{DoxyReturn}
+If the window shouldn\textquotesingle{}t be closed, clear the screen and render the field
+
+Return F\+A\+IL if the window should be closed but the rendering is required 
+
+Definition at line 66 of file interface.\+cpp.
+

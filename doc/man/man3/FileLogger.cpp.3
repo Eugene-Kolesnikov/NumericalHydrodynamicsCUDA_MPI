@@ -1,0 +1,42 @@
+.TH "LoggingSystem/FileLogger.cpp" 3 "Wed Oct 25 2017" "Version 0.1" "Numerical Hydrodynamics MPI+CUDA Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+LoggingSystem/FileLogger.cpp
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <iostream>\fP
+.br
+\fC#include 'FileLogger\&.hpp'\fP
+.br
+
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI " \fBlogging\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "FileLogger & \fBlogging::operator<<\fP (FileLogger &logger, const FileLogger::e_logType l_type)"
+.br
+.ti -1c
+.RI "FileLogger & \fBlogging::operator<<\fP (FileLogger &logger, const char *text)"
+.br
+.ti -1c
+.RI "std::string \fBcreateLogFilename\fP (int node)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "std::string createLogFilename (int node)"
+
+.PP
+Definition at line 64 of file FileLogger\&.cpp\&.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Numerical Hydrodynamics MPI+CUDA Project from the source code\&.

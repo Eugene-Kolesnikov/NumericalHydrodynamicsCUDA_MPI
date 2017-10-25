@@ -1,0 +1,45 @@
+.TH "logging::FileLogger" 3 "Wed Oct 25 2017" "Version 0.1" "Numerical Hydrodynamics MPI+CUDA Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+logging::FileLogger
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBe_logType\fP { \fBLOG_ERROR\fP, \fBLOG_WARNING\fP, \fBLOG_INFO\fP }"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBFileLogger\fP (int node, std::string fname)"
+.br
+.ti -1c
+.RI "\fBFileLogger\fP (const \fBFileLogger\fP &)=delete"
+.br
+.ti -1c
+.RI "\fBFileLogger\fP & \fBoperator=\fP (const \fBFileLogger\fP &)=delete"
+.br
+.in -1c
+.SS "Friends"
+
+.in +1c
+.ti -1c
+.RI "\fBFileLogger\fP & \fBoperator<<\fP (\fBFileLogger\fP &logger, const e_logType l_type)"
+.br
+.ti -1c
+.RI "\fBFileLogger\fP & \fBoperator<<\fP (\fBFileLogger\fP &logger, const char *text)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line 15 of file FileLogger\&.hpp\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Numerical Hydrodynamics MPI+CUDA Project from the source code\&.

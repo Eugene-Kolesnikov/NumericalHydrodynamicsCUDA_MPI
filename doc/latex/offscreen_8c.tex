@@ -1,0 +1,172 @@
+\hypertarget{offscreen_8c}{}\section{Dynamic\+Library\+Visualization/offscreen.c File Reference}
+\label{offscreen_8c}\index{Dynamic\+Library\+Visualization/offscreen.\+c@{Dynamic\+Library\+Visualization/offscreen.\+c}}
+
+
+This file contains the descriptions of the functions which save rendered images to files\+: ppm, png, mpeg.  
+
+
+{\ttfamily \#include \char`\"{}offscreen.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$assert.\+h$>$}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$Open\+G\+L/gl3.\+h$>$}\newline
+{\ttfamily \#include $<$G\+L\+F\+W/glfw3.\+h$>$}\newline
+{\ttfamily \#include $<$png.\+h$>$}\newline
+{\ttfamily \#include $<$libavcodec/avcodec.\+h$>$}\newline
+{\ttfamily \#include $<$libavutil/imgutils.\+h$>$}\newline
+{\ttfamily \#include $<$libavutil/opt.\+h$>$}\newline
+{\ttfamily \#include $<$libswscale/swscale.\+h$>$}\newline
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{offscreen_8c_a198b8c2c77ea9f9815a181ddeda1c320}\label{offscreen_8c_a198b8c2c77ea9f9815a181ddeda1c320}} 
+enum {\bfseries Constants} \{ {\bfseries S\+C\+R\+E\+E\+N\+S\+H\+O\+T\+\_\+\+M\+A\+X\+\_\+\+F\+I\+L\+E\+N\+A\+ME} = 256
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{offscreen_8c_a0c02ed34de92a6bdc7aac86b6c7ebde9}{screenshot\+\_\+ppm} (const char $\ast$filename, unsigned int width, unsigned int height, G\+Lubyte $\ast$$\ast$pixels)
+\begin{DoxyCompactList}\small\item\em Take a screen-\/shot with gl\+Read\+Pixels and save to a file in P\+PM format. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{offscreen_8c_a1eeb20bd3aa05c5145ec78ee40b9b8c2}\label{offscreen_8c_a1eeb20bd3aa05c5145ec78ee40b9b8c2}} 
+void {\bfseries screenshot\+\_\+png} (const char $\ast$filename, unsigned int width, unsigned int height, G\+Lubyte $\ast$$\ast$pixels, png\+\_\+byte $\ast$$\ast$png\+\_\+bytes, png\+\_\+byte $\ast$$\ast$$\ast$png\+\_\+rows)
+\item 
+\mbox{\Hypertarget{offscreen_8c_a866d9934b2d9974a3803b5e5df962276}\label{offscreen_8c_a866d9934b2d9974a3803b5e5df962276}} 
+void {\bfseries ffmpeg\+\_\+encoder\+\_\+set\+\_\+frame\+\_\+yuv\+\_\+from\+\_\+rgb} (uint8\+\_\+t $\ast$rgb)
+\item 
+\mbox{\Hypertarget{offscreen_8c_a03aa92778b7389c393c22457caf9aabc}\label{offscreen_8c_a03aa92778b7389c393c22457caf9aabc}} 
+void {\bfseries ffmpeg\+\_\+encoder\+\_\+start} (const char $\ast$filename, enum A\+V\+Codec\+ID codec\+\_\+id, int fps, int width, int height)
+\item 
+\mbox{\Hypertarget{offscreen_8c_aee024be99052c47b59cbdf3e2626bb53}\label{offscreen_8c_aee024be99052c47b59cbdf3e2626bb53}} 
+void {\bfseries ffmpeg\+\_\+encoder\+\_\+finish} (void)
+\item 
+\mbox{\Hypertarget{offscreen_8c_a9559b490b7da6c97f796f4825e29a501}\label{offscreen_8c_a9559b490b7da6c97f796f4825e29a501}} 
+void {\bfseries ffmpeg\+\_\+encoder\+\_\+encode\+\_\+frame} (uint8\+\_\+t $\ast$rgb)
+\item 
+\mbox{\Hypertarget{offscreen_8c_a2dd732da008e2ef1e1ef0c844ab4ca1f}\label{offscreen_8c_a2dd732da008e2ef1e1ef0c844ab4ca1f}} 
+void {\bfseries ffmpeg\+\_\+encoder\+\_\+glread\+\_\+rgb} (uint8\+\_\+t $\ast$$\ast$rgb, G\+Lubyte $\ast$$\ast$pixels, unsigned int width, unsigned int height)
+\item 
+void \hyperlink{offscreen_8c_afcf386f3f147c0c8027ceb6a09871947}{set\+\_\+output\+\_\+windowsize} (unsigned short window\+\_\+size)
+\begin{DoxyCompactList}\small\item\em Set\textquotesingle{}s up the environment (window size) for the output image or video. \end{DoxyCompactList}\item 
+void \hyperlink{offscreen_8c_a1d7d0de603d074b5ef4313c59b92ccb1}{init\+\_\+output} (enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON} output)
+\begin{DoxyCompactList}\small\item\em Set\textquotesingle{}s up the environment (output option). \end{DoxyCompactList}\item 
+void \hyperlink{offscreen_8c_a60768fd2fff7b48e5d7bb2a497279ebe}{deinit\+\_\+output} (enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON} output)
+\begin{DoxyCompactList}\small\item\em Deinitializes the environment. (Necessary for M\+P\+EG option since the encoder has to close the file appropriately). \end{DoxyCompactList}\item 
+void \hyperlink{offscreen_8c_a0972b9037c322bca4750fb66c346dd6a}{writeframe\+\_\+output} (enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON} output)
+\begin{DoxyCompactList}\small\item\em Either creates an image or writes a frame to a video file (depending on the output option). \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This file contains the descriptions of the functions which save rendered images to files\+: ppm, png, mpeg. 
+
+\begin{DoxyAuthor}{Author}
+Eugene Kolesnikov 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+11/10/2017 
+\end{DoxyDate}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{offscreen_8c_a60768fd2fff7b48e5d7bb2a497279ebe}\label{offscreen_8c_a60768fd2fff7b48e5d7bb2a497279ebe}} 
+\index{offscreen.\+c@{offscreen.\+c}!deinit\+\_\+output@{deinit\+\_\+output}}
+\index{deinit\+\_\+output@{deinit\+\_\+output}!offscreen.\+c@{offscreen.\+c}}
+\subsubsection{\texorpdfstring{deinit\+\_\+output()}{deinit\_output()}}
+{\footnotesize\ttfamily void deinit\+\_\+output (\begin{DoxyParamCaption}\item[{enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON}}]{output }\end{DoxyParamCaption})}
+
+
+
+Deinitializes the environment. (Necessary for M\+P\+EG option since the encoder has to close the file appropriately). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em output} & -- type of an output. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 262 of file offscreen.\+c.
+
+\mbox{\Hypertarget{offscreen_8c_a1d7d0de603d074b5ef4313c59b92ccb1}\label{offscreen_8c_a1d7d0de603d074b5ef4313c59b92ccb1}} 
+\index{offscreen.\+c@{offscreen.\+c}!init\+\_\+output@{init\+\_\+output}}
+\index{init\+\_\+output@{init\+\_\+output}!offscreen.\+c@{offscreen.\+c}}
+\subsubsection{\texorpdfstring{init\+\_\+output()}{init\_output()}}
+{\footnotesize\ttfamily void init\+\_\+output (\begin{DoxyParamCaption}\item[{enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON}}]{output }\end{DoxyParamCaption})}
+
+
+
+Set\textquotesingle{}s up the environment (output option). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em output} & -- type of an output. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 249 of file offscreen.\+c.
+
+\mbox{\Hypertarget{offscreen_8c_a0c02ed34de92a6bdc7aac86b6c7ebde9}\label{offscreen_8c_a0c02ed34de92a6bdc7aac86b6c7ebde9}} 
+\index{offscreen.\+c@{offscreen.\+c}!screenshot\+\_\+ppm@{screenshot\+\_\+ppm}}
+\index{screenshot\+\_\+ppm@{screenshot\+\_\+ppm}!offscreen.\+c@{offscreen.\+c}}
+\subsubsection{\texorpdfstring{screenshot\+\_\+ppm()}{screenshot\_ppm()}}
+{\footnotesize\ttfamily void screenshot\+\_\+ppm (\begin{DoxyParamCaption}\item[{const char $\ast$}]{filename,  }\item[{unsigned int}]{width,  }\item[{unsigned int}]{height,  }\item[{G\+Lubyte $\ast$$\ast$}]{pixels }\end{DoxyParamCaption})}
+
+
+
+Take a screen-\/shot with gl\+Read\+Pixels and save to a file in P\+PM format. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & -- file path to save to, without extension. \\
+\hline
+{\em width} & -- screen width in pixels \\
+\hline
+{\em height} & -- screen height in pixels \\
+\hline
+{\em pixels} & -- intermediate buffer to avoid repeated mallocs across multiple calls. Contents of this buffer do not matter. May be N\+U\+LL, in which case it is initialized. The memory of the buffer must be freed if the function won\textquotesingle{}t be called anymore. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 46 of file offscreen.\+c.
+
+\mbox{\Hypertarget{offscreen_8c_afcf386f3f147c0c8027ceb6a09871947}\label{offscreen_8c_afcf386f3f147c0c8027ceb6a09871947}} 
+\index{offscreen.\+c@{offscreen.\+c}!set\+\_\+output\+\_\+windowsize@{set\+\_\+output\+\_\+windowsize}}
+\index{set\+\_\+output\+\_\+windowsize@{set\+\_\+output\+\_\+windowsize}!offscreen.\+c@{offscreen.\+c}}
+\subsubsection{\texorpdfstring{set\+\_\+output\+\_\+windowsize()}{set\_output\_windowsize()}}
+{\footnotesize\ttfamily void set\+\_\+output\+\_\+windowsize (\begin{DoxyParamCaption}\item[{unsigned short}]{window\+\_\+size }\end{DoxyParamCaption})}
+
+
+
+Set\textquotesingle{}s up the environment (window size) for the output image or video. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em window\+\_\+size} & -- width and height of the result image or video. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 239 of file offscreen.\+c.
+
+\mbox{\Hypertarget{offscreen_8c_a0972b9037c322bca4750fb66c346dd6a}\label{offscreen_8c_a0972b9037c322bca4750fb66c346dd6a}} 
+\index{offscreen.\+c@{offscreen.\+c}!writeframe\+\_\+output@{writeframe\+\_\+output}}
+\index{writeframe\+\_\+output@{writeframe\+\_\+output}!offscreen.\+c@{offscreen.\+c}}
+\subsubsection{\texorpdfstring{writeframe\+\_\+output()}{writeframe\_output()}}
+{\footnotesize\ttfamily void writeframe\+\_\+output (\begin{DoxyParamCaption}\item[{enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON}}]{output }\end{DoxyParamCaption})}
+
+
+
+Either creates an image or writes a frame to a video file (depending on the output option). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em output} & -- type of an output. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 279 of file offscreen.\+c.
+

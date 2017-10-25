@@ -1,0 +1,143 @@
+.TH "DynamicLibraryVisualization/UnitTests/UnitTestTriangle/interface.h" 3 "Wed Oct 25 2017" "Version 0.1" "Numerical Hydrodynamics MPI+CUDA Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+DynamicLibraryVisualization/UnitTests/UnitTestTriangle/interface.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdlib\&.h>\fP
+.br
+
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBOUTPUT_OPTION\fP { \fBPPM\fP, \fBPPM\fP, \fBPNG\fP, \fBPNG\fP, \fBMPEG\fP, \fBMPEG\fP, \fBPPM\fP, \fBPNG\fP, \fBMPEG\fP, \fBPPM\fP, \fBPNG\fP, \fBMPEG\fP }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "bool \fBDLV_init\fP (size_t N_X, size_t N_Y, enum \fBOUTPUT_OPTION\fP outOption)"
+.br
+.RI "The server node calls the \fCDLV_init\fP function once before the computations start in order to initialize the environment: create the window where OpenGL will render the field, allocate necessary memory, initialize environmental variables, set the output method (PPM, PNG, MPEG)\&. "
+.ti -1c
+.RI "bool \fBDLV_visualize\fP (void *field, size_t N_X, size_t N_Y)"
+.br
+.RI "The server node calls the \fCDLV_visualize\fP function each time it is necessary to plot hydrodynamics fields: density, velocity,\&.\&.\&. (depends on the computational model)\&. The decision of what property of the field must be rendered is specified in the DLV library\&. "
+.ti -1c
+.RI "bool \fBDLV_terminate\fP ()"
+.br
+.RI "The server node calls the \fCDLV_terminate\fP function once when the computations has already finished to deinitialize the environment\&. "
+.in -1c
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBOUTPUT_OPTION\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIPPM \fP\fP
+.TP
+\fB\fIPPM \fP\fP
+.TP
+\fB\fIPNG \fP\fP
+.TP
+\fB\fIPNG \fP\fP
+.TP
+\fB\fIMPEG \fP\fP
+.TP
+\fB\fIMPEG \fP\fP
+.TP
+\fB\fIPPM \fP\fP
+.TP
+\fB\fIPNG \fP\fP
+.TP
+\fB\fIMPEG \fP\fP
+.TP
+\fB\fIPPM \fP\fP
+.TP
+\fB\fIPNG \fP\fP
+.TP
+\fB\fIMPEG \fP\fP
+.PP
+Definition at line 17 of file interface\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "bool DLV_init (size_t N_X, size_t N_Y, enum \fBOUTPUT_OPTION\fP outOption)"
+
+.PP
+The server node calls the \fCDLV_init\fP function once before the computations start in order to initialize the environment: create the window where OpenGL will render the field, allocate necessary memory, initialize environmental variables, set the output method (PPM, PNG, MPEG)\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIN_X\fP -- discretization of the grid along the X direction\&. 
+.br
+\fIN_Y\fP -- discretization of the grid along the Y direction\&. 
+.br
+\fIoutOption\fP -- parameter specifies what output is expected from the DLV: 'PPM' creates a \&.ppm image file, 'PNG' creates a \&.png image file, 'MPEG' creates a \&.mpeg video file\&. In the last case, the function initializes the file for further writing frames into it\&. 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+a bool parameter which indicates if the function performed successfully (true) or not (false)\&. 
+.RE
+.PP
+Create the window with an OpenGL context of the '\fBMainWindow\fP' class
+.PP
+Set up the background color of the window (Dark blue)
+.PP
+Allocate memory for the \fBFieldObject\fP
+.PP
+Set up the output method
+.PP
+Initialize the FiledObject
+.PP
+Return FAIL if any runtime exception caught 
+.PP
+Definition at line 33 of file interface\&.cpp\&.
+.SS "bool DLV_terminate ()"
+
+.PP
+The server node calls the \fCDLV_terminate\fP function once when the computations has already finished to deinitialize the environment\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+a bool parameter which indicates if the function performed successfully (true) or not (false)\&. 
+.RE
+.PP
+Delete the \fBFieldObject\fP, close the \fBMainWindow\fP
+.PP
+Return FAIL if any runtime exception caught 
+.PP
+Definition at line 86 of file interface\&.cpp\&.
+.SS "bool DLV_visualize (void * field, size_t N_X, size_t N_Y)"
+
+.PP
+The server node calls the \fCDLV_visualize\fP function each time it is necessary to plot hydrodynamics fields: density, velocity,\&.\&.\&. (depends on the computational model)\&. The decision of what property of the field must be rendered is specified in the DLV library\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfield\fP -- pointer to the field\&. 
+.br
+\fIN_X\fP -- discretization of the grid along the X direction\&. 
+.br
+\fIN_Y\fP -- discretization of the grid along the Y direction\&. 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+a bool parameter which indicates if the function performed successfully (true) or not (false)\&. 
+.RE
+.PP
+If the window shouldn't be closed, clear the screen and render the field
+.PP
+Return FAIL if the window should be closed but the rendering is required 
+.PP
+Definition at line 66 of file interface\&.cpp\&.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Numerical Hydrodynamics MPI+CUDA Project from the source code\&.

@@ -1,0 +1,72 @@
+.TH "LoggingSystem/FileLogger.hpp" 3 "Wed Oct 25 2017" "Version 0.1" "Numerical Hydrodynamics MPI+CUDA Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+LoggingSystem/FileLogger.hpp
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <fstream>\fP
+.br
+\fC#include <ctime>\fP
+.br
+\fC#include <string>\fP
+.br
+
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBlogging::FileLogger\fP"
+.br
+.in -1c
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI " \fBlogging\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fB_WARNING_\fP   \fBlogging::FileLogger::e_logType::LOG_WARNING\fP"
+.br
+.ti -1c
+.RI "#define \fB_ERROR_\fP   \fBlogging::FileLogger::e_logType::LOG_ERROR\fP"
+.br
+.ti -1c
+.RI "#define \fB_INFO_\fP   \fBlogging::FileLogger::e_logType::LOG_INFO\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "std::string \fBcreateLogFilename\fP (int node)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define _ERROR_   \fBlogging::FileLogger::e_logType::LOG_ERROR\fP"
+
+.PP
+Definition at line 9 of file FileLogger\&.hpp\&.
+.SS "#define _INFO_   \fBlogging::FileLogger::e_logType::LOG_INFO\fP"
+
+.PP
+Definition at line 10 of file FileLogger\&.hpp\&.
+.SS "#define _WARNING_   \fBlogging::FileLogger::e_logType::LOG_WARNING\fP"
+
+.PP
+Definition at line 8 of file FileLogger\&.hpp\&.
+.SH "Function Documentation"
+.PP 
+.SS "std::string createLogFilename (int node)"
+
+.PP
+Definition at line 64 of file FileLogger\&.cpp\&.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Numerical Hydrodynamics MPI+CUDA Project from the source code\&.

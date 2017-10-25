@@ -1,0 +1,113 @@
+.TH "DynamicLibraryVisualization/offscreen.h" 3 "Wed Oct 25 2017" "Version 0.1" "Numerical Hydrodynamics MPI+CUDA Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+DynamicLibraryVisualization/offscreen.h \- This header file contains the interface to the functions which save rendered images to files: ppm, png, mpeg\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBOUTPUT_OPTION\fP { \fBPPM\fP, \fBPPM\fP, \fBPNG\fP, \fBPNG\fP, \fBMPEG\fP, \fBMPEG\fP, \fBPPM\fP, \fBPNG\fP, \fBMPEG\fP, \fBPPM\fP, \fBPNG\fP, \fBMPEG\fP }
+.RI "Enum class which is responsible for the type of an output,\&. ""
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBset_output_windowsize\fP (unsigned short window_size)"
+.br
+.RI "Set's up the environment (window size) for the output image or video\&. "
+.ti -1c
+.RI "void \fBinit_output\fP (enum \fBOUTPUT_OPTION\fP output)"
+.br
+.RI "Set's up the environment (output option)\&. "
+.ti -1c
+.RI "void \fBdeinit_output\fP (enum \fBOUTPUT_OPTION\fP output)"
+.br
+.RI "Deinitializes the environment\&. (Necessary for MPEG option since the encoder has to close the file appropriately)\&. "
+.ti -1c
+.RI "void \fBwriteframe_output\fP (enum \fBOUTPUT_OPTION\fP output)"
+.br
+.RI "Either creates an image or writes a frame to a video file (depending on the output option)\&. "
+.in -1c
+.SH "Detailed Description"
+.PP 
+This header file contains the interface to the functions which save rendered images to files: ppm, png, mpeg\&. 
+
+
+.PP
+\fBAuthor:\fP
+.RS 4
+Eugene Kolesnikov 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+11/10/2017 
+.RE
+.PP
+
+.PP
+Definition in file \fBoffscreen\&.h\fP\&.
+.SH "Function Documentation"
+.PP 
+.SS "void deinit_output (enum \fBOUTPUT_OPTION\fP output)"
+
+.PP
+Deinitializes the environment\&. (Necessary for MPEG option since the encoder has to close the file appropriately)\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIoutput\fP -- type of an output\&. 
+.RE
+.PP
+
+.PP
+Definition at line 262 of file offscreen\&.c\&.
+.SS "void init_output (enum \fBOUTPUT_OPTION\fP output)"
+
+.PP
+Set's up the environment (output option)\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIoutput\fP -- type of an output\&. 
+.RE
+.PP
+
+.PP
+Definition at line 249 of file offscreen\&.c\&.
+.SS "void set_output_windowsize (unsigned short window_size)"
+
+.PP
+Set's up the environment (window size) for the output image or video\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwindow_size\fP -- width and height of the result image or video\&. 
+.RE
+.PP
+
+.PP
+Definition at line 239 of file offscreen\&.c\&.
+.SS "void writeframe_output (enum \fBOUTPUT_OPTION\fP output)"
+
+.PP
+Either creates an image or writes a frame to a video file (depending on the output option)\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIoutput\fP -- type of an output\&. 
+.RE
+.PP
+
+.PP
+Definition at line 279 of file offscreen\&.c\&.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Numerical Hydrodynamics MPI+CUDA Project from the source code\&.

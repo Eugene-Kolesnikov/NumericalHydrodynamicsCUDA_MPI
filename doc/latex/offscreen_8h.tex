@@ -1,0 +1,129 @@
+\hypertarget{offscreen_8h}{}\section{Dynamic\+Library\+Visualization/offscreen.h File Reference}
+\label{offscreen_8h}\index{Dynamic\+Library\+Visualization/offscreen.\+h@{Dynamic\+Library\+Visualization/offscreen.\+h}}
+
+
+This header file contains the interface to the functions which save rendered images to files\+: ppm, png, mpeg.  
+
+
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{offscreen_8h_a29ac838d689ab5ed87b591138936e615}\label{offscreen_8h_a29ac838d689ab5ed87b591138936e615}} 
+enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON} \{ \newline
+{\bfseries P\+PM}, 
+{\bfseries P\+PM}, 
+{\bfseries P\+NG}, 
+{\bfseries P\+NG}, 
+\newline
+{\bfseries M\+P\+EG}, 
+{\bfseries M\+P\+EG}, 
+{\bfseries P\+PM}, 
+{\bfseries P\+NG}, 
+\newline
+{\bfseries M\+P\+EG}, 
+{\bfseries P\+PM}, 
+{\bfseries P\+NG}, 
+{\bfseries M\+P\+EG}
+ \}\begin{DoxyCompactList}\small\item\em Enum class which is responsible for the type of an output,. \end{DoxyCompactList}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{offscreen_8h_afcf386f3f147c0c8027ceb6a09871947}{set\+\_\+output\+\_\+windowsize} (unsigned short window\+\_\+size)
+\begin{DoxyCompactList}\small\item\em Set\textquotesingle{}s up the environment (window size) for the output image or video. \end{DoxyCompactList}\item 
+void \hyperlink{offscreen_8h_a1d7d0de603d074b5ef4313c59b92ccb1}{init\+\_\+output} (enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON} output)
+\begin{DoxyCompactList}\small\item\em Set\textquotesingle{}s up the environment (output option). \end{DoxyCompactList}\item 
+void \hyperlink{offscreen_8h_a60768fd2fff7b48e5d7bb2a497279ebe}{deinit\+\_\+output} (enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON} output)
+\begin{DoxyCompactList}\small\item\em Deinitializes the environment. (Necessary for M\+P\+EG option since the encoder has to close the file appropriately). \end{DoxyCompactList}\item 
+void \hyperlink{offscreen_8h_a0972b9037c322bca4750fb66c346dd6a}{writeframe\+\_\+output} (enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON} output)
+\begin{DoxyCompactList}\small\item\em Either creates an image or writes a frame to a video file (depending on the output option). \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This header file contains the interface to the functions which save rendered images to files\+: ppm, png, mpeg. 
+
+\begin{DoxyAuthor}{Author}
+Eugene Kolesnikov 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+11/10/2017 
+\end{DoxyDate}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{offscreen_8h_a60768fd2fff7b48e5d7bb2a497279ebe}\label{offscreen_8h_a60768fd2fff7b48e5d7bb2a497279ebe}} 
+\index{offscreen.\+h@{offscreen.\+h}!deinit\+\_\+output@{deinit\+\_\+output}}
+\index{deinit\+\_\+output@{deinit\+\_\+output}!offscreen.\+h@{offscreen.\+h}}
+\subsubsection{\texorpdfstring{deinit\+\_\+output()}{deinit\_output()}}
+{\footnotesize\ttfamily void deinit\+\_\+output (\begin{DoxyParamCaption}\item[{enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON}}]{output }\end{DoxyParamCaption})}
+
+
+
+Deinitializes the environment. (Necessary for M\+P\+EG option since the encoder has to close the file appropriately). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em output} & -- type of an output. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 262 of file offscreen.\+c.
+
+\mbox{\Hypertarget{offscreen_8h_a1d7d0de603d074b5ef4313c59b92ccb1}\label{offscreen_8h_a1d7d0de603d074b5ef4313c59b92ccb1}} 
+\index{offscreen.\+h@{offscreen.\+h}!init\+\_\+output@{init\+\_\+output}}
+\index{init\+\_\+output@{init\+\_\+output}!offscreen.\+h@{offscreen.\+h}}
+\subsubsection{\texorpdfstring{init\+\_\+output()}{init\_output()}}
+{\footnotesize\ttfamily void init\+\_\+output (\begin{DoxyParamCaption}\item[{enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON}}]{output }\end{DoxyParamCaption})}
+
+
+
+Set\textquotesingle{}s up the environment (output option). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em output} & -- type of an output. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 249 of file offscreen.\+c.
+
+\mbox{\Hypertarget{offscreen_8h_afcf386f3f147c0c8027ceb6a09871947}\label{offscreen_8h_afcf386f3f147c0c8027ceb6a09871947}} 
+\index{offscreen.\+h@{offscreen.\+h}!set\+\_\+output\+\_\+windowsize@{set\+\_\+output\+\_\+windowsize}}
+\index{set\+\_\+output\+\_\+windowsize@{set\+\_\+output\+\_\+windowsize}!offscreen.\+h@{offscreen.\+h}}
+\subsubsection{\texorpdfstring{set\+\_\+output\+\_\+windowsize()}{set\_output\_windowsize()}}
+{\footnotesize\ttfamily void set\+\_\+output\+\_\+windowsize (\begin{DoxyParamCaption}\item[{unsigned short}]{window\+\_\+size }\end{DoxyParamCaption})}
+
+
+
+Set\textquotesingle{}s up the environment (window size) for the output image or video. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em window\+\_\+size} & -- width and height of the result image or video. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 239 of file offscreen.\+c.
+
+\mbox{\Hypertarget{offscreen_8h_a0972b9037c322bca4750fb66c346dd6a}\label{offscreen_8h_a0972b9037c322bca4750fb66c346dd6a}} 
+\index{offscreen.\+h@{offscreen.\+h}!writeframe\+\_\+output@{writeframe\+\_\+output}}
+\index{writeframe\+\_\+output@{writeframe\+\_\+output}!offscreen.\+h@{offscreen.\+h}}
+\subsubsection{\texorpdfstring{writeframe\+\_\+output()}{writeframe\_output()}}
+{\footnotesize\ttfamily void writeframe\+\_\+output (\begin{DoxyParamCaption}\item[{enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON}}]{output }\end{DoxyParamCaption})}
+
+
+
+Either creates an image or writes a frame to a video file (depending on the output option). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em output} & -- type of an output. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 279 of file offscreen.\+c.
+

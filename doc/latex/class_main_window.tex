@@ -1,0 +1,270 @@
+\hypertarget{class_main_window}{}\section{Main\+Window Class Reference}
+\label{class_main_window}\index{Main\+Window@{Main\+Window}}
+
+
+The class which is responsible for all necessary functions related to the window itself\+: creation, termination, events handling, cleaning.  
+
+
+
+
+{\ttfamily \#include $<$Main\+Window.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{class_main_window_a215b729f3f6e8858173e45a0beed5715}{create} (std\+::string title)
+\begin{DoxyCompactList}\small\item\em Creates the window with a specified title. \end{DoxyCompactList}\item 
+G\+L\+F\+Wwindow $\ast$ \hyperlink{class_main_window_a9fe6b6a6fad9fc0d04a4ebd587c663ae}{window} ()
+\begin{DoxyCompactList}\small\item\em Returns the pointer to the G\+L\+F\+W3 class which stores the window. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_main_window_a24d41c1dcaa610c9789022dfb4201fa4}\label{class_main_window_a24d41c1dcaa610c9789022dfb4201fa4}} 
+void \hyperlink{class_main_window_a24d41c1dcaa610c9789022dfb4201fa4}{terminate} ()
+\begin{DoxyCompactList}\small\item\em Terminates the window and clears the memory. \end{DoxyCompactList}\item 
+void \hyperlink{class_main_window_a7880c39dad6416496f678c8f501571b6}{set\+B\+G\+Color} (float r, float g, float b, float a)
+\begin{DoxyCompactList}\small\item\em Sets up the background color of the window. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_main_window_afae98f91bcccb67d79724234ca39c789}\label{class_main_window_afae98f91bcccb67d79724234ca39c789}} 
+void \hyperlink{class_main_window_afae98f91bcccb67d79724234ca39c789}{clear\+Screen} ()
+\begin{DoxyCompactList}\small\item\em Clears the window from previously rendered image. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \hyperlink{class_main_window_a33c07a10c43688414df5cbf157f58a18}{error\+\_\+callback} (int error, const char $\ast$description)
+\begin{DoxyCompactList}\small\item\em Function which is called each time a G\+L\+FW error occurs. \end{DoxyCompactList}\item 
+static void \hyperlink{class_main_window_a21902b8580ae657fa0dcaa1419a61d68}{key\+\_\+callback} (G\+L\+F\+Wwindow $\ast$\hyperlink{class_main_window_a9fe6b6a6fad9fc0d04a4ebd587c663ae}{window}, int key, int scancode, int action, int mods)
+\begin{DoxyCompactList}\small\item\em Key event function which notifies when a physical key is pressed or released or when it repeats. \end{DoxyCompactList}\item 
+static void \hyperlink{class_main_window_abf15a739367001229631fa420bf79eb7}{mouse\+\_\+button\+\_\+callback} (G\+L\+F\+Wwindow $\ast$\hyperlink{class_main_window_a9fe6b6a6fad9fc0d04a4ebd587c663ae}{window}, int button, int action, int mods)
+\begin{DoxyCompactList}\small\item\em mouse button event function which notifies when a mouse button is pressed or released \end{DoxyCompactList}\item 
+static void \hyperlink{class_main_window_aa3b1ac9b22345bb7099347cf42f66ad5}{cursor\+\_\+position\+\_\+callback} (G\+L\+F\+Wwindow $\ast$\hyperlink{class_main_window_a9fe6b6a6fad9fc0d04a4ebd587c663ae}{window}, double x, double y)
+\begin{DoxyCompactList}\small\item\em mouse button event function which notifies when the cursor moves over the window. The callback functions receives the cursor position, measured in screen coordinates but relative to the top-\/left corner of the window client area. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+unsigned short \hyperlink{class_main_window_afb697f0b20242dc01f9c8779382ae53b}{get\+\_\+resolution} ()
+\begin{DoxyCompactList}\small\item\em This method returns the resolution of the screen to open the window of an appropriate size. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+G\+L\+F\+Wwindow $\ast$ \hyperlink{class_main_window_a32bc8e4de92a68ff85f259b6420c372d}{\+\_\+window}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The class which is responsible for all necessary functions related to the window itself\+: creation, termination, events handling, cleaning. 
+
+\begin{DoxyAuthor}{Author}
+Eugene Kolesnikov 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+8/10/2017 
+\end{DoxyDate}
+
+
+Definition at line 22 of file Main\+Window.\+hpp.
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_main_window_a215b729f3f6e8858173e45a0beed5715}\label{class_main_window_a215b729f3f6e8858173e45a0beed5715}} 
+\index{Main\+Window@{Main\+Window}!create@{create}}
+\index{create@{create}!Main\+Window@{Main\+Window}}
+\subsubsection{\texorpdfstring{create()}{create()}}
+{\footnotesize\ttfamily void Main\+Window\+::create (\begin{DoxyParamCaption}\item[{std\+::string}]{title }\end{DoxyParamCaption})}
+
+
+
+Creates the window with a specified title. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em title} & -- the title of the window. \\
+\hline
+\end{DoxyParams}
+Initialize G\+L\+FW
+
+set up the Open\+GL 4.\+1 context
+
+set up the screen resolution
+
+Open a window and create its Open\+GL context
+
+Ensure we can capture the escape key being pressed below
+
+Enable the depth-\/test
+
+Use L\+E\+Q\+U\+AL function for the depth-\/test \begin{DoxyVerb}                 allow blending (Blending is the stage of OpenGL 
+\end{DoxyVerb}
+ rendering pipeline that takes the fragment color outputs from the Fragment Shader and combines them with the colors in the color buffers that these outputs map to)
+
+Definition at line 40 of file Main\+Window.\+cpp.
+
+\mbox{\Hypertarget{class_main_window_aa3b1ac9b22345bb7099347cf42f66ad5}\label{class_main_window_aa3b1ac9b22345bb7099347cf42f66ad5}} 
+\index{Main\+Window@{Main\+Window}!cursor\+\_\+position\+\_\+callback@{cursor\+\_\+position\+\_\+callback}}
+\index{cursor\+\_\+position\+\_\+callback@{cursor\+\_\+position\+\_\+callback}!Main\+Window@{Main\+Window}}
+\subsubsection{\texorpdfstring{cursor\+\_\+position\+\_\+callback()}{cursor\_position\_callback()}}
+{\footnotesize\ttfamily void Main\+Window\+::cursor\+\_\+position\+\_\+callback (\begin{DoxyParamCaption}\item[{G\+L\+F\+Wwindow $\ast$}]{window,  }\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+mouse button event function which notifies when the cursor moves over the window. The callback functions receives the cursor position, measured in screen coordinates but relative to the top-\/left corner of the window client area. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & -- x-\/coordinate. \\
+\hline
+{\em y} & -- y-\/coordinate. \\
+\hline
+\end{DoxyParams}
+Not Implemented 
+
+Definition at line 124 of file Main\+Window.\+cpp.
+
+\mbox{\Hypertarget{class_main_window_a33c07a10c43688414df5cbf157f58a18}\label{class_main_window_a33c07a10c43688414df5cbf157f58a18}} 
+\index{Main\+Window@{Main\+Window}!error\+\_\+callback@{error\+\_\+callback}}
+\index{error\+\_\+callback@{error\+\_\+callback}!Main\+Window@{Main\+Window}}
+\subsubsection{\texorpdfstring{error\+\_\+callback()}{error\_callback()}}
+{\footnotesize\ttfamily void Main\+Window\+::error\+\_\+callback (\begin{DoxyParamCaption}\item[{int}]{error,  }\item[{const char $\ast$}]{description }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Function which is called each time a G\+L\+FW error occurs. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em error} & -- error code. \\
+\hline
+{\em description} & -- human-\/readable description. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 83 of file Main\+Window.\+cpp.
+
+\mbox{\Hypertarget{class_main_window_afb697f0b20242dc01f9c8779382ae53b}\label{class_main_window_afb697f0b20242dc01f9c8779382ae53b}} 
+\index{Main\+Window@{Main\+Window}!get\+\_\+resolution@{get\+\_\+resolution}}
+\index{get\+\_\+resolution@{get\+\_\+resolution}!Main\+Window@{Main\+Window}}
+\subsubsection{\texorpdfstring{get\+\_\+resolution()}{get\_resolution()}}
+{\footnotesize\ttfamily unsigned short Main\+Window\+::get\+\_\+resolution (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+This method returns the resolution of the screen to open the window of an appropriate size. 
+
+\begin{DoxyReturn}{Returns}
+minimum of the height-\/width resolution of the screen in pixels. 
+\end{DoxyReturn}
+
+
+Definition at line 30 of file Main\+Window.\+cpp.
+
+\mbox{\Hypertarget{class_main_window_a21902b8580ae657fa0dcaa1419a61d68}\label{class_main_window_a21902b8580ae657fa0dcaa1419a61d68}} 
+\index{Main\+Window@{Main\+Window}!key\+\_\+callback@{key\+\_\+callback}}
+\index{key\+\_\+callback@{key\+\_\+callback}!Main\+Window@{Main\+Window}}
+\subsubsection{\texorpdfstring{key\+\_\+callback()}{key\_callback()}}
+{\footnotesize\ttfamily void Main\+Window\+::key\+\_\+callback (\begin{DoxyParamCaption}\item[{G\+L\+F\+Wwindow $\ast$}]{window,  }\item[{int}]{key,  }\item[{int}]{scancode,  }\item[{int}]{action,  }\item[{int}]{mods }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Key event function which notifies when a physical key is pressed or released or when it repeats. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em window} & -- The window that received the event. \\
+\hline
+{\em key} & -- The keyboard key that was pressed or released. \\
+\hline
+{\em scancode} & -- The system-\/specific scancode of the key. \\
+\hline
+{\em action} & -- G\+L\+F\+W\+\_\+\+P\+R\+E\+SS, G\+L\+F\+W\+\_\+\+R\+E\+L\+E\+A\+SE or G\+L\+F\+W\+\_\+\+R\+E\+P\+E\+AT. \\
+\hline
+{\em mods} & -- Bit field describing which modifier keys were held down\+: G\+L\+F\+W\+\_\+\+M\+O\+D\+\_\+\+A\+LT, G\+L\+F\+W\+\_\+\+M\+O\+D\+\_\+\+C\+O\+N\+T\+R\+OL, G\+L\+F\+W\+\_\+\+M\+O\+D\+\_\+\+S\+H\+I\+FT, or G\+L\+F\+W\+\_\+\+M\+O\+D\+\_\+\+S\+U\+P\+ER. \\
+\hline
+\end{DoxyParams}
+Not Implemented 
+
+Definition at line 97 of file Main\+Window.\+cpp.
+
+\mbox{\Hypertarget{class_main_window_abf15a739367001229631fa420bf79eb7}\label{class_main_window_abf15a739367001229631fa420bf79eb7}} 
+\index{Main\+Window@{Main\+Window}!mouse\+\_\+button\+\_\+callback@{mouse\+\_\+button\+\_\+callback}}
+\index{mouse\+\_\+button\+\_\+callback@{mouse\+\_\+button\+\_\+callback}!Main\+Window@{Main\+Window}}
+\subsubsection{\texorpdfstring{mouse\+\_\+button\+\_\+callback()}{mouse\_button\_callback()}}
+{\footnotesize\ttfamily void Main\+Window\+::mouse\+\_\+button\+\_\+callback (\begin{DoxyParamCaption}\item[{G\+L\+F\+Wwindow $\ast$}]{window,  }\item[{int}]{button,  }\item[{int}]{action,  }\item[{int}]{mods }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+mouse button event function which notifies when a mouse button is pressed or released 
+
+
+\begin{DoxyParams}{Parameters}
+{\em window} & -- The window that received the event.. \\
+\hline
+{\em button} & -- The mouse button that was pressed or released\+: G\+L\+F\+W\+\_\+\+M\+O\+U\+S\+E\+\_\+\+B\+U\+T\+T\+O\+N\+\_\+1, ..., G\+L\+F\+W\+\_\+\+M\+O\+U\+S\+E\+\_\+\+B\+U\+T\+T\+O\+N\+\_\+8, G\+L\+F\+W\+\_\+\+M\+O\+U\+S\+E\+\_\+\+B\+U\+T\+T\+O\+N\+\_\+\+L\+A\+ST, G\+L\+F\+W\+\_\+\+M\+O\+U\+S\+E\+\_\+\+B\+U\+T\+T\+O\+N\+\_\+\+L\+E\+FT, G\+L\+F\+W\+\_\+\+M\+O\+U\+S\+E\+\_\+\+B\+U\+T\+T\+O\+N\+\_\+\+M\+I\+D\+D\+LE, G\+L\+F\+W\+\_\+\+M\+O\+U\+S\+E\+\_\+\+B\+U\+T\+T\+O\+N\+\_\+\+R\+I\+G\+HT. \\
+\hline
+{\em action} & -- One of G\+L\+F\+W\+\_\+\+P\+R\+E\+SS or G\+L\+F\+W\+\_\+\+R\+E\+L\+E\+A\+SE. \\
+\hline
+{\em mods} & -- Bit field describing which modifier keys were held down\+: G\+L\+F\+W\+\_\+\+M\+O\+D\+\_\+\+A\+LT, G\+L\+F\+W\+\_\+\+M\+O\+D\+\_\+\+C\+O\+N\+T\+R\+OL, G\+L\+F\+W\+\_\+\+M\+O\+D\+\_\+\+S\+H\+I\+FT, or G\+L\+F\+W\+\_\+\+M\+O\+D\+\_\+\+S\+U\+P\+ER. \\
+\hline
+\end{DoxyParams}
+Not Implemented 
+
+Definition at line 112 of file Main\+Window.\+cpp.
+
+\mbox{\Hypertarget{class_main_window_a7880c39dad6416496f678c8f501571b6}\label{class_main_window_a7880c39dad6416496f678c8f501571b6}} 
+\index{Main\+Window@{Main\+Window}!set\+B\+G\+Color@{set\+B\+G\+Color}}
+\index{set\+B\+G\+Color@{set\+B\+G\+Color}!Main\+Window@{Main\+Window}}
+\subsubsection{\texorpdfstring{set\+B\+G\+Color()}{setBGColor()}}
+{\footnotesize\ttfamily void Main\+Window\+::set\+B\+G\+Color (\begin{DoxyParamCaption}\item[{float}]{r,  }\item[{float}]{g,  }\item[{float}]{b,  }\item[{float}]{a }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets up the background color of the window. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em r} & -- red component of the R\+G\+BA color. \\
+\hline
+{\em g} & -- blue component of the R\+G\+BA color. \\
+\hline
+{\em b} & -- green component of the R\+G\+BA color. \\
+\hline
+{\em a} & -- alpha component of the R\+G\+BA color. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 56 of file Main\+Window.\+hpp.
+
+\mbox{\Hypertarget{class_main_window_a9fe6b6a6fad9fc0d04a4ebd587c663ae}\label{class_main_window_a9fe6b6a6fad9fc0d04a4ebd587c663ae}} 
+\index{Main\+Window@{Main\+Window}!window@{window}}
+\index{window@{window}!Main\+Window@{Main\+Window}}
+\subsubsection{\texorpdfstring{window()}{window()}}
+{\footnotesize\ttfamily G\+L\+F\+Wwindow$\ast$ Main\+Window\+::window (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the pointer to the G\+L\+F\+W3 class which stores the window. 
+
+\begin{DoxyReturn}{Returns}
+pointer to the G\+L\+F\+W3 class. 
+\end{DoxyReturn}
+
+
+Definition at line 38 of file Main\+Window.\+hpp.
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_main_window_a32bc8e4de92a68ff85f259b6420c372d}\label{class_main_window_a32bc8e4de92a68ff85f259b6420c372d}} 
+\index{Main\+Window@{Main\+Window}!\+\_\+window@{\+\_\+window}}
+\index{\+\_\+window@{\+\_\+window}!Main\+Window@{Main\+Window}}
+\subsubsection{\texorpdfstring{\+\_\+window}{\_window}}
+{\footnotesize\ttfamily G\+L\+F\+Wwindow$\ast$ Main\+Window\+::\+\_\+window\hspace{0.3cm}{\ttfamily [protected]}}
+
+G\+L\+F\+W3 class which stores the window on which the Open\+GL renders the field. 
+
+Definition at line 115 of file Main\+Window.\+hpp.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Dynamic\+Library\+Visualization/\hyperlink{_main_window_8hpp}{Main\+Window.\+hpp}\item 
+Dynamic\+Library\+Visualization/\hyperlink{_main_window_8cpp}{Main\+Window.\+cpp}\end{DoxyCompactItemize}

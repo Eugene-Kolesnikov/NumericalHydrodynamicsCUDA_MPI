@@ -1,0 +1,13 @@
+In this particular case, D\+LV uses Open\+GL to render the field and saves it to one of the following files\+: ppm, png, mpeg (for videos). Since the software solves 2D problems, the Visualization is a 2D image (static or dynamic depending on the problem), which is generated using Open\+GL 4.\+x and G\+L\+FW 3 as an interface generation library.
+
+Interface functions\+:
+
+
+\begin{DoxyCode}
+bool DLV\_init(size\_t N\_X, size\_t N\_Y, enum OUTPUT\_OPTION outOption);
+bool DLV\_visualize(void* field, size\_t N\_X, size\_t N\_Y);
+bool DLV\_terminate();
+\end{DoxyCode}
+
+
+The field should be normalized to \mbox{[}0,1\mbox{]} before sending it to the {\ttfamily D\+L\+V\+\_\+visualize} function. The D\+LV renders the field on a square \$\mbox{[}0,1\mbox{]}$^\wedge$2\$. \textbackslash{}\mbox{[} D\+LV\+: \mbox{[}0,1\mbox{]} -\/$>$ \mbox{[}0,1\mbox{]}$^\wedge$3 \textbackslash{}\mbox{]} 

@@ -1,9 +1,10 @@
-/* 
- * File:   FieldObject.cpp
- * Author: eugene
- * 
- * Created on October 8, 2017, 11:50 PM
- */
+/**
+* @file FieldObject.cpp
+* @brief This file contains descriptions of functions (FieldObject class methods) which are responsible 
+ * for rendering the field and storing all necessary environmental variables.
+* @author Eugene Kolesnikov 
+* @date 8/10/2017 
+*/
 
 #include "FieldObject.hpp"
 #include "shader.h"
@@ -29,27 +30,44 @@ FieldObject::~FieldObject()
     deinit_output(_output_option);
 }
 
+/**
+ * @brief Initializes buffer objects, generates the field mesh, index mesh and
+  * uploads it to the GPU, compiles shaders.
+ * @param N_X -- amount of grid cells along the X direction.
+ * @param N_Y -- amount of grid cells along the Y direction.
+*/
 void FieldObject::init(size_t N_X, size_t N_Y)
 {
     _dataSize = N_X * N_Y;
     _data = new GLfloat[_dataSize];
 
+    /// Generate the Vertex Array Buffer
     glGenVertexArrays(1, &_vao);
     glBindVertexArray(_vao);
 
+    // Generate the field mesh and the index mesh
     createMeshPositionVBO(N_X, N_Y);
     createMeshIndexBuffer(N_X, N_Y);
 
+    /// Load and compile shaders
     _programID = compileShaders("/Users/eugene/NetBeansProjects/DynamicLibraryVisualization/shaders/draw_field.vert.glsl",
                                 "/Users/eugene/NetBeansProjects/DynamicLibraryVisualization/shaders/draw_field.frag.glsl");
     
     init_output(_output_option);
 }
 
+/**
+ * @brief Renders the field.
+ * @param field -- pointer to the field.
+ * @param N_X -- amount of grid cells along the X direction.
+ * @param N_Y -- amount of grid cells along the Y direction.
+*/
 void FieldObject::render(void* field, size_t N_X, size_t N_Y)
 {
+    /// Update the field information
     updateField(field, N_X, N_Y);
     
+    /// Bind buffers, shader program, vertex attribute pointers
     glBindVertexArray(_vao);
     glUseProgram(_programID);
     
@@ -70,9 +88,13 @@ void FieldObject::render(void* field, size_t N_X, size_t N_Y)
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer);
 
+    /// Render the field
     glDrawElements(GL_TRIANGLES, _index_buf_count, GL_UNSIGNED_INT, 0);
+    
+    /// Save the rendered image to the file of the output style
     writeframe_output(_output_option);
 
+    /// Unbind buffers, pointers, shaders
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -81,6 +103,11 @@ void FieldObject::render(void* field, size_t N_X, size_t N_Y)
     glBindVertexArray(0);
 }
 
+/**
+ * @brief Generates the field mesh [-0.9, 0.9]^2.
+ * @param N_X -- amount of grid cells along the X direction.
+ * @param N_Y -- amount of grid cells along the Y direction.
+*/
 void FieldObject::createMeshPositionVBO(size_t N_X, size_t N_Y)
 {
     float xlim[2] = {-0.9f, 0.9f};
@@ -91,12 +118,14 @@ void FieldObject::createMeshPositionVBO(size_t N_X, size_t N_Y)
 
     glm::vec2* field_xy = new glm::vec2[_dataSize];
     
+    /// Generate the mesh
     for(int j = 0; j < N_Y; ++j) {
         for(int i = 0; i < N_X; ++i) {
             field_xy[j*N_X+i] = glm::vec2(xlim[0] + i*dx, ylim[0] + j*dy);
         }
     }
 
+    /// Generate the array buffer and upload the mesh to the GPU
     glGenBuffers(1, &_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, _vbo);
     glBufferData(GL_ARRAY_BUFFER, _dataSize * sizeof(glm::vec2), field_xy, GL_STATIC_DRAW);
@@ -105,8 +134,7 @@ void FieldObject::createMeshPositionVBO(size_t N_X, size_t N_Y)
     delete[] field_xy;
     
     
-    // %% CREATION AND INITIALIZATION OF A '_fieldValBuffer'.
-    
+    /// Generate the empty array buffer of the field information and upload to the GPU
     for(int j = 0; j < N_Y; ++j) {
         for(int i = 0; i < N_X; ++i) {
             _data[j*N_X+i] = 0.0;
@@ -119,12 +147,17 @@ void FieldObject::createMeshPositionVBO(size_t N_X, size_t N_Y)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+/**
+ * @brief Generates the index mesh for rendering.
+ * @param N_X -- amount of grid cells along the X direction.
+ * @param N_Y -- amount of grid cells along the Y direction.
+*/
 void FieldObject::createMeshIndexBuffer(size_t N_X, size_t N_Y)
 {
     int size = (N_X - 1) * (N_Y - 1) * 6 * sizeof(GLuint);
     _index_buf_count = (N_X - 1) * (N_Y - 1) * 6;
 
-    // create index buffer
+    /// Generate the index buffer
     glGenBuffers(1, &_indexBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, 0, GL_STATIC_DRAW);
@@ -134,6 +167,7 @@ void FieldObject::createMeshIndexBuffer(size_t N_X, size_t N_Y)
         throw std::runtime_error("Failed to create an index buffer.");
     }
 
+    /// Generate the index mesh and automatically upload to the GPU
     for(int j = 0; j < N_Y-1; ++j) {
         for(int i = 0; i < N_X-1; ++i) {
             *indices++ = j*N_X+i;
@@ -150,6 +184,12 @@ void FieldObject::createMeshIndexBuffer(size_t N_X, size_t N_Y)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
+/**
+ * @brief Re-uploads updated field characteristics (ex. density, velocity, energy).
+ * @param field -- pointer to the field.
+ * @param N_X -- amount of grid cells along the X direction.
+ * @param N_Y -- amount of grid cells along the Y direction.
+*/
 void FieldObject::updateField(void* field, size_t N_X, size_t N_Y)
 {
     Cell* FieldCell = (Cell*)field;
@@ -167,6 +207,10 @@ void FieldObject::updateField(void* field, size_t N_X, size_t N_Y)
     glBindVertexArray(0);
 }
 
+/**
+ * @brief Set up the a type of the output: PPM, PNG, MPEG
+ * @param outOption -- the type of the output.
+*/
 void FieldObject::setOutputOption(enum OUTPUT_OPTION outOption)
 {
     _output_option = outOption;

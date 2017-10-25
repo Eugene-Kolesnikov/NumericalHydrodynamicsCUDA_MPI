@@ -1,0 +1,75 @@
+\hypertarget{_file_logger_8hpp}{}\section{Logging\+System/\+File\+Logger.hpp File Reference}
+\label{_file_logger_8hpp}\index{Logging\+System/\+File\+Logger.\+hpp@{Logging\+System/\+File\+Logger.\+hpp}}
+{\ttfamily \#include $<$fstream$>$}\newline
+{\ttfamily \#include $<$ctime$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{classlogging_1_1_file_logger}{logging\+::\+File\+Logger}
+\end{DoxyCompactItemize}
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \hyperlink{namespacelogging}{logging}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{_file_logger_8hpp_aedeaf74b58fd090e349845ee9d6d5f9a}{\+\_\+\+W\+A\+R\+N\+I\+N\+G\+\_\+}~\hyperlink{classlogging_1_1_file_logger_a2ee70febdd1432400fa07ea2a17f0623ad0cb3df3102ca9270c5785af9a8c137f}{logging\+::\+File\+Logger\+::e\+\_\+log\+Type\+::\+L\+O\+G\+\_\+\+W\+A\+R\+N\+I\+NG}
+\item 
+\#define \hyperlink{_file_logger_8hpp_a4d178ec5f52534c3fcc7b775e0d45dca}{\+\_\+\+E\+R\+R\+O\+R\+\_\+}~\hyperlink{classlogging_1_1_file_logger_a2ee70febdd1432400fa07ea2a17f0623a4490aa3d29644e716440fada68f54032}{logging\+::\+File\+Logger\+::e\+\_\+log\+Type\+::\+L\+O\+G\+\_\+\+E\+R\+R\+OR}
+\item 
+\#define \hyperlink{_file_logger_8hpp_a3e75ea0d1bd36390f4cda5c41f5dd93a}{\+\_\+\+I\+N\+F\+O\+\_\+}~\hyperlink{classlogging_1_1_file_logger_a2ee70febdd1432400fa07ea2a17f0623a41abf3cca8cee8cdae01749df7a991c6}{logging\+::\+File\+Logger\+::e\+\_\+log\+Type\+::\+L\+O\+G\+\_\+\+I\+N\+FO}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::string \hyperlink{_file_logger_8hpp_a74e9b1e1491f2908b32131fc0af92800}{create\+Log\+Filename} (int node)
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\mbox{\Hypertarget{_file_logger_8hpp_a4d178ec5f52534c3fcc7b775e0d45dca}\label{_file_logger_8hpp_a4d178ec5f52534c3fcc7b775e0d45dca}} 
+\index{File\+Logger.\+hpp@{File\+Logger.\+hpp}!\+\_\+\+E\+R\+R\+O\+R\+\_\+@{\+\_\+\+E\+R\+R\+O\+R\+\_\+}}
+\index{\+\_\+\+E\+R\+R\+O\+R\+\_\+@{\+\_\+\+E\+R\+R\+O\+R\+\_\+}!File\+Logger.\+hpp@{File\+Logger.\+hpp}}
+\subsubsection{\texorpdfstring{\+\_\+\+E\+R\+R\+O\+R\+\_\+}{\_ERROR\_}}
+{\footnotesize\ttfamily \#define \+\_\+\+E\+R\+R\+O\+R\+\_\+~\hyperlink{classlogging_1_1_file_logger_a2ee70febdd1432400fa07ea2a17f0623a4490aa3d29644e716440fada68f54032}{logging\+::\+File\+Logger\+::e\+\_\+log\+Type\+::\+L\+O\+G\+\_\+\+E\+R\+R\+OR}}
+
+
+
+Definition at line 9 of file File\+Logger.\+hpp.
+
+\mbox{\Hypertarget{_file_logger_8hpp_a3e75ea0d1bd36390f4cda5c41f5dd93a}\label{_file_logger_8hpp_a3e75ea0d1bd36390f4cda5c41f5dd93a}} 
+\index{File\+Logger.\+hpp@{File\+Logger.\+hpp}!\+\_\+\+I\+N\+F\+O\+\_\+@{\+\_\+\+I\+N\+F\+O\+\_\+}}
+\index{\+\_\+\+I\+N\+F\+O\+\_\+@{\+\_\+\+I\+N\+F\+O\+\_\+}!File\+Logger.\+hpp@{File\+Logger.\+hpp}}
+\subsubsection{\texorpdfstring{\+\_\+\+I\+N\+F\+O\+\_\+}{\_INFO\_}}
+{\footnotesize\ttfamily \#define \+\_\+\+I\+N\+F\+O\+\_\+~\hyperlink{classlogging_1_1_file_logger_a2ee70febdd1432400fa07ea2a17f0623a41abf3cca8cee8cdae01749df7a991c6}{logging\+::\+File\+Logger\+::e\+\_\+log\+Type\+::\+L\+O\+G\+\_\+\+I\+N\+FO}}
+
+
+
+Definition at line 10 of file File\+Logger.\+hpp.
+
+\mbox{\Hypertarget{_file_logger_8hpp_aedeaf74b58fd090e349845ee9d6d5f9a}\label{_file_logger_8hpp_aedeaf74b58fd090e349845ee9d6d5f9a}} 
+\index{File\+Logger.\+hpp@{File\+Logger.\+hpp}!\+\_\+\+W\+A\+R\+N\+I\+N\+G\+\_\+@{\+\_\+\+W\+A\+R\+N\+I\+N\+G\+\_\+}}
+\index{\+\_\+\+W\+A\+R\+N\+I\+N\+G\+\_\+@{\+\_\+\+W\+A\+R\+N\+I\+N\+G\+\_\+}!File\+Logger.\+hpp@{File\+Logger.\+hpp}}
+\subsubsection{\texorpdfstring{\+\_\+\+W\+A\+R\+N\+I\+N\+G\+\_\+}{\_WARNING\_}}
+{\footnotesize\ttfamily \#define \+\_\+\+W\+A\+R\+N\+I\+N\+G\+\_\+~\hyperlink{classlogging_1_1_file_logger_a2ee70febdd1432400fa07ea2a17f0623ad0cb3df3102ca9270c5785af9a8c137f}{logging\+::\+File\+Logger\+::e\+\_\+log\+Type\+::\+L\+O\+G\+\_\+\+W\+A\+R\+N\+I\+NG}}
+
+
+
+Definition at line 8 of file File\+Logger.\+hpp.
+
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{_file_logger_8hpp_a74e9b1e1491f2908b32131fc0af92800}\label{_file_logger_8hpp_a74e9b1e1491f2908b32131fc0af92800}} 
+\index{File\+Logger.\+hpp@{File\+Logger.\+hpp}!create\+Log\+Filename@{create\+Log\+Filename}}
+\index{create\+Log\+Filename@{create\+Log\+Filename}!File\+Logger.\+hpp@{File\+Logger.\+hpp}}
+\subsubsection{\texorpdfstring{create\+Log\+Filename()}{createLogFilename()}}
+{\footnotesize\ttfamily std\+::string create\+Log\+Filename (\begin{DoxyParamCaption}\item[{int}]{node }\end{DoxyParamCaption})}
+
+
+
+Definition at line 64 of file File\+Logger.\+cpp.
+

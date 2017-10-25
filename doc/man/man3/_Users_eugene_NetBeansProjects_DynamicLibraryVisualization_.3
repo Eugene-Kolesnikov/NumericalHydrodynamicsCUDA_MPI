@@ -1,0 +1,48 @@
+.TH "DynamicLibraryVisualization Directory Reference" 3 "Wed Oct 25 2017" "Version 0.1" "Numerical Hydrodynamics MPI+CUDA Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+DynamicLibraryVisualization Directory Reference
+.SH SYNOPSIS
+.br
+.PP
+.SS "Files"
+
+.in +1c
+.ti -1c
+.RI "file \fBFieldObject\&.cpp\fP"
+.br
+.RI "This file contains descriptions of functions (\fBFieldObject\fP class methods) which are responsible for rendering the field and storing all necessary environmental variables\&. "
+.ti -1c
+.RI "file \fBFieldObject\&.hpp\fP"
+.br
+.RI "This header file contains the \fBFieldObject\fP class which is responsible for rendering the field and storing all necessary environmental variables\&. "
+.ti -1c
+.RI "file \fBinterface\&.cpp\fP"
+.br
+.RI "This file contains description of functions of the Visualization module\&. It consists of three functions: initialization, visualization, termination\&. "
+.ti -1c
+.RI "file \fBMainWindow\&.cpp\fP"
+.br
+.RI "This file contains descriptions of functions (\fBMainWindow\fP class methods) which are responsible for all necessary functions related to the window itself: creation, termination, events handling, cleaning\&. "
+.ti -1c
+.RI "file \fBMainWindow\&.hpp\fP"
+.br
+.RI "This header file contains the \fBMainWindow\fP class with an OpenGL context\&. "
+.ti -1c
+.RI "file \fBoffscreen\&.c\fP"
+.br
+.RI "This file contains the descriptions of the functions which save rendered images to files: ppm, png, mpeg\&. "
+.ti -1c
+.RI "file \fBoffscreen\&.h\fP"
+.br
+.RI "This header file contains the interface to the functions which save rendered images to files: ppm, png, mpeg\&. "
+.ti -1c
+.RI "file \fBshader\&.cpp\fP"
+.br
+.RI "This file contains description of functions which load, compile, and link shader files to the program\&. "
+.ti -1c
+.RI "file \fBshader\&.h\fP"
+.br
+.RI "This header file contains the interface to functions which load, compile, and link shader files to the program\&. "
+.in -1c

@@ -1,0 +1,128 @@
+\hypertarget{potential_field_8cpp}{}\section{Dynamic\+Library\+Visualization/\+Unit\+Tests/\+Unit\+Test\+Potential\+Field/potential\+Field.cpp File Reference}
+\label{potential_field_8cpp}\index{Dynamic\+Library\+Visualization/\+Unit\+Tests/\+Unit\+Test\+Potential\+Field/potential\+Field.\+cpp@{Dynamic\+Library\+Visualization/\+Unit\+Tests/\+Unit\+Test\+Potential\+Field/potential\+Field.\+cpp}}
+{\ttfamily \#include \char`\"{}interface.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$cstdio$>$}\newline
+{\ttfamily \#include $<$cstdlib$>$}\newline
+{\ttfamily \#include \char`\"{}cell.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$cmath$>$}\newline
+{\ttfamily \#include $<$dlfcn.\+h$>$}\newline
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{potential_field_8cpp_a87997595c410101af664aa8b3aa0bb51}{initialize\+Field} (\hyperlink{struct_cell}{Cell} $\ast$field, size\+\_\+t N\+\_\+X, size\+\_\+t N\+\_\+Y)
+\item 
+void \hyperlink{potential_field_8cpp_aa7ef92dba2ed9c1f2e6d383937c6e69e}{Gauss\+Seidel\+Solver} (\hyperlink{struct_cell}{Cell} $\ast$field, size\+\_\+t N\+\_\+X, size\+\_\+t N\+\_\+Y)
+\item 
+void \hyperlink{potential_field_8cpp_a607b9980080e6def737c4b01d783c524}{normalize\+Field} (\hyperlink{struct_cell}{Cell} $\ast$field, size\+\_\+t N\+\_\+X, size\+\_\+t N\+\_\+Y)
+\item 
+int \hyperlink{potential_field_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4}{main} ()
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+size\+\_\+t \hyperlink{potential_field_8cpp_aa11dcf2732bf6853ab68daa6fc46959c}{xsize} = 20000000
+\item 
+size\+\_\+t \hyperlink{potential_field_8cpp_aef0bffca6586c3e1489aba142b0a6771}{ysize} = 20000000
+\item 
+float \hyperlink{potential_field_8cpp_a9eae6c1f38db98ab568f3ed3771a969d}{dx}
+\item 
+float \hyperlink{potential_field_8cpp_a8f461b6142ce8725218813abb23b06a3}{dy}
+\item 
+float $\ast$ \hyperlink{potential_field_8cpp_a6cfd16a892428f368ea909f7153e0b27}{R}
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{potential_field_8cpp_aa7ef92dba2ed9c1f2e6d383937c6e69e}\label{potential_field_8cpp_aa7ef92dba2ed9c1f2e6d383937c6e69e}} 
+\index{potential\+Field.\+cpp@{potential\+Field.\+cpp}!Gauss\+Seidel\+Solver@{Gauss\+Seidel\+Solver}}
+\index{Gauss\+Seidel\+Solver@{Gauss\+Seidel\+Solver}!potential\+Field.\+cpp@{potential\+Field.\+cpp}}
+\subsubsection{\texorpdfstring{Gauss\+Seidel\+Solver()}{GaussSeidelSolver()}}
+{\footnotesize\ttfamily void Gauss\+Seidel\+Solver (\begin{DoxyParamCaption}\item[{\hyperlink{struct_cell}{Cell} $\ast$}]{field,  }\item[{size\+\_\+t}]{N\+\_\+X,  }\item[{size\+\_\+t}]{N\+\_\+Y }\end{DoxyParamCaption})}
+
+
+
+Definition at line 77 of file potential\+Field.\+cpp.
+
+\mbox{\Hypertarget{potential_field_8cpp_a87997595c410101af664aa8b3aa0bb51}\label{potential_field_8cpp_a87997595c410101af664aa8b3aa0bb51}} 
+\index{potential\+Field.\+cpp@{potential\+Field.\+cpp}!initialize\+Field@{initialize\+Field}}
+\index{initialize\+Field@{initialize\+Field}!potential\+Field.\+cpp@{potential\+Field.\+cpp}}
+\subsubsection{\texorpdfstring{initialize\+Field()}{initializeField()}}
+{\footnotesize\ttfamily void initialize\+Field (\begin{DoxyParamCaption}\item[{\hyperlink{struct_cell}{Cell} $\ast$}]{field,  }\item[{size\+\_\+t}]{N\+\_\+X,  }\item[{size\+\_\+t}]{N\+\_\+Y }\end{DoxyParamCaption})}
+
+
+
+Definition at line 22 of file potential\+Field.\+cpp.
+
+\mbox{\Hypertarget{potential_field_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4}\label{potential_field_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4}} 
+\index{potential\+Field.\+cpp@{potential\+Field.\+cpp}!main@{main}}
+\index{main@{main}!potential\+Field.\+cpp@{potential\+Field.\+cpp}}
+\subsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 123 of file potential\+Field.\+cpp.
+
+\mbox{\Hypertarget{potential_field_8cpp_a607b9980080e6def737c4b01d783c524}\label{potential_field_8cpp_a607b9980080e6def737c4b01d783c524}} 
+\index{potential\+Field.\+cpp@{potential\+Field.\+cpp}!normalize\+Field@{normalize\+Field}}
+\index{normalize\+Field@{normalize\+Field}!potential\+Field.\+cpp@{potential\+Field.\+cpp}}
+\subsubsection{\texorpdfstring{normalize\+Field()}{normalizeField()}}
+{\footnotesize\ttfamily void normalize\+Field (\begin{DoxyParamCaption}\item[{\hyperlink{struct_cell}{Cell} $\ast$}]{field,  }\item[{size\+\_\+t}]{N\+\_\+X,  }\item[{size\+\_\+t}]{N\+\_\+Y }\end{DoxyParamCaption})}
+
+
+
+Definition at line 100 of file potential\+Field.\+cpp.
+
+
+
+\subsection{Variable Documentation}
+\mbox{\Hypertarget{potential_field_8cpp_a9eae6c1f38db98ab568f3ed3771a969d}\label{potential_field_8cpp_a9eae6c1f38db98ab568f3ed3771a969d}} 
+\index{potential\+Field.\+cpp@{potential\+Field.\+cpp}!dx@{dx}}
+\index{dx@{dx}!potential\+Field.\+cpp@{potential\+Field.\+cpp}}
+\subsubsection{\texorpdfstring{dx}{dx}}
+{\footnotesize\ttfamily float dx}
+
+
+
+Definition at line 18 of file potential\+Field.\+cpp.
+
+\mbox{\Hypertarget{potential_field_8cpp_a8f461b6142ce8725218813abb23b06a3}\label{potential_field_8cpp_a8f461b6142ce8725218813abb23b06a3}} 
+\index{potential\+Field.\+cpp@{potential\+Field.\+cpp}!dy@{dy}}
+\index{dy@{dy}!potential\+Field.\+cpp@{potential\+Field.\+cpp}}
+\subsubsection{\texorpdfstring{dy}{dy}}
+{\footnotesize\ttfamily float dy}
+
+
+
+Definition at line 19 of file potential\+Field.\+cpp.
+
+\mbox{\Hypertarget{potential_field_8cpp_a6cfd16a892428f368ea909f7153e0b27}\label{potential_field_8cpp_a6cfd16a892428f368ea909f7153e0b27}} 
+\index{potential\+Field.\+cpp@{potential\+Field.\+cpp}!R@{R}}
+\index{R@{R}!potential\+Field.\+cpp@{potential\+Field.\+cpp}}
+\subsubsection{\texorpdfstring{R}{R}}
+{\footnotesize\ttfamily float$\ast$ R}
+
+
+
+Definition at line 20 of file potential\+Field.\+cpp.
+
+\mbox{\Hypertarget{potential_field_8cpp_aa11dcf2732bf6853ab68daa6fc46959c}\label{potential_field_8cpp_aa11dcf2732bf6853ab68daa6fc46959c}} 
+\index{potential\+Field.\+cpp@{potential\+Field.\+cpp}!xsize@{xsize}}
+\index{xsize@{xsize}!potential\+Field.\+cpp@{potential\+Field.\+cpp}}
+\subsubsection{\texorpdfstring{xsize}{xsize}}
+{\footnotesize\ttfamily size\+\_\+t xsize = 20000000}
+
+
+
+Definition at line 16 of file potential\+Field.\+cpp.
+
+\mbox{\Hypertarget{potential_field_8cpp_aef0bffca6586c3e1489aba142b0a6771}\label{potential_field_8cpp_aef0bffca6586c3e1489aba142b0a6771}} 
+\index{potential\+Field.\+cpp@{potential\+Field.\+cpp}!ysize@{ysize}}
+\index{ysize@{ysize}!potential\+Field.\+cpp@{potential\+Field.\+cpp}}
+\subsubsection{\texorpdfstring{ysize}{ysize}}
+{\footnotesize\ttfamily size\+\_\+t ysize = 20000000}
+
+
+
+Definition at line 17 of file potential\+Field.\+cpp.
+

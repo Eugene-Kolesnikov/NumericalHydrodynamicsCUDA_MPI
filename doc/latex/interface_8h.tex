@@ -1,0 +1,99 @@
+\hypertarget{interface_8h}{}\section{Dynamic\+Library\+Visualization/interface.h File Reference}
+\label{interface_8h}\index{Dynamic\+Library\+Visualization/interface.\+h@{Dynamic\+Library\+Visualization/interface.\+h}}
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}offscreen.\+h\char`\"{}}\newline
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{interface_8h_a4f9004bf1abf1f896f3317a8837b4c8c}{D\+L\+V\+\_\+init} (size\+\_\+t N\+\_\+X, size\+\_\+t N\+\_\+Y, enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON} out\+Option)
+\begin{DoxyCompactList}\small\item\em The server node calls the {\ttfamily D\+L\+V\+\_\+init} function once before the computations start in order to initialize the environment\+: create the window where Open\+GL will render the field, allocate necessary memory, initialize environmental variables, set the output method (P\+PM, P\+NG, M\+P\+EG). \end{DoxyCompactList}\item 
+bool \hyperlink{interface_8h_a574b683f637118843396eff34c354002}{D\+L\+V\+\_\+visualize} (void $\ast$field, size\+\_\+t N\+\_\+X, size\+\_\+t N\+\_\+Y)
+\begin{DoxyCompactList}\small\item\em The server node calls the {\ttfamily D\+L\+V\+\_\+visualize} function each time it is necessary to plot hydrodynamics fields\+: density, velocity,... (depends on the computational model). The decision of what property of the field must be rendered is specified in the D\+LV library. \end{DoxyCompactList}\item 
+bool \hyperlink{interface_8h_afe37ec7f94000a6b21bdd1306e244499}{D\+L\+V\+\_\+terminate} ()
+\begin{DoxyCompactList}\small\item\em The server node calls the {\ttfamily D\+L\+V\+\_\+terminate} function once when the computations has already finished to deinitialize the environment. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{interface_8h_a4f9004bf1abf1f896f3317a8837b4c8c}\label{interface_8h_a4f9004bf1abf1f896f3317a8837b4c8c}} 
+\index{interface.\+h@{interface.\+h}!D\+L\+V\+\_\+init@{D\+L\+V\+\_\+init}}
+\index{D\+L\+V\+\_\+init@{D\+L\+V\+\_\+init}!interface.\+h@{interface.\+h}}
+\subsubsection{\texorpdfstring{D\+L\+V\+\_\+init()}{DLV\_init()}}
+{\footnotesize\ttfamily bool D\+L\+V\+\_\+init (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{N\+\_\+X,  }\item[{size\+\_\+t}]{N\+\_\+Y,  }\item[{enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON}}]{out\+Option }\end{DoxyParamCaption})}
+
+
+
+The server node calls the {\ttfamily D\+L\+V\+\_\+init} function once before the computations start in order to initialize the environment\+: create the window where Open\+GL will render the field, allocate necessary memory, initialize environmental variables, set the output method (P\+PM, P\+NG, M\+P\+EG). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em N\+\_\+X} & -- discretization of the grid along the X direction. \\
+\hline
+{\em N\+\_\+Y} & -- discretization of the grid along the Y direction. \\
+\hline
+{\em out\+Option} & -- parameter specifies what output is expected from the D\+LV\+: \textquotesingle{}P\+PM\textquotesingle{} creates a .ppm image file, \textquotesingle{}P\+NG\textquotesingle{} creates a .png image file, \textquotesingle{}M\+P\+EG\textquotesingle{} creates a .mpeg video file. In the last case, the function initializes the file for further writing frames into it. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a bool parameter which indicates if the function performed successfully (true) or not (false). 
+\end{DoxyReturn}
+Create the window with an Open\+GL context of the \textquotesingle{}\hyperlink{class_main_window}{Main\+Window}\textquotesingle{} class
+
+Set up the background color of the window (Dark blue)
+
+Allocate memory for the \hyperlink{class_field_object}{Field\+Object}
+
+Set up the output method
+
+Initialize the Filed\+Object
+
+Return F\+A\+IL if any runtime exception caught 
+
+Definition at line 33 of file interface.\+cpp.
+
+\mbox{\Hypertarget{interface_8h_afe37ec7f94000a6b21bdd1306e244499}\label{interface_8h_afe37ec7f94000a6b21bdd1306e244499}} 
+\index{interface.\+h@{interface.\+h}!D\+L\+V\+\_\+terminate@{D\+L\+V\+\_\+terminate}}
+\index{D\+L\+V\+\_\+terminate@{D\+L\+V\+\_\+terminate}!interface.\+h@{interface.\+h}}
+\subsubsection{\texorpdfstring{D\+L\+V\+\_\+terminate()}{DLV\_terminate()}}
+{\footnotesize\ttfamily bool D\+L\+V\+\_\+terminate (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+The server node calls the {\ttfamily D\+L\+V\+\_\+terminate} function once when the computations has already finished to deinitialize the environment. 
+
+\begin{DoxyReturn}{Returns}
+a bool parameter which indicates if the function performed successfully (true) or not (false). 
+\end{DoxyReturn}
+Delete the \hyperlink{class_field_object}{Field\+Object}, close the \hyperlink{class_main_window}{Main\+Window}
+
+Return F\+A\+IL if any runtime exception caught 
+
+Definition at line 86 of file interface.\+cpp.
+
+\mbox{\Hypertarget{interface_8h_a574b683f637118843396eff34c354002}\label{interface_8h_a574b683f637118843396eff34c354002}} 
+\index{interface.\+h@{interface.\+h}!D\+L\+V\+\_\+visualize@{D\+L\+V\+\_\+visualize}}
+\index{D\+L\+V\+\_\+visualize@{D\+L\+V\+\_\+visualize}!interface.\+h@{interface.\+h}}
+\subsubsection{\texorpdfstring{D\+L\+V\+\_\+visualize()}{DLV\_visualize()}}
+{\footnotesize\ttfamily bool D\+L\+V\+\_\+visualize (\begin{DoxyParamCaption}\item[{void $\ast$}]{field,  }\item[{size\+\_\+t}]{N\+\_\+X,  }\item[{size\+\_\+t}]{N\+\_\+Y }\end{DoxyParamCaption})}
+
+
+
+The server node calls the {\ttfamily D\+L\+V\+\_\+visualize} function each time it is necessary to plot hydrodynamics fields\+: density, velocity,... (depends on the computational model). The decision of what property of the field must be rendered is specified in the D\+LV library. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em field} & -- pointer to the field. \\
+\hline
+{\em N\+\_\+X} & -- discretization of the grid along the X direction. \\
+\hline
+{\em N\+\_\+Y} & -- discretization of the grid along the Y direction. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a bool parameter which indicates if the function performed successfully (true) or not (false). 
+\end{DoxyReturn}
+If the window shouldn\textquotesingle{}t be closed, clear the screen and render the field
+
+Return F\+A\+IL if the window should be closed but the rendering is required 
+
+Definition at line 66 of file interface.\+cpp.
+

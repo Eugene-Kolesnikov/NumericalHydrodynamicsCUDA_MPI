@@ -1,0 +1,96 @@
+.TH "DynamicLibraryVisualization/shader.h" 3 "Wed Oct 25 2017" "Version 0.1" "Numerical Hydrodynamics MPI+CUDA Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+DynamicLibraryVisualization/shader.h \- This header file contains the interface to functions which load, compile, and link shader files to the program\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <OpenGL/gl3\&.h>\fP
+.br
+\fC#include <string>\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "std::string \fBloadShaderFile\fP (const std::string &filename)"
+.br
+.RI "Reads the shader file\&. "
+.ti -1c
+.RI "GLuint \fBcompileShaders\fP (std::string vertexPath, std::string fragmentPath)"
+.br
+.RI "Reads the shader file\&. "
+.in -1c
+.SH "Detailed Description"
+.PP 
+This header file contains the interface to functions which load, compile, and link shader files to the program\&. 
+
+
+.PP
+\fBAuthor:\fP
+.RS 4
+Eugene Kolesnikov 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+8/10/2017 
+.RE
+.PP
+
+.PP
+Definition in file \fBshader\&.h\fP\&.
+.SH "Function Documentation"
+.PP 
+.SS "GLuint compileShaders (std::string vertexPath, std::string fragmentPath)"
+
+.PP
+Reads the shader file\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIvertexPath\fP -- The path to the vertex shader file in the system\&. 
+.br
+\fIfragmentPath\fP -- The path to the fragment shader file in the system\&. 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The ID of a compiled and linked shader program\&. 
+.RE
+.PP
+Generate new shader indeces
+.PP
+Read and compile the Vertex Shader
+.PP
+Check if the compilation of the Vertex Shader was successful
+.PP
+Check if the compilation of the Fragment Shader was successful
+.PP
+Link the compiled shaders to the program 
+.PP
+Definition at line 40 of file shader\&.cpp\&.
+.SS "std::string loadShaderFile (const std::string & filename)"
+
+.PP
+Reads the shader file\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfilename\fP -- The path to the shader file in the system\&. 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The string which contains the content of a shader file\&. 
+.RE
+.PP
+
+.PP
+Definition at line 19 of file shader\&.cpp\&.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Numerical Hydrodynamics MPI+CUDA Project from the source code\&.

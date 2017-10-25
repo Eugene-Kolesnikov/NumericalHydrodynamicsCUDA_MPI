@@ -1,0 +1,86 @@
+\hypertarget{shader_8cpp}{}\section{Dynamic\+Library\+Visualization/shader.cpp File Reference}
+\label{shader_8cpp}\index{Dynamic\+Library\+Visualization/shader.\+cpp@{Dynamic\+Library\+Visualization/shader.\+cpp}}
+
+
+This file contains description of functions which load, compile, and link shader files to the program.  
+
+
+{\ttfamily \#include $<$exception$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$fstream$>$}\newline
+{\ttfamily \#include \char`\"{}shader.\+h\char`\"{}}\newline
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::string \hyperlink{shader_8cpp_aa8b22c5ecfb5d6b830a25e8557075410}{load\+Shader\+File} (const std\+::string \&filename)
+\begin{DoxyCompactList}\small\item\em Reads the shader file. \end{DoxyCompactList}\item 
+G\+Luint \hyperlink{shader_8cpp_a17cb966596934e3be2a49f9b3c5e2b53}{compile\+Shaders} (std\+::string vertex\+Path, std\+::string fragment\+Path)
+\begin{DoxyCompactList}\small\item\em Reads the shader file. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This file contains description of functions which load, compile, and link shader files to the program. 
+
+\begin{DoxyAuthor}{Author}
+Eugene Kolesnikov 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+8/10/2017 
+\end{DoxyDate}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{shader_8cpp_a17cb966596934e3be2a49f9b3c5e2b53}\label{shader_8cpp_a17cb966596934e3be2a49f9b3c5e2b53}} 
+\index{shader.\+cpp@{shader.\+cpp}!compile\+Shaders@{compile\+Shaders}}
+\index{compile\+Shaders@{compile\+Shaders}!shader.\+cpp@{shader.\+cpp}}
+\subsubsection{\texorpdfstring{compile\+Shaders()}{compileShaders()}}
+{\footnotesize\ttfamily G\+Luint compile\+Shaders (\begin{DoxyParamCaption}\item[{std\+::string}]{vertex\+Path,  }\item[{std\+::string}]{fragment\+Path }\end{DoxyParamCaption})}
+
+
+
+Reads the shader file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em vertex\+Path} & -- The path to the vertex shader file in the system. \\
+\hline
+{\em fragment\+Path} & -- The path to the fragment shader file in the system. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The ID of a compiled and linked shader program. 
+\end{DoxyReturn}
+Generate new shader indeces
+
+Read and compile the Vertex Shader
+
+Check if the compilation of the Vertex Shader was successful
+
+Check if the compilation of the Fragment Shader was successful
+
+Link the compiled shaders to the program 
+
+Definition at line 40 of file shader.\+cpp.
+
+\mbox{\Hypertarget{shader_8cpp_aa8b22c5ecfb5d6b830a25e8557075410}\label{shader_8cpp_aa8b22c5ecfb5d6b830a25e8557075410}} 
+\index{shader.\+cpp@{shader.\+cpp}!load\+Shader\+File@{load\+Shader\+File}}
+\index{load\+Shader\+File@{load\+Shader\+File}!shader.\+cpp@{shader.\+cpp}}
+\subsubsection{\texorpdfstring{load\+Shader\+File()}{loadShaderFile()}}
+{\footnotesize\ttfamily std\+::string load\+Shader\+File (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename }\end{DoxyParamCaption})}
+
+
+
+Reads the shader file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & -- The path to the shader file in the system. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The string which contains the content of a shader file. 
+\end{DoxyReturn}
+
+
+Definition at line 19 of file shader.\+cpp.
+

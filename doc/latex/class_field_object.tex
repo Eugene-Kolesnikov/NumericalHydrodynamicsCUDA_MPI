@@ -1,0 +1,311 @@
+\hypertarget{class_field_object}{}\section{Field\+Object Class Reference}
+\label{class_field_object}\index{Field\+Object@{Field\+Object}}
+
+
+The class which is responsible for rendering the field and storing all necessary environmental variables.  
+
+
+
+
+{\ttfamily \#include $<$Field\+Object.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{class_field_object_a92a55f8d93bc37fd81d4b157b43fc1f6}{init} (size\+\_\+t N\+\_\+X, size\+\_\+t N\+\_\+Y)
+\begin{DoxyCompactList}\small\item\em Initializes buffer objects, generates the field mesh, index mesh and uploads it to the G\+PU, compiles shaders. \end{DoxyCompactList}\item 
+void \hyperlink{class_field_object_a4dc838b4ac4ee2e11ec0ebafad7b9d1e}{render} (void $\ast$field, size\+\_\+t N\+\_\+X, size\+\_\+t N\+\_\+Y)
+\begin{DoxyCompactList}\small\item\em Renders the field. \end{DoxyCompactList}\item 
+void \hyperlink{class_field_object_af3ad1cf11c7033def6ea707dc39bf3dd}{set\+Output\+Option} (enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON} out\+Option)
+\begin{DoxyCompactList}\small\item\em Set up the a type of the output\+: P\+PM, P\+NG, M\+P\+EG. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{class_field_object_a059a05b427c9231642913aee67768613}{create\+Mesh\+Position\+V\+BO} (size\+\_\+t N\+\_\+X, size\+\_\+t N\+\_\+Y)
+\begin{DoxyCompactList}\small\item\em Generates the field mesh \mbox{[}-\/0.\+9, 0.\+9\mbox{]}$^\wedge$2. \end{DoxyCompactList}\item 
+void \hyperlink{class_field_object_a33d5a7b1230bc5b9d5f29b2762d9d002}{create\+Mesh\+Index\+Buffer} (size\+\_\+t N\+\_\+X, size\+\_\+t N\+\_\+Y)
+\begin{DoxyCompactList}\small\item\em Generates the index mesh for rendering. \end{DoxyCompactList}\item 
+void \hyperlink{class_field_object_ae44fb6a929a1a14815f8c9757c75bdf1}{update\+Field} (void $\ast$field, size\+\_\+t N\+\_\+X, size\+\_\+t N\+\_\+Y)
+\begin{DoxyCompactList}\small\item\em Re-\/uploads updated field characteristics (ex. density, velocity, energy). \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+G\+Luint \hyperlink{class_field_object_ae6ae1217e025ba7aaf4de62edb227d88}{\+\_\+vao}
+\item 
+G\+Luint \hyperlink{class_field_object_a1203d3948925d7c456ba18af4cb419f7}{\+\_\+vbo}
+\item 
+G\+Luint \hyperlink{class_field_object_a0c38722ea5628f3c87a0122570542490}{\+\_\+field\+Val\+Buffer}
+\item 
+G\+Luint \hyperlink{class_field_object_a8bdf4e9d88a422e080ded80fe3c7ae08}{\+\_\+index\+Buffer}
+\item 
+size\+\_\+t \hyperlink{class_field_object_a737157aec4185354f55ccd36b8786461}{\+\_\+index\+\_\+buf\+\_\+count}
+\item 
+G\+Lfloat $\ast$ \hyperlink{class_field_object_a940f8cc7e3294eb89014f0cee8ccbc41}{\+\_\+data}
+\item 
+size\+\_\+t \hyperlink{class_field_object_a62d22516449ba4c71438dd635c18b4e3}{\+\_\+data\+Size}
+\item 
+G\+Luint \hyperlink{class_field_object_a6c5c454cefffe4c094bb2e015c2f1cae}{\+\_\+program\+ID}
+\item 
+enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON} \hyperlink{class_field_object_ac389b983df486fe3eac03de5825d1a35}{\+\_\+output\+\_\+option}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The class which is responsible for rendering the field and storing all necessary environmental variables. 
+
+\begin{DoxyAuthor}{Author}
+Eugene Kolesnikov 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+8/10/2017 
+\end{DoxyDate}
+
+
+Definition at line 23 of file Field\+Object.\+hpp.
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_field_object_a33d5a7b1230bc5b9d5f29b2762d9d002}\label{class_field_object_a33d5a7b1230bc5b9d5f29b2762d9d002}} 
+\index{Field\+Object@{Field\+Object}!create\+Mesh\+Index\+Buffer@{create\+Mesh\+Index\+Buffer}}
+\index{create\+Mesh\+Index\+Buffer@{create\+Mesh\+Index\+Buffer}!Field\+Object@{Field\+Object}}
+\subsubsection{\texorpdfstring{create\+Mesh\+Index\+Buffer()}{createMeshIndexBuffer()}}
+{\footnotesize\ttfamily void Field\+Object\+::create\+Mesh\+Index\+Buffer (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{N\+\_\+X,  }\item[{size\+\_\+t}]{N\+\_\+Y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Generates the index mesh for rendering. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em N\+\_\+X} & -- amount of grid cells along the X direction. \\
+\hline
+{\em N\+\_\+Y} & -- amount of grid cells along the Y direction. \\
+\hline
+\end{DoxyParams}
+Generate the index buffer
+
+Generate the index mesh and automatically upload to the G\+PU 
+
+Definition at line 155 of file Field\+Object.\+cpp.
+
+\mbox{\Hypertarget{class_field_object_a059a05b427c9231642913aee67768613}\label{class_field_object_a059a05b427c9231642913aee67768613}} 
+\index{Field\+Object@{Field\+Object}!create\+Mesh\+Position\+V\+BO@{create\+Mesh\+Position\+V\+BO}}
+\index{create\+Mesh\+Position\+V\+BO@{create\+Mesh\+Position\+V\+BO}!Field\+Object@{Field\+Object}}
+\subsubsection{\texorpdfstring{create\+Mesh\+Position\+V\+B\+O()}{createMeshPositionVBO()}}
+{\footnotesize\ttfamily void Field\+Object\+::create\+Mesh\+Position\+V\+BO (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{N\+\_\+X,  }\item[{size\+\_\+t}]{N\+\_\+Y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Generates the field mesh \mbox{[}-\/0.\+9, 0.\+9\mbox{]}$^\wedge$2. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em N\+\_\+X} & -- amount of grid cells along the X direction. \\
+\hline
+{\em N\+\_\+Y} & -- amount of grid cells along the Y direction. \\
+\hline
+\end{DoxyParams}
+Generate the mesh
+
+Generate the array buffer and upload the mesh to the G\+PU
+
+Generate the empty array buffer of the field information and upload to the G\+PU 
+
+Definition at line 111 of file Field\+Object.\+cpp.
+
+\mbox{\Hypertarget{class_field_object_a92a55f8d93bc37fd81d4b157b43fc1f6}\label{class_field_object_a92a55f8d93bc37fd81d4b157b43fc1f6}} 
+\index{Field\+Object@{Field\+Object}!init@{init}}
+\index{init@{init}!Field\+Object@{Field\+Object}}
+\subsubsection{\texorpdfstring{init()}{init()}}
+{\footnotesize\ttfamily void Field\+Object\+::init (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{N\+\_\+X,  }\item[{size\+\_\+t}]{N\+\_\+Y }\end{DoxyParamCaption})}
+
+
+
+Initializes buffer objects, generates the field mesh, index mesh and uploads it to the G\+PU, compiles shaders. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em N\+\_\+X} & -- amount of grid cells along the X direction. \\
+\hline
+{\em N\+\_\+Y} & -- amount of grid cells along the Y direction. \\
+\hline
+\end{DoxyParams}
+Generate the Vertex Array Buffer
+
+Load and compile shaders 
+
+Definition at line 39 of file Field\+Object.\+cpp.
+
+\mbox{\Hypertarget{class_field_object_a4dc838b4ac4ee2e11ec0ebafad7b9d1e}\label{class_field_object_a4dc838b4ac4ee2e11ec0ebafad7b9d1e}} 
+\index{Field\+Object@{Field\+Object}!render@{render}}
+\index{render@{render}!Field\+Object@{Field\+Object}}
+\subsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily void Field\+Object\+::render (\begin{DoxyParamCaption}\item[{void $\ast$}]{field,  }\item[{size\+\_\+t}]{N\+\_\+X,  }\item[{size\+\_\+t}]{N\+\_\+Y }\end{DoxyParamCaption})}
+
+
+
+Renders the field. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em field} & -- pointer to the field. \\
+\hline
+{\em N\+\_\+X} & -- amount of grid cells along the X direction. \\
+\hline
+{\em N\+\_\+Y} & -- amount of grid cells along the Y direction. \\
+\hline
+\end{DoxyParams}
+Update the field information
+
+Bind buffers, shader program, vertex attribute pointers
+
+Render the field
+
+Save the rendered image to the file of the output style
+
+Unbind buffers, pointers, shaders 
+
+Definition at line 65 of file Field\+Object.\+cpp.
+
+\mbox{\Hypertarget{class_field_object_af3ad1cf11c7033def6ea707dc39bf3dd}\label{class_field_object_af3ad1cf11c7033def6ea707dc39bf3dd}} 
+\index{Field\+Object@{Field\+Object}!set\+Output\+Option@{set\+Output\+Option}}
+\index{set\+Output\+Option@{set\+Output\+Option}!Field\+Object@{Field\+Object}}
+\subsubsection{\texorpdfstring{set\+Output\+Option()}{setOutputOption()}}
+{\footnotesize\ttfamily void Field\+Object\+::set\+Output\+Option (\begin{DoxyParamCaption}\item[{enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON}}]{out\+Option }\end{DoxyParamCaption})}
+
+
+
+Set up the a type of the output\+: P\+PM, P\+NG, M\+P\+EG. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em out\+Option} & -- the type of the output. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 214 of file Field\+Object.\+cpp.
+
+\mbox{\Hypertarget{class_field_object_ae44fb6a929a1a14815f8c9757c75bdf1}\label{class_field_object_ae44fb6a929a1a14815f8c9757c75bdf1}} 
+\index{Field\+Object@{Field\+Object}!update\+Field@{update\+Field}}
+\index{update\+Field@{update\+Field}!Field\+Object@{Field\+Object}}
+\subsubsection{\texorpdfstring{update\+Field()}{updateField()}}
+{\footnotesize\ttfamily void Field\+Object\+::update\+Field (\begin{DoxyParamCaption}\item[{void $\ast$}]{field,  }\item[{size\+\_\+t}]{N\+\_\+X,  }\item[{size\+\_\+t}]{N\+\_\+Y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Re-\/uploads updated field characteristics (ex. density, velocity, energy). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em field} & -- pointer to the field. \\
+\hline
+{\em N\+\_\+X} & -- amount of grid cells along the X direction. \\
+\hline
+{\em N\+\_\+Y} & -- amount of grid cells along the Y direction. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 193 of file Field\+Object.\+cpp.
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_field_object_a940f8cc7e3294eb89014f0cee8ccbc41}\label{class_field_object_a940f8cc7e3294eb89014f0cee8ccbc41}} 
+\index{Field\+Object@{Field\+Object}!\+\_\+data@{\+\_\+data}}
+\index{\+\_\+data@{\+\_\+data}!Field\+Object@{Field\+Object}}
+\subsubsection{\texorpdfstring{\+\_\+data}{\_data}}
+{\footnotesize\ttfamily G\+Lfloat$\ast$ Field\+Object\+::\+\_\+data\hspace{0.3cm}{\ttfamily [protected]}}
+
+Pointer to an array which stores the information (ex. density, velocity, energy) of the generated field mesh. 
+
+Definition at line 82 of file Field\+Object.\+hpp.
+
+\mbox{\Hypertarget{class_field_object_a62d22516449ba4c71438dd635c18b4e3}\label{class_field_object_a62d22516449ba4c71438dd635c18b4e3}} 
+\index{Field\+Object@{Field\+Object}!\+\_\+data\+Size@{\+\_\+data\+Size}}
+\index{\+\_\+data\+Size@{\+\_\+data\+Size}!Field\+Object@{Field\+Object}}
+\subsubsection{\texorpdfstring{\+\_\+data\+Size}{\_dataSize}}
+{\footnotesize\ttfamily size\+\_\+t Field\+Object\+::\+\_\+data\+Size\hspace{0.3cm}{\ttfamily [protected]}}
+
+Number of points in the generated field mesh. 
+
+Definition at line 83 of file Field\+Object.\+hpp.
+
+\mbox{\Hypertarget{class_field_object_a0c38722ea5628f3c87a0122570542490}\label{class_field_object_a0c38722ea5628f3c87a0122570542490}} 
+\index{Field\+Object@{Field\+Object}!\+\_\+field\+Val\+Buffer@{\+\_\+field\+Val\+Buffer}}
+\index{\+\_\+field\+Val\+Buffer@{\+\_\+field\+Val\+Buffer}!Field\+Object@{Field\+Object}}
+\subsubsection{\texorpdfstring{\+\_\+field\+Val\+Buffer}{\_fieldValBuffer}}
+{\footnotesize\ttfamily G\+Luint Field\+Object\+::\+\_\+field\+Val\+Buffer\hspace{0.3cm}{\ttfamily [protected]}}
+
+Vertex Buffer Object which stores the field information (ex. density, velocity, energy) in points which are stored in \+\_\+vbo. \+\_\+vbo and \+\_\+field\+Val\+Buffer are split because the first buffer is static and the other one is dynamic. 
+
+Definition at line 77 of file Field\+Object.\+hpp.
+
+\mbox{\Hypertarget{class_field_object_a737157aec4185354f55ccd36b8786461}\label{class_field_object_a737157aec4185354f55ccd36b8786461}} 
+\index{Field\+Object@{Field\+Object}!\+\_\+index\+\_\+buf\+\_\+count@{\+\_\+index\+\_\+buf\+\_\+count}}
+\index{\+\_\+index\+\_\+buf\+\_\+count@{\+\_\+index\+\_\+buf\+\_\+count}!Field\+Object@{Field\+Object}}
+\subsubsection{\texorpdfstring{\+\_\+index\+\_\+buf\+\_\+count}{\_index\_buf\_count}}
+{\footnotesize\ttfamily size\+\_\+t Field\+Object\+::\+\_\+index\+\_\+buf\+\_\+count\hspace{0.3cm}{\ttfamily [protected]}}
+
+Number of indeces. 
+
+Definition at line 81 of file Field\+Object.\+hpp.
+
+\mbox{\Hypertarget{class_field_object_a8bdf4e9d88a422e080ded80fe3c7ae08}\label{class_field_object_a8bdf4e9d88a422e080ded80fe3c7ae08}} 
+\index{Field\+Object@{Field\+Object}!\+\_\+index\+Buffer@{\+\_\+index\+Buffer}}
+\index{\+\_\+index\+Buffer@{\+\_\+index\+Buffer}!Field\+Object@{Field\+Object}}
+\subsubsection{\texorpdfstring{\+\_\+index\+Buffer}{\_indexBuffer}}
+{\footnotesize\ttfamily G\+Luint Field\+Object\+::\+\_\+index\+Buffer\hspace{0.3cm}{\ttfamily [protected]}}
+
+Vertex Buffer Object which stores indeces which are used to render the field 
+
+Definition at line 80 of file Field\+Object.\+hpp.
+
+\mbox{\Hypertarget{class_field_object_ac389b983df486fe3eac03de5825d1a35}\label{class_field_object_ac389b983df486fe3eac03de5825d1a35}} 
+\index{Field\+Object@{Field\+Object}!\+\_\+output\+\_\+option@{\+\_\+output\+\_\+option}}
+\index{\+\_\+output\+\_\+option@{\+\_\+output\+\_\+option}!Field\+Object@{Field\+Object}}
+\subsubsection{\texorpdfstring{\+\_\+output\+\_\+option}{\_output\_option}}
+{\footnotesize\ttfamily enum \hyperlink{offscreen_8h_a29ac838d689ab5ed87b591138936e615}{O\+U\+T\+P\+U\+T\+\_\+\+O\+P\+T\+I\+ON} Field\+Object\+::\+\_\+output\+\_\+option\hspace{0.3cm}{\ttfamily [protected]}}
+
+Type of the output\+: save in an image (P\+PM, P\+NG) or generate a video file (M\+P\+EG). 
+
+Definition at line 85 of file Field\+Object.\+hpp.
+
+\mbox{\Hypertarget{class_field_object_a6c5c454cefffe4c094bb2e015c2f1cae}\label{class_field_object_a6c5c454cefffe4c094bb2e015c2f1cae}} 
+\index{Field\+Object@{Field\+Object}!\+\_\+program\+ID@{\+\_\+program\+ID}}
+\index{\+\_\+program\+ID@{\+\_\+program\+ID}!Field\+Object@{Field\+Object}}
+\subsubsection{\texorpdfstring{\+\_\+program\+ID}{\_programID}}
+{\footnotesize\ttfamily G\+Luint Field\+Object\+::\+\_\+program\+ID\hspace{0.3cm}{\ttfamily [protected]}}
+
+Environment with compiled shaders. 
+
+Definition at line 84 of file Field\+Object.\+hpp.
+
+\mbox{\Hypertarget{class_field_object_ae6ae1217e025ba7aaf4de62edb227d88}\label{class_field_object_ae6ae1217e025ba7aaf4de62edb227d88}} 
+\index{Field\+Object@{Field\+Object}!\+\_\+vao@{\+\_\+vao}}
+\index{\+\_\+vao@{\+\_\+vao}!Field\+Object@{Field\+Object}}
+\subsubsection{\texorpdfstring{\+\_\+vao}{\_vao}}
+{\footnotesize\ttfamily G\+Luint Field\+Object\+::\+\_\+vao\hspace{0.3cm}{\ttfamily [protected]}}
+
+Vertex Array Object -- Open\+GL Object that stores all of the state needed to supply vertex data 
+
+Definition at line 75 of file Field\+Object.\+hpp.
+
+\mbox{\Hypertarget{class_field_object_a1203d3948925d7c456ba18af4cb419f7}\label{class_field_object_a1203d3948925d7c456ba18af4cb419f7}} 
+\index{Field\+Object@{Field\+Object}!\+\_\+vbo@{\+\_\+vbo}}
+\index{\+\_\+vbo@{\+\_\+vbo}!Field\+Object@{Field\+Object}}
+\subsubsection{\texorpdfstring{\+\_\+vbo}{\_vbo}}
+{\footnotesize\ttfamily G\+Luint Field\+Object\+::\+\_\+vbo\hspace{0.3cm}{\ttfamily [protected]}}
+
+Vertex Buffer Object which stores the 2D field without the field information (ex. density, velocity, energy) 
+
+Definition at line 76 of file Field\+Object.\+hpp.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Dynamic\+Library\+Visualization/\hyperlink{_field_object_8hpp}{Field\+Object.\+hpp}\item 
+Dynamic\+Library\+Visualization/\hyperlink{_field_object_8cpp}{Field\+Object.\+cpp}\end{DoxyCompactItemize}

@@ -1,0 +1,99 @@
+.TH "DynamicLibraryVisualization/UnitTests/UnitTestPotentialField/potentialField.cpp" 3 "Wed Oct 25 2017" "Version 0.1" "Numerical Hydrodynamics MPI+CUDA Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+DynamicLibraryVisualization/UnitTests/UnitTestPotentialField/potentialField.cpp
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'interface\&.h'\fP
+.br
+\fC#include <cstdio>\fP
+.br
+\fC#include <cstdlib>\fP
+.br
+\fC#include 'cell\&.h'\fP
+.br
+\fC#include <cmath>\fP
+.br
+\fC#include <dlfcn\&.h>\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBinitializeField\fP (\fBCell\fP *field, size_t N_X, size_t N_Y)"
+.br
+.ti -1c
+.RI "void \fBGaussSeidelSolver\fP (\fBCell\fP *field, size_t N_X, size_t N_Y)"
+.br
+.ti -1c
+.RI "void \fBnormalizeField\fP (\fBCell\fP *field, size_t N_X, size_t N_Y)"
+.br
+.ti -1c
+.RI "int \fBmain\fP ()"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "size_t \fBxsize\fP = 20000000"
+.br
+.ti -1c
+.RI "size_t \fBysize\fP = 20000000"
+.br
+.ti -1c
+.RI "float \fBdx\fP"
+.br
+.ti -1c
+.RI "float \fBdy\fP"
+.br
+.ti -1c
+.RI "float * \fBR\fP"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "void GaussSeidelSolver (\fBCell\fP * field, size_t N_X, size_t N_Y)"
+
+.PP
+Definition at line 77 of file potentialField\&.cpp\&.
+.SS "void initializeField (\fBCell\fP * field, size_t N_X, size_t N_Y)"
+
+.PP
+Definition at line 22 of file potentialField\&.cpp\&.
+.SS "int main ()"
+
+.PP
+Definition at line 123 of file potentialField\&.cpp\&.
+.SS "void normalizeField (\fBCell\fP * field, size_t N_X, size_t N_Y)"
+
+.PP
+Definition at line 100 of file potentialField\&.cpp\&.
+.SH "Variable Documentation"
+.PP 
+.SS "float dx"
+
+.PP
+Definition at line 18 of file potentialField\&.cpp\&.
+.SS "float dy"
+
+.PP
+Definition at line 19 of file potentialField\&.cpp\&.
+.SS "float* R"
+
+.PP
+Definition at line 20 of file potentialField\&.cpp\&.
+.SS "size_t xsize = 20000000"
+
+.PP
+Definition at line 16 of file potentialField\&.cpp\&.
+.SS "size_t ysize = 20000000"
+
+.PP
+Definition at line 17 of file potentialField\&.cpp\&.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Numerical Hydrodynamics MPI+CUDA Project from the source code\&.

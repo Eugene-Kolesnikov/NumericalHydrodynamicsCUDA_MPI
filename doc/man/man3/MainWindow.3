@@ -1,0 +1,248 @@
+.TH "MainWindow" 3 "Wed Oct 25 2017" "Version 0.1" "Numerical Hydrodynamics MPI+CUDA Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+MainWindow \- The class which is responsible for all necessary functions related to the window itself: creation, termination, events handling, cleaning\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <MainWindow\&.hpp>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBcreate\fP (std::string title)"
+.br
+.RI "Creates the window with a specified title\&. "
+.ti -1c
+.RI "GLFWwindow * \fBwindow\fP ()"
+.br
+.RI "Returns the pointer to the GLFW3 class which stores the window\&. "
+.ti -1c
+.RI "void \fBterminate\fP ()"
+.br
+.RI "Terminates the window and clears the memory\&. "
+.ti -1c
+.RI "void \fBsetBGColor\fP (float r, float g, float b, float a)"
+.br
+.RI "Sets up the background color of the window\&. "
+.ti -1c
+.RI "void \fBclearScreen\fP ()"
+.br
+.RI "Clears the window from previously rendered image\&. "
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static void \fBerror_callback\fP (int error, const char *description)"
+.br
+.RI "Function which is called each time a GLFW error occurs\&. "
+.ti -1c
+.RI "static void \fBkey_callback\fP (GLFWwindow *\fBwindow\fP, int key, int scancode, int action, int mods)"
+.br
+.RI "Key event function which notifies when a physical key is pressed or released or when it repeats\&. "
+.ti -1c
+.RI "static void \fBmouse_button_callback\fP (GLFWwindow *\fBwindow\fP, int button, int action, int mods)"
+.br
+.RI "mouse button event function which notifies when a mouse button is pressed or released "
+.ti -1c
+.RI "static void \fBcursor_position_callback\fP (GLFWwindow *\fBwindow\fP, double x, double y)"
+.br
+.RI "mouse button event function which notifies when the cursor moves over the window\&. The callback functions receives the cursor position, measured in screen coordinates but relative to the top-left corner of the window client area\&. "
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "unsigned short \fBget_resolution\fP ()"
+.br
+.RI "This method returns the resolution of the screen to open the window of an appropriate size\&. "
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "GLFWwindow * \fB_window\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+The class which is responsible for all necessary functions related to the window itself: creation, termination, events handling, cleaning\&. 
+
+
+.PP
+\fBAuthor:\fP
+.RS 4
+Eugene Kolesnikov 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+8/10/2017 
+.RE
+.PP
+
+.PP
+Definition at line 22 of file MainWindow\&.hpp\&.
+.SH "Member Function Documentation"
+.PP 
+.SS "void MainWindow::create (std::string title)"
+
+.PP
+Creates the window with a specified title\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fItitle\fP -- the title of the window\&. 
+.RE
+.PP
+Initialize GLFW
+.PP
+set up the OpenGL 4\&.1 context
+.PP
+set up the screen resolution
+.PP
+Open a window and create its OpenGL context
+.PP
+Ensure we can capture the escape key being pressed below
+.PP
+Enable the depth-test
+.PP
+Use LEQUAL function for the depth-test 
+.PP
+.nf
+                 allow blending (Blending is the stage of OpenGL 
+
+.fi
+.PP
+ rendering pipeline that takes the fragment color outputs from the Fragment Shader and combines them with the colors in the color buffers that these outputs map to)
+.PP
+Definition at line 40 of file MainWindow\&.cpp\&.
+.SS "void MainWindow::cursor_position_callback (GLFWwindow * window, double x, double y)\fC [static]\fP"
+
+.PP
+mouse button event function which notifies when the cursor moves over the window\&. The callback functions receives the cursor position, measured in screen coordinates but relative to the top-left corner of the window client area\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIx\fP -- x-coordinate\&. 
+.br
+\fIy\fP -- y-coordinate\&. 
+.RE
+.PP
+Not Implemented 
+.PP
+Definition at line 124 of file MainWindow\&.cpp\&.
+.SS "void MainWindow::error_callback (int error, const char * description)\fC [static]\fP"
+
+.PP
+Function which is called each time a GLFW error occurs\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIerror\fP -- error code\&. 
+.br
+\fIdescription\fP -- human-readable description\&. 
+.RE
+.PP
+
+.PP
+Definition at line 83 of file MainWindow\&.cpp\&.
+.SS "unsigned short MainWindow::get_resolution ()\fC [protected]\fP"
+
+.PP
+This method returns the resolution of the screen to open the window of an appropriate size\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+minimum of the height-width resolution of the screen in pixels\&. 
+.RE
+.PP
+
+.PP
+Definition at line 30 of file MainWindow\&.cpp\&.
+.SS "void MainWindow::key_callback (GLFWwindow * window, int key, int scancode, int action, int mods)\fC [static]\fP"
+
+.PP
+Key event function which notifies when a physical key is pressed or released or when it repeats\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwindow\fP -- The window that received the event\&. 
+.br
+\fIkey\fP -- The keyboard key that was pressed or released\&. 
+.br
+\fIscancode\fP -- The system-specific scancode of the key\&. 
+.br
+\fIaction\fP -- GLFW_PRESS, GLFW_RELEASE or GLFW_REPEAT\&. 
+.br
+\fImods\fP -- Bit field describing which modifier keys were held down: GLFW_MOD_ALT, GLFW_MOD_CONTROL, GLFW_MOD_SHIFT, or GLFW_MOD_SUPER\&. 
+.RE
+.PP
+Not Implemented 
+.PP
+Definition at line 97 of file MainWindow\&.cpp\&.
+.SS "void MainWindow::mouse_button_callback (GLFWwindow * window, int button, int action, int mods)\fC [static]\fP"
+
+.PP
+mouse button event function which notifies when a mouse button is pressed or released 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwindow\fP -- The window that received the event\&.\&. 
+.br
+\fIbutton\fP -- The mouse button that was pressed or released: GLFW_MOUSE_BUTTON_1, \&.\&.\&., GLFW_MOUSE_BUTTON_8, GLFW_MOUSE_BUTTON_LAST, GLFW_MOUSE_BUTTON_LEFT, GLFW_MOUSE_BUTTON_MIDDLE, GLFW_MOUSE_BUTTON_RIGHT\&. 
+.br
+\fIaction\fP -- One of GLFW_PRESS or GLFW_RELEASE\&. 
+.br
+\fImods\fP -- Bit field describing which modifier keys were held down: GLFW_MOD_ALT, GLFW_MOD_CONTROL, GLFW_MOD_SHIFT, or GLFW_MOD_SUPER\&. 
+.RE
+.PP
+Not Implemented 
+.PP
+Definition at line 112 of file MainWindow\&.cpp\&.
+.SS "void MainWindow::setBGColor (float r, float g, float b, float a)\fC [inline]\fP"
+
+.PP
+Sets up the background color of the window\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIr\fP -- red component of the RGBA color\&. 
+.br
+\fIg\fP -- blue component of the RGBA color\&. 
+.br
+\fIb\fP -- green component of the RGBA color\&. 
+.br
+\fIa\fP -- alpha component of the RGBA color\&. 
+.RE
+.PP
+
+.PP
+Definition at line 56 of file MainWindow\&.hpp\&.
+.SS "GLFWwindow* MainWindow::window ()\fC [inline]\fP"
+
+.PP
+Returns the pointer to the GLFW3 class which stores the window\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+pointer to the GLFW3 class\&. 
+.RE
+.PP
+
+.PP
+Definition at line 38 of file MainWindow\&.hpp\&.
+.SH "Member Data Documentation"
+.PP 
+.SS "GLFWwindow* MainWindow::_window\fC [protected]\fP"
+GLFW3 class which stores the window on which the OpenGL renders the field\&. 
+.PP
+Definition at line 115 of file MainWindow\&.hpp\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Numerical Hydrodynamics MPI+CUDA Project from the source code\&.
