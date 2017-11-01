@@ -1,0 +1,2 @@
+mv -v ./StartInterface/build/StartInterface.app ./
+mv ./ConfigParser/build/libConfigParser.1.0.0.dylib ./StartInterface.app/Contents/MacOS/

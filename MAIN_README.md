@@ -66,4 +66,4 @@ In order to create ```MPI_NODES_X * MPI_NODES_Y``` MPI nodes, the program calls 
 
 
 #TODO:
-- Learn how to use Doxygen
+- XML Parser: http://doc.qt.io/qt-5/qtxml-streambookmarks-example.html
