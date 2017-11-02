@@ -1,2 +1,10 @@
+cd ./StartInterface/src/
+qmake StartInterface.pro && make && make clean
+cd ../../ConfigParser/src
+qmake ConfigParser.pro && make && make clean
+cd ../../Visualization
+make && make clean
+cd ..
 mv -v ./StartInterface/build/StartInterface.app ./
 mv ./ConfigParser/build/libConfigParser.1.0.0.dylib ./StartInterface.app/Contents/MacOS/
+mv ./Visualization/libVisuzalization.1.0.0.dylib ./StartInterface.app/Contents/MacOS/

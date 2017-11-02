@@ -25,10 +25,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 DESTDIR = ../build
-OBJECTS_DIR = $$DESTDIR/.obj
-MOC_DIR = $$DESTDIR/.moc
-RCC_DIR = $$DESTDIR/.rcc
-UI_DIR = $$DESTDIR/.ui
+OBJECTS_DIR = $$DESTDIR
+MOC_DIR = $$DESTDIR
+RCC_DIR = $$DESTDIR
+UI_DIR = $$DESTDIR
 
 SOURCES += \
         main.cpp \
