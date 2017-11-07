@@ -1,0 +1,45 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/* 
+ * File:   ProcessNode.hpp
+ * Author: eugene
+ *
+ * Created on November 1, 2017, 12:49 PM
+ */
+
+#ifndef COMPUTATIONALNODE_HPP
+#define COMPUTATIONALNODE_HPP
+
+#include "MPI_Node.hpp"
+#include "ComputationalModel.hpp"
+#include <string>
+#include <cstdlib>
+#include <mpi.h>
+
+class ComputationalNode : protected MPI_Node {
+public:
+    ComputationalNode(size_t globalRank, size_t totalNodes, std::string app_path);
+    virtual ~ComputationalNode();
+    
+    virtual void initEnvironment();
+    virtual void runNode();
+    
+protected:
+    void createComputationalMPIgroup();
+    void loadInitSubFieldFromServer();
+    void sendUpdatedSubFieldToServer();
+    void shareHaloElements();
+    void sndRcvHaloElements(int snd_id, int rvc_id, int snd_border, int rcv_border);
+    
+protected:
+    MPI_Group world_group;
+    MPI_Group computational_group;
+    MPI_Comm MPI_COMM_COMPUTATIONAL;
+};
+
+#endif /* COMPUTATIONALNODE_HPP */
+

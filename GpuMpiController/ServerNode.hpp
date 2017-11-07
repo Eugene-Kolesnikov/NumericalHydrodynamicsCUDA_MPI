@@ -15,18 +15,27 @@
 #define SERVERNODE_HPP
 
 #include "MPI_Node.hpp"
+#include "interface.h"
+#include <string>
+#include <cstdlib>
 
-class ServerNode : public MPI_Node {
+class ServerNode : protected MPI_Node {
 public:
-    ServerNode();
-    ServerNode(const ServerNode& orig);
+    ServerNode(size_t globalRank, size_t totalNodes, std::string app_path);
     virtual ~ServerNode();
     
-public:
-    void loadVisualizationLib();
+    virtual void initEnvironment();
+    virtual void runNode();
     
-private:
-
+protected:
+    void loadVisualizationLib();
+    void sendInitFieldToCompNodes();
+    
+protected:
+    void* m_visualizationLibHandle;
+     bool (*DLV_init)(size_t N_X, size_t N_Y, enum OUTPUT_OPTION outOption);
+     bool (*DLV_visualize)(void* field, size_t N_X, size_t N_Y);
+     bool (*DLV_terminate)();
 };
 
 #endif /* SERVERNODE_HPP */

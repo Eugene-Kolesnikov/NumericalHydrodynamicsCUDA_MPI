@@ -6,58 +6,62 @@
  */
 
 #include <mpi.h>
-#include "processNode.hpp"
-#include "serverNode.hpp"
+#include "ComputationalNode.hpp"
+#include "ServerNode.hpp"
 #include "MPI_Node.hpp"
-#include <getopt.h>
-#include <stdlib.h>
+#include <string>
+#include <exception>
 
-MPI_Datatype MPI_CellType;
-
-void createMpiStructType();
-void parseCmdArgv(int argc, char** argv, int* Nx, int* Ny, std::string& gui_dl);
-
-int rank, size;
 int main(int argc, char** argv) 
 {
-    int Nx = -1, Ny = -1;
-    std::string gui_dl;
+    if(argc != 2)
+        throw std::runtime_error("Wrong application call (wrong number of arguments)!");
+    std::string appPath(argv[1]);
+    
+    int globalRank, totalNodes;
 
+    /** Initialize the MPI environment and get the global id of the process
+     * and the total amount of processes.
+     */
     MPI_Init (&argc, &argv);
-    MPI_Comm_rank (MPI_COMM_WORLD, &rank); // id of the current mpi process
-    MPI_Comm_size (MPI_COMM_WORLD, &size); // total amount of processes
+    MPI_Comm_rank (MPI_COMM_WORLD, &globalRank); // id of the current mpi process
+    MPI_Comm_size (MPI_COMM_WORLD, &totalNodes); // total amount of processes
+    MPI_Errhandler_set(MPI_COMM_WORLD,MPI_ERRORS_RETURN); // return info about errors
 
-    createMpiStructType(); // create necessary `MPI_CellType` for MPI transfer system
+    /// Create an empty node class
+    MPI_Node* node = nullptr;
 
-    parseCmdArgv(argc, argv, &Nx, &Ny, gui_dl);
-    if((Nx == -1 || Ny == -1) && rank == size - 1) {
-	fputs("Error: not enough cmd arguments!\n", stderr);
-	MPI_Abort(MPI_COMM_WORLD, 1);
+    /** Choose what type of node class needs to be created
+     * in this particular process id
+     */
+    if(globalRank == (totalNodes - 1)) {
+        // the last node is a server node
+        node = new ServerNode(globalRank, totalNodes, appPath);
+    } else {
+        // all other nodes are computational nodes
+        node = new ComputationalNode(globalRank, totalNodes, appPath);
     }
     
-    MPI_Node* 
+    try {
+        /** Initialize the process's environment: 
+         * 1) connect all libraries: visualization library, configuration parser, computational library;
+         * 2) initialize all necessary variables by parsing the configuration file.
+         */
+        node->initEnvironment();
 
-    if(rank < size - 1) { // computational nodes
-	ProcessNode* process = new ProcessNode(rank,size,Nx,Ny);
-        process->loadXMLParserLib();
-        process->initEnvironment();
-	process->runNode();
-	delete process;
-    } else { // server node
-	ServerNode* server = new ServerNode(rank,size,Nx,Ny);
-	server->setArgcArgv(argc, argv);
-	server->loadVisualizationLib(); // \TODO: open the dynamic lib using the full path
-        server->loadXMLParserLib();
-        server->initEnvironment();
-	server->runNode();
-	delete server;
+        /// Start the application
+        node->runNode();
+    } catch(...) {
+        MPI_Abort();
     }
+    
+    delete node;
 
     MPI_Finalize();
     return 0;
 }
 
-void createMpiStructType()
+/*void createMpiStructType()
 {
     const int nitems = 4;
     int blocklengths[4] = {1,1,1,1};
@@ -109,6 +113,6 @@ void parseCmdArgv(int argc, char** argv, int* Nx, int* Ny, std::string& gui_dl)
             	break;
         }
     }
-}
+}*/
 
 

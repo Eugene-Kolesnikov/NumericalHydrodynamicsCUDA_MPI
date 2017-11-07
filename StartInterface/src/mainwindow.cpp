@@ -7,6 +7,7 @@
 #include <exception>
 #include <QDir>
 #include <dlfcn.h>
+#include <cstdlib>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -40,7 +41,7 @@ void MainWindow::connectParserLib()
 void MainWindow::readPrevConfig()
 {
     using namespace std;
-    string filepath = QCoreApplication::applicationDirPath().toStdString() + "/../../../CONFIG";
+    string filepath = QCoreApplication::applicationDirPath().toStdString() + "/CONFIG";
     void* lst = readConfig(filepath.c_str());
     if(lst == nullptr)
         return;
@@ -60,6 +61,7 @@ void MainWindow::readPrevConfig()
 
 void MainWindow::startSimulation()
 {
+    ui->startbtn->setEnabled(false);
     using namespace std;
     list<pair<string,double>> params;
     params.push_back(make_pair<string,double>("MPI_NODES_X",ui->mpi_nodes_x->text().toDouble()));
@@ -76,13 +78,15 @@ void MainWindow::startSimulation()
     params.push_back(make_pair<string,double>("USG",1));
     params.push_back(make_pair<string,double>("STAG",0));
     params.push_back(make_pair<string,double>("RND_TR",0));
-    string filepath = QCoreApplication::applicationDirPath().toStdString() + "/";
-    params.push_back(make_pair<string,double>(filepath.c_str(),-1.0));
     try {
         createConfig((void*)&params, (filepath + "CONFIG").c_str());
     } catch(runtime_error err) {
-        printf("Error: %s\n", err.what());
         throw std::runtime_error(err.what());
     }
+    string filepath = QCoreApplication::applicationDirPath().toStdString() + "/";
+    size_t mpi_nodes = ui->mpi_nodes_x->text().toUInt() * ui->mpi_nodes_y->text().toUInt() + 1;
+    string system_call = "mpiexec -l -np " + std::to_string(mpi_nodes) +
+            "./simulation_app " + filepath;
+    system(system_call);
     emit close();
 }

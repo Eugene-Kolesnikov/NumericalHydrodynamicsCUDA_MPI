@@ -17,9 +17,7 @@ std::list<std::pair<std::string,double>>* XMLReader::readConfig()
             auto token = xml.readNext();
             if(token == QXmlStreamReader::StartElement)
             {
-                if(xml.name().toString() == "ApplicationFullPath") {
-                    params->push_back(make_pair<string,double>(xml.name().toString().toStdString(), -1));
-                } else if(!(xml.name().toString() == "MPIConfiguration" || xml.name().toString() == "GPUConfiguration" ||
+                if(!(xml.name().toString() == "MPIConfiguration" || xml.name().toString() == "GPUConfiguration" ||
                      xml.name().toString() == "SolverConfiguration" || xml.name().toString() == "ComputationalModel" ||
                      xml.name().toString() == "GridModel" || xml.name().toString() == "Application")) {
                     params->push_back(make_pair<string,double>(xml.name().toString().toStdString(),xml.readElementText().toDouble()));

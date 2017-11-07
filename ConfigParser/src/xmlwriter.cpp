@@ -24,17 +24,11 @@ void XMLWriter::writeConfig(std::list<std::pair<std::string,double>>* params)
             xml.writeStartElement("ComputationalModel");
         } else if(it->first == std::string("USG")) {
             xml.writeStartElement("GridModel");
-        } else if(it->second == -1) {
-            xml.writeStartElement("Application");
         } else {
             // nothing
         }
 
-        if(it->second == -1) {
-            xml.writeTextElement("ApplicationFullPath", QString::fromStdString(it->first));
-        } else {
-            xml.writeTextElement(QString::fromStdString(it->first), QString::number(it->second));
-        }
+        xml.writeTextElement(QString::fromStdString(it->first), QString::number(it->second));
 
         if(it->first == std::string("MPI_NODES_Y")) {
             xml.writeEndElement();
@@ -45,8 +39,6 @@ void XMLWriter::writeConfig(std::list<std::pair<std::string,double>>* params)
         } else if(it->first == std::string("NS")) {
             xml.writeEndElement();
         } else if(it->first == std::string("RND_TR")) {
-            xml.writeEndElement();
-        } else if(it->second == -1) {
             xml.writeEndElement();
         } else {
             // nothing

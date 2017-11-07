@@ -15,14 +15,19 @@
 #define LATTICEBOLTZMANNMODEL_HPP
 
 #include "ComputationalModel.hpp"
+#include <cstdlib>
 
 class LatticeBoltzmannModel : public ComputationalModel {
 public:
     LatticeBoltzmannModel();
-    LatticeBoltzmannModel(const LatticeBoltzmannModel& orig);
     virtual ~LatticeBoltzmannModel();
-private:
-
+    
+public:
+    virtual void createMpiStructType();
+    virtual void* getField();
+    
+protected:
+    
 };
 
 #endif /* LATTICEBOLTZMANNMODEL_HPP */
