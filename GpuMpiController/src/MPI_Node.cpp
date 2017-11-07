@@ -15,11 +15,12 @@
 #include <dlfcn.h>
 #include <list>
 #include <map>
-#include "computationalModel_interface.h"
-#include "ComputationalModel.hpp"
+#include "../../ComputationalModel/src/computationalModel_interface.h"
+#include "../../ComputationalModel/src/ComputationalModel.hpp"
 #include <cmath> // floor
 
-MPI_Node::MPI_Node(int globalRank, int totalNodes, std::string app_path):
+
+MPI_Node::MPI_Node(size_t globalRank, size_t totalNodes, std::string app_path):
     Log(globalRank)
 {
     totalMPINodes = totalNodes;
@@ -55,7 +56,7 @@ MPI_Node::~MPI_Node()
 
 void MPI_Node::initEnvironment()
 {
-    Log.openLogFile();
+    Log.openLogFile(appPath);
     loadXMLParserLib();
     loadComputationalModelLib();
     parseConfigFile();
@@ -182,6 +183,12 @@ void MPI_Node::setComputationalModelEnv(ComputationalModel::NODE_TYPE node_type)
 }
 
 void MPI_Node::setLocalMPI_ids(const size_t globalId, size_t& localIdx, size_t& localIdy)
+{
+    localIdy = static_cast<size_t>(floor(globalId / MPI_NODES_X));
+    localIdx = globalId - localIdy * MPI_NODES_X;
+}
+
+void MPI_Node::setLocalMPI_ids(const int globalId, int& localIdx, int& localIdy)
 {
     if(globalId < 0) {
         localIdx = MPI_NODES_X;

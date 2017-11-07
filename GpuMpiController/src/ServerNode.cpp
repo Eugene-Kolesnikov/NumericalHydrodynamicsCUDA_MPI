@@ -12,7 +12,7 @@
  */
 
 #include "ServerNode.hpp"
-#include "ComputationalModel.hpp" // ComputationalModel::NODE_TYPE
+#include "../../ComputationalModel/src/ComputationalModel.hpp" // ComputationalModel::NODE_TYPE
 #include <dlfcn.h>
 #include <mpi.h>
 
@@ -38,28 +38,32 @@ void ServerNode::initEnvironment()
         loadVisualizationLib();
         MPI_Node::setComputationalModelEnv(ComputationalModel::NODE_TYPE::SERVER_NODE);
         sendInitFieldToCompNodes();
-    } catch(std::runtime_error err) {
+        if(DLV_init(N_X, N_Y, OUTPUT_OPTION::MPEG) == false)
+            throw std::runtime_error("Visualization library was not able"
+                    " to initialize successfully!");
+    } catch(const std::runtime_error& err) {
         if(Log.is_open())
-            Log << _ERROR_ << "(ServerNode:initEnvironment): " << err.what();
-        throw err;
+            Log << _ERROR_ << std::string("(ServerNode:initEnvironment): ") + err.what();
+        throw;
     }
 }
 
 void ServerNode::runNode()
 {
     try {
-        if(DLV_init(N_X, N_Y, OUTPUT_OPTION::MPEG == false))
-            throw std::runtime_error("Visualization library was not able"
-                    " to initialize successfully!");
-        
-        // \TODO: Place for the code of the server node
-        
+        // Continue loading updated fields and visualize them
+        // until the stop marker is set
+        while(model->checkStopMarker() == false) {
+            DLV_visualize(model->getField(), N_X, N_Y);
+            loadUpdatedSubfields();
+        }
+        // Finish the visualization process
         if(!DLV_terminate())
             throw std::runtime_error("Visualization library was not able"
                     " to terminate successfully!");
-    } catch(std::runtime_error err) {
-        Log << _ERROR_ << "(ServerNode:runNode): " << err.what();
-        throw err;
+    } catch(const std::runtime_error& err) {
+        Log << _ERROR_ << std::string("(ServerNode:runNode): ") + err.what();
+        throw;
     }
 }
 
@@ -103,16 +107,16 @@ void ServerNode::sendInitFieldToCompNodes()
                     " pointer with the prepared subfield";
             tmpStoragePtr = model->getTmpCPUFieldStoragePtr();
             Log << "Received the temporary CPU field storage pointer";
-            // since the MPI is working with global 1D array of MPI indexes,
+            // Since the MPI is working with the global 1D array of MPI indexes,
             // the 2D MPI id must be converted to the global MPI
             globalMPIidReceiver = getGlobalMPIid(mpi_node_x, mpi_node_y);
             Log << "Trying to send " + std::to_string(totalAmountCellsToTransfer) +
-                " amount of field cells to node (" + 
+                " amount of field cells to the node (" + 
                 std::to_string(mpi_node_x) + "," + 
                 std::to_string(mpi_node_y) + "), (global id: " +
                 std::to_string(globalMPIidReceiver) + ")";
             mpi_err_status = MPI_Send(tmpStoragePtr, totalAmountCellsToTransfer, 
-                    model->MPI_CellType, globalMPIidReceiver, 0, MPI_COMM_WORLD);
+                model->MPI_CellType, globalMPIidReceiver, globalMPIidReceiver, MPI_COMM_WORLD);
             // Check if the MPI transfer was successful
             if(mpi_err_status != MPI_SUCCESS) {
                 MPI_Error_string(mpi_err_status, err_buffer, &resultlen);
@@ -125,6 +129,40 @@ void ServerNode::sendInitFieldToCompNodes()
         }
     }
     Log << "Subfields has been successfully sent to all computational nodes";
-    MPI_Barrier(MPI_COMM_WORLD); // make sure that every one has it's part of data
+    // make sure that every ComputationalNode received its part of data
+    MPI_Barrier(MPI_COMM_WORLD); 
+    Log << "Barrier synchronization has been successfully performed.";
+}
+
+void ServerNode::loadUpdatedSubfields()
+{
+    MPI_Status status;
+    size_t totalAmountCellsToTransfer = lN_X * lN_Y;
+    // The temporary storage doesn't change, so the pointer must be
+    // obtained only once.
+    void* tmpStoragePtr = model->getTmpCPUFieldStoragePtr();
+    for(size_t mpi_node_x = 0; mpi_node_x < MPI_NODES_X; ++mpi_node_x) {
+        for(size_t mpi_node_y = 0; mpi_node_y < MPI_NODES_Y; ++mpi_node_y) {
+            size_t globalMPIidSender = getGlobalMPIid(mpi_node_x, mpi_node_y);
+            Log << "Trying to receive " + std::to_string(totalAmountCellsToTransfer) +
+                " amount of field cells from the node (" + 
+                std::to_string(mpi_node_x) + "," + 
+                std::to_string(mpi_node_y) + "), (global id: " +
+                std::to_string(globalMPIidSender) + ")";
+            MPI_Recv(tmpStoragePtr, totalAmountCellsToTransfer, model->MPI_CellType, 
+                    globalMPIidSender, globalMPIidSender, MPI_COMM_WORLD, &status);
+            Log << "Data has been successfully received from the node (" + 
+                std::to_string(mpi_node_x) + "," + 
+                std::to_string(mpi_node_y) + "), (global id: " +
+                std::to_string(globalMPIidSender) + ")";
+            // On the next iteration the values of the array to which the 
+            // tmpStoragePtr is referenced will be changed, so it is 
+            // important to update the global field first.
+            model->updateGlobalField(mpi_node_x, mpi_node_y);
+        }
+    }
+    Log << "Data has been successfully received from all computational nodes";
+    // make sure that every ComputationalNode sent their subfields
+    MPI_Barrier(MPI_COMM_WORLD);
     Log << "Barrier synchronization has been successfully performed.";
 }

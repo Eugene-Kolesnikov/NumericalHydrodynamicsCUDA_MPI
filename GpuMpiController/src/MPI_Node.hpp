@@ -17,7 +17,7 @@
 #include <string>
 #include <cstdlib>
 #include "LoggingSystem/FileLogger.hpp"
-#include "ComputationalModel.hpp"
+#include "../../ComputationalModel/src/ComputationalModel.hpp"
 
 class MPI_Node {
 public:
@@ -35,6 +35,7 @@ protected:
     void loadComputationalModelLib();
     void setComputationalModelEnv(ComputationalModel::NODE_TYPE node_type);
     void setLocalMPI_ids(const size_t globalId, size_t& localIdx, size_t& localIdy);
+    void setLocalMPI_ids(const int globalId, int& localIdx, int& localIdy);
     size_t getGlobalMPIid(size_t mpi_id_x, size_t mpi_id_y);
     
 protected:

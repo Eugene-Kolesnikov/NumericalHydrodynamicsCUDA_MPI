@@ -15,11 +15,11 @@
 #define SERVERNODE_HPP
 
 #include "MPI_Node.hpp"
-#include "interface.h"
+#include "../../Visualization/src/interface.h"
 #include <string>
 #include <cstdlib>
 
-class ServerNode : protected MPI_Node {
+class ServerNode : public MPI_Node {
 public:
     ServerNode(size_t globalRank, size_t totalNodes, std::string app_path);
     virtual ~ServerNode();
@@ -30,6 +30,7 @@ public:
 protected:
     void loadVisualizationLib();
     void sendInitFieldToCompNodes();
+    void loadUpdatedSubfields();
     
 protected:
     void* m_visualizationLibHandle;

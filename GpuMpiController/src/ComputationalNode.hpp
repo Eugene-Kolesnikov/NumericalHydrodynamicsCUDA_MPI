@@ -15,12 +15,11 @@
 #define COMPUTATIONALNODE_HPP
 
 #include "MPI_Node.hpp"
-#include "ComputationalModel.hpp"
 #include <string>
 #include <cstdlib>
 #include <mpi.h>
 
-class ComputationalNode : protected MPI_Node {
+class ComputationalNode : public MPI_Node {
 public:
     ComputationalNode(size_t globalRank, size_t totalNodes, std::string app_path);
     virtual ~ComputationalNode();
@@ -34,8 +33,10 @@ protected:
     void sendUpdatedSubFieldToServer();
     void shareHaloElements();
     void sndRcvHaloElements(int snd_id, int rvc_id, int snd_border, int rcv_border);
+    void setStopMarker();
     
 protected:
+    int* compRanks;
     MPI_Group world_group;
     MPI_Group computational_group;
     MPI_Comm MPI_COMM_COMPUTATIONAL;

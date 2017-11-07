@@ -678,7 +678,11 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 		../../../Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qmainwindow.h \
 		../build/ui_mainwindow.h \
 		../../../Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QDir \
-		../../../Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qdir.h
+		../../../Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qdir.h \
+		../../../Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QProcess \
+		../../../Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qprocess.h \
+		../../../Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qmessagebox.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/mainwindow.o mainwindow.cpp
 
 ../build/moc_mainwindow.o: ../build/moc_mainwindow.cpp 

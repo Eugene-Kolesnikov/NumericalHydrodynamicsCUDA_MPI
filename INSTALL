@@ -1,10 +1,10 @@
-cd ./StartInterface/src/
-qmake StartInterface.pro && make && make clean
-cd ../../ConfigParser/src
-qmake ConfigParser.pro && make && make clean
-cd ../../Visualization
-make && make clean
-cd ..
-mv -v ./StartInterface/build/StartInterface.app ./
-mv ./ConfigParser/build/libConfigParser.1.0.0.dylib ./StartInterface.app/Contents/MacOS/
-mv ./Visualization/libVisuzalization.1.0.0.dylib ./StartInterface.app/Contents/MacOS/
+cd ./StartInterface/src/ && qmake StartInterface.pro && make && #make clean &&
+cd ../../ConfigParser/src && qmake ConfigParser.pro && make && #make clean &&
+cd ../../Visualization/src && make && #make clean &&
+cd ../../GpuMpiController/src && make && #make clean &&
+cd ../../ &&
+mv -v ./StartInterface/build/StartInterface.app . &&
+mkdir ./StartInterface.app/Contents/MacOS/log &&
+mv ./ConfigParser/build/libConfigParser.1.0.0.dylib ./StartInterface.app/Contents/MacOS/ &&
+mv ./Visualization/build/libVisuzalization.1.0.0.dylib ./StartInterface.app/Contents/MacOS/ &&
+mv ./GpuMpiController/build/simulation_app ./StartInterface.app/Contents/MacOS/

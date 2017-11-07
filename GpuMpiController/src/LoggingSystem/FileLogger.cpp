@@ -41,7 +41,7 @@ FileLogger &operator << (FileLogger &logger, const char *text) {
     return logger;
 }
 
-friend FileLogger &operator << (FileLogger &logger, std::string text)
+FileLogger &operator << (FileLogger &logger, std::string text)
 {
     std::time_t result = std::time(nullptr);
     logger.myFile << "("
@@ -58,13 +58,13 @@ char* FileLogger::getTime(const struct tm *timeptr)
   return result;
 }
 
-void FileLogger::openLogFile()
+void FileLogger::openLogFile(std::string appPath)
 {
-    myFile.open(createLogFilename());
+    myFile.open(createLogFilename(appPath));
     std::time_t result = std::time(nullptr);
     // Write the first lines
     if (myFile.is_open()) {
-        myFile << "Log file created: " << 
+        myFile << "Log file created: "
                << getTime(std::localtime(&result))
                << std::endl;
     } else {
@@ -74,9 +74,9 @@ void FileLogger::openLogFile()
     }
 }
 
-std::string FileLogger::createLogFilename()
+std::string FileLogger::createLogFilename(std::string appPath)
 {
-    std::string filename = "log/node_" + std::to_string(mpi_id) + ".log";
+    std::string filename = appPath + "log/node_" + std::to_string(mpi_id) + ".log";
     return filename;
 }
 

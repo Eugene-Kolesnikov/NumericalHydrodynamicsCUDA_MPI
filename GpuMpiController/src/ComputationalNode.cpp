@@ -12,7 +12,7 @@
  */
 
 #include "ComputationalNode.hpp"
-#include "ComputationalModel.hpp" // ComputationalModel::NODE_TYPE
+#include "../../ComputationalModel/src/ComputationalModel.hpp" // ComputationalModel::NODE_TYPE
 #include <mpi.h>
 
 ComputationalNode::ComputationalNode(size_t globalRank, size_t totalNodes, std::string app_path):
@@ -52,10 +52,10 @@ void ComputationalNode::initEnvironment()
         model->updateHaloBorderElements();
         // Wait for the stream 'streamHaloBorder' to finish its tasks
         model->gpuSync();
-    } catch(std::runtime_error err) {
+    } catch(const std::runtime_error& err) {
         if(Log.is_open())
-            Log << _ERROR_ << "(ComputationalNode:initEnvironment): " << err.what();
-        throw err;
+            Log << _ERROR_ << std::string("(ComputationalNode:initEnvironment): ") + err.what();
+        throw;
     }
 }
 
@@ -105,9 +105,11 @@ void ComputationalNode::runNode()
             }
             curTime += TAU;
         }
-    } catch(std::runtime_error err) {
-        Log << _ERROR_ << "(ComputationalNode:runNode): " << err.what();
-        throw err;
+        setStopMarker();
+        sendUpdatedSubFieldToServer();
+    } catch(const std::runtime_error& err) {
+        Log << _ERROR_ << std::string("(ComputationalNode:runNode): ") + err.what();
+        throw;
     }
 }
 
@@ -125,8 +127,9 @@ void ComputationalNode::createComputationalMPIgroup()
         compRanks[i] = i;
     MPI_Group_incl(world_group, numberOfRanks, compRanks, &computational_group);
     
+    int tag = numberOfRanks; // safe tag unused by other communication
     // Create a new communicator based on the group
-    MPI_Comm_create_group(MPI_COMM_WORLD, computational_group, 0, &MPI_COMM_COMPUTATIONAL);
+    MPI_Comm_create_group(MPI_COMM_WORLD, computational_group, tag, &MPI_COMM_COMPUTATIONAL);
 }
 
 void ComputationalNode::loadInitSubFieldFromServer()
@@ -143,7 +146,7 @@ void ComputationalNode::loadInitSubFieldFromServer()
             " amount of field points from the server node";
     MPI_Recv(tmpStoragePtr, totalAmountCellsToTransfer, 
             model->MPI_CellType, serverProcess_id, 
-            MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+            globalMPI_id, MPI_COMM_WORLD, &status);
     Log << "Successfully received data from the server node";
     MPI_Barrier(MPI_COMM_WORLD);
     Log << "Barrier synchronization has been successfully performed";
@@ -162,12 +165,13 @@ void ComputationalNode::sendUpdatedSubFieldToServer()
     Log << "Trying to send " + std::to_string(totalAmountCellsToTransfer) + 
             " amount of data to server node.";
     mpi_err_status = MPI_Send(tmpStoragePtr, totalAmountCellsToTransfer, 
-            model->MPI_CellType, globalMPIidServer, 0, MPI_COMM_WORLD);
+            model->MPI_CellType, globalMPIidServer, globalMPI_id, MPI_COMM_WORLD);
     if(mpi_err_status != MPI_SUCCESS) {
         MPI_Error_string(mpi_err_status, err_buffer, &resultlen);
         throw std::runtime_error(err_buffer);
     }
     Log << "Data has been successfully sent to the server node";
+    // make sure that Server node has successfully received all subfields
     MPI_Barrier(MPI_COMM_WORLD);
     Log << "Barrier synchronization has been successfully performed";
 }
@@ -246,6 +250,7 @@ void ComputationalNode::sndRcvHaloElements(int snd_id, int rcv_id, int snd_borde
         throw std::runtime_error(err_buffer);
     }
     Log << "Data has been successfully sent and received.";
+    // Make sure that every ComputationalNode sent and received halo elements
     mpi_err_status = MPI_Barrier(MPI_COMM_COMPUTATIONAL);
     // Check if the MPI barrier synchronization was successful
     if(mpi_err_status != MPI_SUCCESS) {
@@ -253,4 +258,24 @@ void ComputationalNode::sndRcvHaloElements(int snd_id, int rcv_id, int snd_borde
         throw std::runtime_error(err_buffer);
     }
     Log << "Barrier synchronization has been successfully performed";
+}
+
+void ComputationalNode::setStopMarker()
+{
+    MPI_Status status;
+    int mpi_err_status, resultlen;
+    char err_buffer[MPI_MAX_ERROR_STRING];
+    // The first ComputationalNode sets the stop marker
+    if(globalMPI_id == 0) {
+        model->setStopMarker();
+        Log << "Stop Marker has been successfully set";
+    }
+    // Wait for the first ComputationalNode to set the stop marker
+    mpi_err_status = MPI_Barrier(MPI_COMM_COMPUTATIONAL);
+    // Check if the MPI barrier synchronization was successful
+    if(mpi_err_status != MPI_SUCCESS) {
+        MPI_Error_string(mpi_err_status, err_buffer, &resultlen);
+        throw std::runtime_error(err_buffer);
+    }
+    Log << "Barrier synchronization (for the Stop Marker) has been successfully performed";
 }

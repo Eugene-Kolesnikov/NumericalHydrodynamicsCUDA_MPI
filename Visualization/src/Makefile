@@ -14,13 +14,13 @@ OBJECTS = MainWindow.o \
 	
 
 all: $(OBJECTS)
-	$(CXX) -shared -fpic -o libVisuzalization.1.0.0.dylib $(OBJECTS) $(LIBS)
+	$(CXX) -shared -fpic -o ../build/libVisuzalization.1.0.0.dylib $(addprefix ../build/,$(OBJECTS)) $(LIBS)
 
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) -fpic $< -o $@
+	$(CXX) $(CXXFLAGS) -fpic $< -o ../build/$@
 
 %.o: %.c
-	$(CC) $(CCFLAGS) -fpic $< -o $@
+	$(CC) $(CCFLAGS) -fpic $< -o ../build/$@
 
 clean:
-	rm *.o
+	rm ../build/*.o

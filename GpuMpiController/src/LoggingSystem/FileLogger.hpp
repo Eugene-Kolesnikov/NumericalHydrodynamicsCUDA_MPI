@@ -23,8 +23,8 @@ namespace logging {
             FileLogger (const FileLogger &) = delete;
             FileLogger &operator= (const FileLogger &) = delete;
             
-            void openLogFile();
-            std::string createLogFilename();
+            void openLogFile(std::string appPath);
+            std::string createLogFilename(std::string appPath);
             bool is_open();
 
         private:
