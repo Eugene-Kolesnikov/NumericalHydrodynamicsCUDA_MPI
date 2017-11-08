@@ -25,8 +25,8 @@
 class ComputationalModel {
 public:
     enum NODE_TYPE {SERVER_NODE, COMPUTATIONAL_NODE};
-    ComputationalModel();
-    virtual ~ComputationalModel();
+    ComputationalModel(const char* compModel, const char* gridModel){}
+    virtual ~ComputationalModel(){}
 
 /// Virtual functions which are unique for each computational model
 public:
@@ -351,21 +351,3 @@ protected:
 };
 
 #endif /* COMPUTATIONALMODEL_HPP */
-
-
-/*void createMpiStructType()
-{
-    const int nitems = 4;
-    int blocklengths[4] = {1,1,1,1};
-    MPI_Datatype types[4] = {MPI_DOUBLE, MPI_DOUBLE, MPI_DOUBLE, MPI_DOUBLE};
-    MPI_Aint offsets[4];
-
-    offsets[0] = offsetof(Cell, r);
-    offsets[1] = offsetof(Cell, u);
-    offsets[2] = offsetof(Cell, v);
-    offsets[3] = offsetof(Cell, e);
-
-    MPI_Type_create_struct(nitems, blocklengths, offsets, types, &MPI_CellType);
-    MPI_Type_commit(&MPI_CellType);
-}
-*/

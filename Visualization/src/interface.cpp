@@ -32,25 +32,19 @@ FieldObject* fieldObject;
  * @return a bool parameter which indicates if the function performed successfully (true) or not (false). */
 bool DLV_init(size_t N_X, size_t N_Y, enum OUTPUT_OPTION outOption)
 {
-    try {
-        /// Create the window with an OpenGL context of the 'MainWindow' class
-        mainWindow = new MainWindow;
-    	mainWindow->create("Visualization");
+    /// Create the window with an OpenGL context of the 'MainWindow' class
+    mainWindow = new MainWindow;
+    mainWindow->create("Visualization");
 
-    	/// Set up the background color of the window (Dark blue)
-    	mainWindow->setBGColor(0.0f, 0.0f, 0.4f, 0.0f);
+    /// Set up the background color of the window (Dark blue)
+    mainWindow->setBGColor(0.0f, 0.0f, 0.4f, 0.0f);
 
-        /// Allocate memory for the FieldObject
-    	fieldObject = new FieldObject;
-        /// Set up the output method
-        fieldObject->setOutputOption(outOption);
-        /// Initialize the FiledObject
-    	fieldObject->init(N_X, N_Y);
-    } catch(std::runtime_error err) {
-        /// Return FAIL if any runtime exception caught
-        printf("Error: (DLV_init) %s\n", err.what());
-        return FAIL;
-    }
+    /// Allocate memory for the FieldObject
+    fieldObject = new FieldObject;
+    /// Set up the output method
+    fieldObject->setOutputOption(outOption);
+    /// Initialize the FiledObject
+    fieldObject->init(N_X, N_Y);
 
     return SUCCESS;
 }

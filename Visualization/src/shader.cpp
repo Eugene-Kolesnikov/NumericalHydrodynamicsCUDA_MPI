@@ -18,14 +18,14 @@
 std::string getVertexShader()
 {
     return
-    "#version 410 core"
-    "layout(location = 0) in vec2 pos;"
-    "layout(location = 1) in float field_val;"
-    "out float field;"
-    "void main() {"
-    "   gl_Position = vec4(pos.x, pos.y, 0.0f, 1.0);"
-    "   field = field_val;"
-    "}";
+    "#version 410 core \n"
+    "layout(location = 0) in vec2 pos; \n"
+    "layout(location = 1) in float field_val; \n"
+    "out float field; \n"
+    "void main() { \n"
+    "   gl_Position = vec4(pos.x, pos.y, 0.0f, 1.0); \n"
+    "   field = field_val; \n"
+    "} \n";
 }
 
 /**
@@ -35,24 +35,24 @@ std::string getVertexShader()
 std::string getFragmentShader()
 {
     return
-    "#version 410 core"
-    "in float field;"
-    "out vec4 fColor;"
-    "vec3 colorbar(float field)"
-    "{"
-    "   vec3 color = vec3(0,0,0);"
-    "   if(field >= 1.0/2.0) {"
-    "       float d = field - 1.0/2.0;"
-    "       color = vec3(0,(1.0/2.0-d)*2.0,d*2.0);"
-    "   } else {"
-    "       float d = 1.0/2.0 - field;"
-    "       color = vec3(d*2.0,(1.0/2.0-d)*2.0,0);"
-    "   }"
-    "   return color;"
-    "}"
-    "void main (void) {"
-    "   fColor = vec4(colorbar(field),1);"
-    "}";
+    "#version 410 core \n"
+    "in float field; \n"
+    "out vec4 fColor; \n"
+    "vec3 colorbar(float field) \n"
+    "{ \n"
+    "   vec3 color = vec3(0,0,0); \n"
+    "   if(field >= 1.0/2.0) { \n"
+    "       float d = field - 1.0/2.0; \n"
+    "       color = vec3(0,(1.0/2.0-d)*2.0,d*2.0); \n"
+    "   } else { \n"
+    "       float d = 1.0/2.0 - field; \n"
+    "       color = vec3(d*2.0,(1.0/2.0-d)*2.0,0); \n"
+    "   } \n"
+    "   return color; \n"
+    "} \n"
+    "void main (void) { \n"
+    "   fColor = vec4(colorbar(field),1); \n"
+    "} \n";
 }
 
 /**
