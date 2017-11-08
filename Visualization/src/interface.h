@@ -29,7 +29,7 @@ extern "C" {
  * file for further writing frames into it.
  * @return a bool parameter which indicates if the function performed successfully (true) or not (false). 
  */
-bool DLV_init(size_t N_X, size_t N_Y, enum OUTPUT_OPTION outOption);
+bool DLV_init(size_t N_X, size_t N_Y, enum OUTPUT_OPTION outOption, const char* path);
 
 /** 
  * @brief The server node calls the `DLV_visualize` function each time it is necessary to

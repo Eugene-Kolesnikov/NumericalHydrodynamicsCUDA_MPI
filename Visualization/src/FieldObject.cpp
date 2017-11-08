@@ -13,10 +13,11 @@
 
 extern GLuint programID;
 
-FieldObject::FieldObject()
+FieldObject::FieldObject(std::string path)
 {
     _data = nullptr;
     _output_option = PNG;
+    outputPath = path;
 }
 
 FieldObject::~FieldObject()
@@ -52,7 +53,7 @@ void FieldObject::init(size_t N_X, size_t N_Y)
     /// Load and compile shaders
     _programID = compileShaders();
 
-    init_output(_output_option);
+    init_output(_output_option, outputPath.c_str());
 }
 
 /**
@@ -91,7 +92,7 @@ void FieldObject::render(void* field, size_t N_X, size_t N_Y)
     glDrawElements(GL_TRIANGLES, _index_buf_count, GL_UNSIGNED_INT, 0);
 
     /// Save the rendered image to the file of the output style
-    writeframe_output(_output_option);
+    writeframe_output(_output_option, outputPath.c_str());
 
     /// Unbind buffers, pointers, shaders
     glDisableVertexAttribArray(0);

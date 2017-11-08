@@ -34,7 +34,7 @@ protected:
     
 protected:
     void* m_visualizationLibHandle;
-     bool (*DLV_init)(size_t N_X, size_t N_Y, enum OUTPUT_OPTION outOption);
+     bool (*DLV_init)(size_t N_X, size_t N_Y, enum OUTPUT_OPTION outOption, const char* path);
      bool (*DLV_visualize)(void* field, size_t N_X, size_t N_Y);
      bool (*DLV_terminate)();
 };

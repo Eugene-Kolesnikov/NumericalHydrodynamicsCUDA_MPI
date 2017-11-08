@@ -27,10 +27,10 @@
 #include <libswscale/swscale.h>
 
 
-enum Constants { SCREENSHOT_MAX_FILENAME = 256 };
+enum Constants { SCREENSHOT_MAX_FILENAME = 512 };
 static GLubyte *pixels = NULL;
-static unsigned int HEIGHT = 1000;
-static unsigned int WIDTH = 1000;
+static unsigned int HEIGHT = 500;
+static unsigned int WIDTH = 500;
 static unsigned int nframes = 0;
 
 // PPM
@@ -246,11 +246,13 @@ void set_output_windowsize(unsigned short window_size)
  * @brief Set's up the environment (output option).
  * @param output -- type of an output.
 */
-void init_output(enum OUTPUT_OPTION output)
+void init_output(enum OUTPUT_OPTION output, const char* path)
 {
-    const char* filepath = "output.mpg"; // \TODO: read from a configuration file
+    char fullpath[SCREENSHOT_MAX_FILENAME];
+    strcpy(fullpath, path);
+    strcat(fullpath, "output.mpg");
     if(output == MPEG) {
-        ffmpeg_encoder_start(filepath, AV_CODEC_ID_MPEG1VIDEO, 25, WIDTH, HEIGHT);
+        ffmpeg_encoder_start(fullpath, AV_CODEC_ID_MPEG1VIDEO, 30, WIDTH, HEIGHT);
     }
 }
 
@@ -276,16 +278,21 @@ void deinit_output(enum OUTPUT_OPTION output)
   * on the output option).
  * @param output -- type of an output.
 */
-void writeframe_output(enum OUTPUT_OPTION output)
+void writeframe_output(enum OUTPUT_OPTION output, const char* path)
 {
+    char fullpath[SCREENSHOT_MAX_FILENAME];
     char filename[SCREENSHOT_MAX_FILENAME];
     glFlush();
     if(output == PPM) {
+        strcpy(fullpath, path);
         snprintf(filename, SCREENSHOT_MAX_FILENAME, "output%d.ppm", nframes);
-        screenshot_ppm(filename, WIDTH, HEIGHT, &pixels);
+        strcat(fullpath, filename);
+        screenshot_ppm(fullpath, WIDTH, HEIGHT, &pixels);
     } else if(output == PNG) {
+        strcpy(fullpath, path);
         snprintf(filename, SCREENSHOT_MAX_FILENAME, "output%d.png", nframes);
-        screenshot_png(filename, WIDTH, HEIGHT, &pixels, &png_bytes, &png_rows);
+        strcat(fullpath, filename);
+        screenshot_png(fullpath, WIDTH, HEIGHT, &pixels, &png_bytes, &png_rows);
     } else if(output == MPEG) {
         frame->pts = nframes;
         ffmpeg_encoder_glread_rgb(&rgb, &pixels, WIDTH, HEIGHT);

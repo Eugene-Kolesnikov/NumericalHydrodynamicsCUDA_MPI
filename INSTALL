@@ -1,3 +1,4 @@
+rm -rf ./StartInterface.app
 cd ./StartInterface/src/ && qmake StartInterface.pro && make && make clean &&
 cd ../../ConfigParser/src && qmake ConfigParser.pro && make && make clean &&
 cd ../../Visualization/src && make && make clean &&

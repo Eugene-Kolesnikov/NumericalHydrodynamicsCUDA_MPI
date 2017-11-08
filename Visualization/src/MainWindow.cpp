@@ -53,7 +53,7 @@ void MainWindow::create(std::string title)
 
     /// set up the screen resolution
     unsigned short size_wh = 0.49 * get_resolution();
-    set_output_windowsize(2 * size_wh);
+    set_output_windowsize(size_wh);
     
     /// Open a window and create its OpenGL context
     _window = glfwCreateWindow(size_wh, size_wh, title.c_str(), NULL, NULL);

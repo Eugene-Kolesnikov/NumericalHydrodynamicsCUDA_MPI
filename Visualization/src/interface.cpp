@@ -30,7 +30,7 @@ FieldObject* fieldObject;
  * 'MPEG' creates a .mpeg video file. In the last case, the function initializes the 
  * file for further writing frames into it.
  * @return a bool parameter which indicates if the function performed successfully (true) or not (false). */
-bool DLV_init(size_t N_X, size_t N_Y, enum OUTPUT_OPTION outOption)
+bool DLV_init(size_t N_X, size_t N_Y, enum OUTPUT_OPTION outOption, const char* path)
 {
     /// Create the window with an OpenGL context of the 'MainWindow' class
     mainWindow = new MainWindow;
@@ -40,7 +40,7 @@ bool DLV_init(size_t N_X, size_t N_Y, enum OUTPUT_OPTION outOption)
     mainWindow->setBGColor(0.0f, 0.0f, 0.4f, 0.0f);
 
     /// Allocate memory for the FieldObject
-    fieldObject = new FieldObject;
+    fieldObject = new FieldObject(path);
     /// Set up the output method
     fieldObject->setOutputOption(outOption);
     /// Initialize the FiledObject

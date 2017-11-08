@@ -38,7 +38,7 @@ void ServerNode::initEnvironment()
         loadVisualizationLib();
         MPI_Node::setComputationalModelEnv(ComputationalModel::NODE_TYPE::SERVER_NODE);
         sendInitFieldToCompNodes();
-        DLV_init(N_X, N_Y, OUTPUT_OPTION::MPEG);
+        DLV_init(N_X, N_Y, OUTPUT_OPTION::MPEG, (appPath + "../../../").c_str());
     } catch(const std::runtime_error& err) {
         if(Log.is_open())
             Log << _ERROR_ << std::string("(ServerNode:initEnvironment): ") + err.what();
@@ -52,13 +52,13 @@ void ServerNode::runNode()
         // Continue loading updated fields and visualize them
         // until the stop marker is set
         while(model->checkStopMarker() == false) {
-            //DLV_visualize(model->getField(), N_X, N_Y);
+            DLV_visualize(model->getField(), N_X, N_Y);
             loadUpdatedSubfields();
         }
         // Finish the visualization process
-        //if(!DLV_terminate())
-        //    throw std::runtime_error("Visualization library was not able"
-        //            " to terminate successfully!");
+        if(!DLV_terminate())
+            throw std::runtime_error("Visualization library was not able"
+                    " to terminate successfully!");
         Log << "Simulation has been successfully finished";
     } catch(const std::runtime_error& err) {
         Log << _ERROR_ << std::string("(ServerNode:runNode): ") + err.what();
@@ -68,7 +68,8 @@ void ServerNode::runNode()
 
 void ServerNode::loadVisualizationLib()
 {
-    void* m_visualizationLibHandle = dlopen("libVisuzalization.1.0.0.dylib", RTLD_LOCAL | RTLD_LAZY);
+    std::string libpath = appPath + "libVisuzalization.1.0.0.dylib";
+    void* m_visualizationLibHandle = dlopen(libpath.c_str(), RTLD_LOCAL | RTLD_LAZY);
     if (m_visualizationLibHandle == nullptr) {
         throw std::runtime_error(dlerror());
     } else {
@@ -76,7 +77,7 @@ void ServerNode::loadVisualizationLib()
     }
 
     DLV_init = (bool (*)(size_t, size_t, 
-            enum OUTPUT_OPTION))dlsym(m_visualizationLibHandle, "DLV_init");
+            enum OUTPUT_OPTION, const char*))dlsym(m_visualizationLibHandle, "DLV_init");
     DLV_visualize = (bool (*)(void*,
         size_t, size_t))dlsym(m_visualizationLibHandle, "DLV_visualize");
     DLV_terminate = (bool (*)())dlsym(m_visualizationLibHandle, "DLV_terminate");

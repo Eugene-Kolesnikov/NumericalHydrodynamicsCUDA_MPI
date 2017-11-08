@@ -53,7 +53,7 @@ extern "C"
      * @brief Set's up the environment (output option).
      * @param output -- type of an output.
     */
-    void init_output(enum OUTPUT_OPTION output);
+    void init_output(enum OUTPUT_OPTION output, const char* path);
     
     /**
      * @brief Deinitializes the environment. (Necessary for MPEG option since
@@ -67,7 +67,7 @@ extern "C"
       * on the output option).
      * @param output -- type of an output.
     */
-    void writeframe_output(enum OUTPUT_OPTION output);
+    void writeframe_output(enum OUTPUT_OPTION output, const char* path);
 #ifdef __cplusplus
 }
 #endif

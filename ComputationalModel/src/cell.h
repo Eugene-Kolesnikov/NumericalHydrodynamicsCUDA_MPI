@@ -9,7 +9,7 @@
 #define CELL_H
 
 #define MAX_CELL_ARG 10
-#define STRUCT_DATA_TYPE double
+#define STRUCT_DATA_TYPE float
 
 #define PRIMITIVE_CAT(x, y) x ## y
 #define CAT(x, y) PRIMITIVE_CAT(x, y)

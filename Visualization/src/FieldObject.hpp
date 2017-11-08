@@ -12,6 +12,7 @@
 #include <OpenGL/gl3.h>
 #include <glm/glm.hpp>
 #include "offscreen.h"
+#include <string>
 
 /**
 * @class FieldObject
@@ -23,7 +24,7 @@
 class FieldObject
 {
 public:
-    FieldObject();
+    FieldObject(std::string path);
     ~FieldObject();
 
     /**
@@ -83,6 +84,7 @@ protected:
     size_t _dataSize; /**< Number of points in the generated field mesh. */
     GLuint _programID; /**< Environment with compiled shaders. */
     enum OUTPUT_OPTION _output_option; /**< Type of the output: save in an image (PPM, PNG) or generate a video file (MPEG). */
+    std::string outputPath; /**< Full path to the place where the output file(s) must be created. */
 };
 
 #endif /* FIELDOBJECT_HPP */
