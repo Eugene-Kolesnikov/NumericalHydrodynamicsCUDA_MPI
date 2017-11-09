@@ -15,15 +15,15 @@
 #define CPUTESTCOMPUTATIONALMODEL_H
 
 #include "ComputationalModel.hpp"
-#include "cell.h"
 
 class CPUTestComputationalModel : public ComputationalModel {
+    enum TypeMemCpy {TmpCPUFieldToField, FieldToTmpCPUField};
 public:
     CPUTestComputationalModel(const char* compModel, const char* gridModel);
     virtual ~CPUTestComputationalModel();
 
 public:
-    virtual void createMpiStructType();
+    virtual void createMpiStructType(logging::FileLogger& Log);
     virtual void initializeField();
     virtual void* getTmpCPUFieldStoragePtr();
     virtual void updateGlobalField(size_t mpi_node_x, size_t mpi_node_y);
@@ -40,12 +40,15 @@ public:
     virtual bool checkStopMarker();
     
 protected:
-    Cell* field;
-    Cell* tmpCPUField;
-    Cell* lr_halo;
-    Cell* tb_halo;
-    Cell* rcv_lr_halo;
-    Cell* rcv_tb_halo;
+    void memcpyField(size_t mpi_node_x, size_t mpi_node_y, TypeMemCpy cpyType);
+    
+protected:
+    void* field;
+    void* tmpCPUField;
+    void* lr_halo;
+    void* tb_halo;
+    void* rcv_lr_halo;
+    void* rcv_tb_halo;
 };
 
 #endif /* CPUTESTCOMPUTATIONALMODEL_H */

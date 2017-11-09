@@ -12,13 +12,20 @@
  */
 
 #include "CPUTestComputationalModel.hpp"
-#include "cell.h"
 #include <typeinfo> // operator typeid
 #include <exception>
 #include <vector>
 #include <cstdlib> //drand48
 #include <mpi.h>
 
+/**
+ * byte type is actually a char type. The reason to use it is that all other 
+ * types like float, double, long double can be represented as a sequence of 
+ * chars, which means that size (memory) of each type is a multiple of the char size.
+ * It is useful to use byte since we don't know which one of the types (float, double,
+ * long double) will be used in the program.
+ */
+typedef char byte;
 
 CPUTestComputationalModel::CPUTestComputationalModel(const char* compModel, const char* gridModel):
     ComputationalModel(compModel, gridModel)
@@ -34,44 +41,48 @@ CPUTestComputationalModel::CPUTestComputationalModel(const char* compModel, cons
 CPUTestComputationalModel::~CPUTestComputationalModel() 
 {
     if(field != nullptr)
-        delete[] field;
+        delete[] (byte*)field;
     if(lr_halo != nullptr)
-        delete[] lr_halo;
+        delete[] (byte*)lr_halo;
     if(tb_halo != nullptr)
-        delete[] tb_halo;
+        delete[] (byte*)tb_halo;
     if(rcv_lr_halo != nullptr)
-        delete[] rcv_lr_halo;
+        delete[] (byte*)rcv_lr_halo;
     if(rcv_tb_halo != nullptr)
-        delete[] rcv_tb_halo;
+        delete[] (byte*)rcv_tb_halo;
     if(tmpCPUField != nullptr)
-        delete[] tmpCPUField;
+        delete[] (byte*)tmpCPUField;
 }
 
-void CPUTestComputationalModel::createMpiStructType() 
+void CPUTestComputationalModel::createMpiStructType(logging::FileLogger& Log) 
 {
+    const std::type_info& data_typeid = scheme->getDataTypeid();
+    size_t size_of_datatype = scheme->getSizeOfDatatype();
     int mpi_err_status, resultlen;
     char err_buffer[MPI_MAX_ERROR_STRING];
     MPI_Datatype MPI_DATA_TYPE;
-    if(typeid(STRUCT_DATA_TYPE) == typeid(float)) {
+    if(data_typeid == typeid(float)) {
         MPI_DATA_TYPE = MPI_FLOAT;
-    } else if(typeid(STRUCT_DATA_TYPE) == typeid(double)) {
+    } else if(data_typeid == typeid(double)) {
         MPI_DATA_TYPE = MPI_DOUBLE;
-    } else if(typeid(STRUCT_DATA_TYPE) == typeid(long double)) {
+    } else if(data_typeid == typeid(long double)) {
         MPI_DATA_TYPE = MPI_LONG_DOUBLE;
     } else {
         throw std::runtime_error("CPUTestComputationalModel::createMpiStructType: Wrong STRUCT_DATA_TYPE!");
     }
-    size_t nitems = static_cast<size_t>(sizeof(Cell) / sizeof(STRUCT_DATA_TYPE));
-    int blocklengths[MAX_CELL_ARG];
-    MPI_Datatype types[MAX_CELL_ARG];
-    MPI_Aint offsets[MAX_CELL_ARG];
-    
+    size_t nitems = scheme->getNumberOfElements();
+    int* blocklengths = new int[nitems];
+    MPI_Datatype* types = new MPI_Datatype[nitems];
+    MPI_Aint* offsets = new MPI_Aint[nitems];
     for(size_t i = 0; i < nitems; ++i) {
         blocklengths[i] = 1;
         types[i] = MPI_DATA_TYPE;
-        offsets[i] = i * sizeof(STRUCT_DATA_TYPE);
+        offsets[i] = i * size_of_datatype;
     }
     mpi_err_status = MPI_Type_create_struct(nitems, blocklengths, offsets, types, &MPI_CellType);
+    delete[] blocklengths;
+    delete[] types;
+    delete[] offsets;
     if(mpi_err_status != MPI_SUCCESS) {
         MPI_Error_string(mpi_err_status, err_buffer, &resultlen);
         throw std::runtime_error(err_buffer);
@@ -81,34 +92,26 @@ void CPUTestComputationalModel::createMpiStructType()
         MPI_Error_string(mpi_err_status, err_buffer, &resultlen);
         throw std::runtime_error(err_buffer);
     }
+    Log << "MPI structure has been successfully created";
 }
 
 void CPUTestComputationalModel::initializeField() 
 {
-    tmpCPUField = new Cell[lN_X * lN_Y];
+    tmpCPUField = scheme->createField(lN_X, lN_Y);
     if(nodeType == NODE_TYPE::COMPUTATIONAL_NODE) {
-        lr_halo = new Cell[2*lN_Y];
-        tb_halo = new Cell[2*lN_X];
-        rcv_lr_halo = new Cell[2*lN_Y];
-        rcv_tb_halo = new Cell[2*lN_X];
-    } else {
-        size_t global;
-        field = new Cell[N_X * N_Y];
-        for(size_t x = 0; x < N_X; ++x) {
-            for(size_t y = 0; y < N_Y; ++y) {
-                global = y * N_X + x;
-                field[global].r = drand48();
-                field[global].u = 0.0;
-                field[global].v = 0.0;
-                field[global].e = 0.0;
-            }
-        }
+        lr_halo = scheme->initHalos(lN_Y);
+        tb_halo = scheme->initHalos(lN_X);
+        rcv_lr_halo = scheme->initHalos(lN_Y);
+        rcv_tb_halo = scheme->initHalos(lN_X);
+    } else { // NODE_TYPE::SERVER_NODE
+        field = scheme->createField(N_X, N_Y);
+        scheme->initField(field, N_X, N_Y);
     }
 }
 
 void* CPUTestComputationalModel::getTmpCPUFieldStoragePtr() 
 {
-    return (void*) tmpCPUField;
+    return tmpCPUField;
 }
 
 void CPUTestComputationalModel::updateGlobalField(size_t mpi_node_x, size_t mpi_node_y) 
@@ -116,59 +119,31 @@ void CPUTestComputationalModel::updateGlobalField(size_t mpi_node_x, size_t mpi_
     if(nodeType != NODE_TYPE::SERVER_NODE)
         throw std::runtime_error("CPUTestComputationalModel::updateGlobalField: "
                 "This function should not be called by a Computational Node");
-    size_t global, globalTmp, x0, y0, x1, y1;
-    x0 = static_cast<size_t>(N_X / MPI_NODES_X * mpi_node_x);
-    y0 = static_cast<size_t>(N_Y / MPI_NODES_Y * mpi_node_y);
-    for(size_t x = 0; x < lN_X; ++x) {
-        for(size_t y = 0; y < lN_Y; ++y) {
-            x1 = x0 + x;
-            y1 = y0 + y;
-            global = y1 * N_X + x1;
-            globalTmp = y * lN_X + x;
-            field[global].r = tmpCPUField[globalTmp].r;
-            field[global].u = tmpCPUField[globalTmp].u;
-            field[global].v = tmpCPUField[globalTmp].v;
-            field[global].e = tmpCPUField[globalTmp].e;
-        }
-    }
+    memcpyField(mpi_node_x, mpi_node_y, TmpCPUFieldToField);
 }
 
 void CPUTestComputationalModel::prepareSubfield(size_t mpi_node_x, size_t mpi_node_y) 
 {
     if(nodeType == NODE_TYPE::COMPUTATIONAL_NODE) {
-        // nothing
+        // nothing yet
     } else {
-        size_t global, globalTmp, x0, y0, x1, y1;
-        x0 = static_cast<size_t>(N_X / MPI_NODES_X * mpi_node_x);
-        y0 = static_cast<size_t>(N_Y / MPI_NODES_Y * mpi_node_y);
-        for(size_t x = 0; x < lN_X; ++x) {
-            for(size_t y = 0; y < lN_Y; ++y) {
-                x1 = x0 + x;
-                y1 = y0 + y;
-                global = y1 * N_X + x1;
-                globalTmp = y * lN_X + x;
-                tmpCPUField[globalTmp].r = field[global].r;
-                tmpCPUField[globalTmp].u = field[global].u;
-                tmpCPUField[globalTmp].v = field[global].v;
-                tmpCPUField[globalTmp].e = field[global].e;
-            }
-        }
+        memcpyField(mpi_node_x, mpi_node_y, FieldToTmpCPUField);
     }
 }
 
 void CPUTestComputationalModel::loadSubFieldToGPU() 
 {
-    // nothing
+    // nothing yet
 }
 
 void* CPUTestComputationalModel::getField() 
 {
-    return (void*)field;
+    return field;
 }
 
 void CPUTestComputationalModel::gpuSync() 
 {
-    // nothing
+    // nothing yet
 }
 
 void CPUTestComputationalModel::performSimulationStep() 
@@ -176,33 +151,8 @@ void CPUTestComputationalModel::performSimulationStep()
     if(nodeType != NODE_TYPE::COMPUTATIONAL_NODE)
         throw std::runtime_error("CPUTestComputationalModel::performSimulationStep: "
                 "This function should not be called by the Server Node");
-    size_t global, global1;
-    Cell* tmpField = new Cell[lN_Y];
-    for(size_t y = 0; y < lN_Y; ++y) {
-        global = y * lN_X;
-        tmpField[y].r = tmpCPUField[global].r;
-        tmpField[y].u = tmpCPUField[global].u;
-        tmpField[y].v = tmpCPUField[global].v;
-        tmpField[y].e = tmpCPUField[global].e;
-    }
-    for(size_t x = 1; x < lN_X; ++x) {
-        for(size_t y = 0; y < lN_Y; ++y) {
-            global = y * lN_X + x;
-            global1 = y * lN_X + x - 1;
-            tmpCPUField[global1].r = tmpCPUField[global].r;
-            tmpCPUField[global1].u = tmpCPUField[global].u;
-            tmpCPUField[global1].v = tmpCPUField[global].v;
-            tmpCPUField[global1].e = tmpCPUField[global].e;
-        }
-    }
-    for(size_t y = 1; y <= lN_Y; ++y) {
-        global = y * lN_X - 1;
-        tmpCPUField[global].r = tmpField[y-1].r;
-        tmpCPUField[global].u = tmpField[y-1].u;
-        tmpCPUField[global].v = tmpField[y-1].v;
-        tmpCPUField[global].e = tmpField[y-1].e;
-    }
-    delete[] tmpField;
+    // for now use the CPU field
+    scheme->performSimulationStep(tmpCPUField, lr_halo, tb_halo, lN_X, lN_Y);
 }
 
 void CPUTestComputationalModel::updateHaloBorderElements() 
@@ -210,19 +160,52 @@ void CPUTestComputationalModel::updateHaloBorderElements()
     if(nodeType != NODE_TYPE::COMPUTATIONAL_NODE)
         throw std::runtime_error("CPUTestComputationalModel::updateHaloBorderElements: "
                 "This function should not be called by the Server Node");
+    size_t shift, shift_item, global;
+    size_t size_of_datatype = scheme->getSizeOfDatatype();
+    size_t nitems = scheme->getNumberOfElements();
     // update lr
+    byte* lr_haloPtr = (byte*)lr_halo;
+    byte* rcv_lr_halodPtr = (byte*)rcv_lr_halo;
     for(size_t y = 0; y < 2*lN_Y; ++y) {
-        lr_halo[y].r = rcv_lr_halo[y].r;
-        lr_halo[y].u = rcv_lr_halo[y].u;
-        lr_halo[y].v = rcv_lr_halo[y].v;
-        lr_halo[y].e = rcv_lr_halo[y].e;
+        /// Go through all elements of lr_halo array
+        /** Calculate the shift using the fact that structure consists
+         * of nitems amount of elements which are size_of_datatype amount
+         * of bytes each. */
+        shift = y * nitems * size_of_datatype;
+        for(size_t i = 0; i < nitems; ++i) {
+            /// Go through all elements of the Cell
+            /** Add shifts for the elements inside the Cell structure */
+            shift_item = shift + i * size_of_datatype;
+            for(size_t s = 0; s < size_of_datatype; ++s) {
+                /// Go through all bytes of the STRUCT_DATA_TYPE
+                /** Add shifts for the bytes of the STRUCT_DATA_TYPE */
+                global = shift_item + s;
+                /// Update the byte
+                lr_haloPtr[global] = rcv_lr_halodPtr[global];
+            }
+        }
     }
     // update tb
+    byte* tb_haloPtr = (byte*)tb_halo;
+    byte* rcv_tb_halodPtr = (byte*)rcv_tb_halo;
     for(size_t x = 0; x < 2*lN_X; ++x) {
-        tb_halo[x].r = rcv_tb_halo[x].r;
-        tb_halo[x].u = rcv_tb_halo[x].u;
-        tb_halo[x].v = rcv_tb_halo[x].v;
-        tb_halo[x].e = rcv_tb_halo[x].e;
+        /// Go through all elements of lr_halo array
+        /** Calculate the shift using the fact that structure consists
+         * of nitems amount of elements which are size_of_datatype amount
+         * of bytes each. */
+        shift = x * nitems * size_of_datatype;
+        for(size_t i = 0; i < nitems; ++i) {
+            /// Go through all elements of the Cell
+            /** Add shifts for the elements inside the Cell structure */
+            shift_item = shift + i * size_of_datatype;
+            for(size_t s = 0; s < size_of_datatype; ++s) {
+                /// Go through all bytes of the STRUCT_DATA_TYPE
+                /** Add shifts for the bytes of the STRUCT_DATA_TYPE */
+                global = shift_item + s;
+                /// Update the byte
+                tb_haloPtr[global] = rcv_tb_halodPtr[global];
+            }
+        }
     }
 }
 
@@ -231,30 +214,75 @@ void CPUTestComputationalModel::prepareHaloElements()
     if(nodeType != NODE_TYPE::COMPUTATIONAL_NODE)
         throw std::runtime_error("CPUTestComputationalModel::prepareHaloElements: "
                 "This function should not be called by the Server Node");
-    size_t global, global1;
+    // Later this function will be a simple data transfer from GPU
+    size_t halo_shift, halo_shift_item, halo_global;
+    size_t halo_shift1, halo_shift_item1, halo_global1;
+    size_t field_shift, field_shift_item, field_global;
+    size_t field_shift1, field_shift_item1, field_global1;
+    size_t size_of_datatype = scheme->getSizeOfDatatype();
+    size_t nitems = scheme->getNumberOfElements();
+    byte* tmpCPUFieldPtr = (byte*)tmpCPUField;
+    // update lr
+    byte* lr_haloPtr = (byte*)lr_halo;
     for(size_t y = 0; y < lN_Y; ++y) {
-        global = y * lN_X;
-        global1 = (y+1) * lN_X - 1;
-        lr_halo[y].r = tmpCPUField[global].r;
-        lr_halo[y].u = tmpCPUField[global].u;
-        lr_halo[y].v = tmpCPUField[global].v;
-        lr_halo[y].e = tmpCPUField[global].e;
-        lr_halo[y+lN_Y].r = tmpCPUField[global1].r;
-        lr_halo[y+lN_Y].u = tmpCPUField[global1].u;
-        lr_halo[y+lN_Y].v = tmpCPUField[global1].v;
-        lr_halo[y+lN_Y].e = tmpCPUField[global1].e;
+        /// Go through all elements of a column of the subfield
+        /** Calculate the shift using the fact that structure consists
+         * of nitems amount of elements which are size_of_datatype amount
+         * of bytes each. */
+        halo_shift = y * nitems * size_of_datatype;
+        halo_shift1 = (y + lN_Y) * nitems * size_of_datatype;
+        field_shift = (y * lN_X) * nitems * size_of_datatype;
+        field_shift1 = ((y+1) * lN_X - 1) * nitems * size_of_datatype;
+        for(size_t i = 0; i < nitems; ++i) {
+            /// Go through all elements of the Cell
+            /** Add shifts for the elements inside the Cell structure */
+            halo_shift_item = halo_shift + i * size_of_datatype;
+            halo_shift_item1 = halo_shift1 + i * size_of_datatype;
+            field_shift_item = field_shift + i * size_of_datatype;
+            field_shift_item1 = field_shift1 + i * size_of_datatype;
+            for(size_t s = 0; s < size_of_datatype; ++s) {
+                /// Go through all bytes of the STRUCT_DATA_TYPE
+                /** Add shifts for the bytes of the STRUCT_DATA_TYPE */
+                halo_global = halo_shift_item + s;
+                halo_global1 = halo_shift_item1 + s;
+                field_global = field_shift_item + s;
+                field_global1 = field_shift_item1 + s;
+                /// Update the byte
+                lr_haloPtr[halo_global] = tmpCPUFieldPtr[field_global];
+                lr_haloPtr[halo_global1] = tmpCPUFieldPtr[field_global1];
+            }
+        }
     }
+    // update lr
+    byte* tb_haloPtr = (byte*)tb_halo;
     for(size_t x = 0; x < lN_X; ++x) {
-        global = x;
-        global1 = (lN_Y-1) * lN_X + x;
-        tb_halo[x].r = tmpCPUField[global].r;
-        tb_halo[x].u = tmpCPUField[global].u;
-        tb_halo[x].v = tmpCPUField[global].v;
-        tb_halo[x].e = tmpCPUField[global].e;
-        tb_halo[x+lN_X].r = tmpCPUField[global1].r;
-        tb_halo[x+lN_X].u = tmpCPUField[global1].u;
-        tb_halo[x+lN_X].v = tmpCPUField[global1].v;
-        tb_halo[x+lN_X].e = tmpCPUField[global1].e;
+        /// Go through all elements of a column of the subfield
+        /** Calculate the shift using the fact that structure consists
+         * of nitems amount of elements which are size_of_datatype amount
+         * of bytes each. */
+        halo_shift = x * nitems * size_of_datatype;
+        halo_shift1 = (x + lN_X) * nitems * size_of_datatype;
+        field_shift = x * nitems * size_of_datatype;
+        field_shift1 = ((lN_Y-1) * lN_X + x) * nitems * size_of_datatype;
+        for(size_t i = 0; i < nitems; ++i) {
+            /// Go through all elements of the Cell
+            /** Add shifts for the elements inside the Cell structure */
+            halo_shift_item = halo_shift + i * size_of_datatype;
+            halo_shift_item1 = halo_shift1 + i * size_of_datatype;
+            field_shift_item = field_shift + i * size_of_datatype;
+            field_shift_item1 = field_shift1 + i * size_of_datatype;
+            for(size_t s = 0; s < size_of_datatype; ++s) {
+                /// Go through all bytes of the STRUCT_DATA_TYPE
+                /** Add shifts for the bytes of the STRUCT_DATA_TYPE */
+                halo_global = halo_shift_item + s;
+                halo_global1 = halo_shift_item1 + s;
+                field_global = field_shift_item + s;
+                field_global1 = field_shift_item1 + s;
+                /// Update the byte
+                tb_haloPtr[halo_global] = tmpCPUFieldPtr[field_global];
+                tb_haloPtr[halo_global1] = tmpCPUFieldPtr[field_global1];
+            }
+        }
     }
 }
 
@@ -263,15 +291,21 @@ void* CPUTestComputationalModel::getCPUHaloPtr(size_t border_type)
     if(nodeType != NODE_TYPE::COMPUTATIONAL_NODE)
         throw std::runtime_error("CPUTestComputationalModel::getCPUHaloPtr: "
                 "This function should not be called by the Server Node");
+    size_t size_of_datatype = scheme->getSizeOfDatatype();
+    size_t nitems = scheme->getNumberOfElements();
     if(border_type == LEFT_BORDER)
-        return (void*)lr_halo;
-    else if(border_type == RIGHT_BORDER)
-        return (void*)(lr_halo + lN_Y);
-    else if(border_type == TOP_BORDER)
-        return (void*)tb_halo;
-    else if(border_type == BOTTOM_BORDER)
-        return (void*)(tb_halo + lN_X);
-    else
+        return lr_halo;
+    else if(border_type == RIGHT_BORDER) {
+        byte* lr_haloPtr = (byte*)lr_halo;
+        byte* r_haloPtr = lr_haloPtr + lN_Y * nitems * size_of_datatype;
+        return (void*)r_haloPtr;
+    } else if(border_type == TOP_BORDER)
+        return tb_halo;
+    else if(border_type == BOTTOM_BORDER) {
+        byte* tb_haloPtr = (byte*)tb_halo;
+        byte* b_haloPtr = tb_haloPtr + lN_X * nitems * size_of_datatype;
+        return (void*)b_haloPtr;
+    } else
         throw std::runtime_error("CPUTestComputationalModel::getCPUHaloPtr: Wrong border_type");
 }
 
@@ -280,15 +314,21 @@ void* CPUTestComputationalModel::getTmpCPUHaloPtr(size_t border_type)
     if(nodeType != NODE_TYPE::COMPUTATIONAL_NODE)
         throw std::runtime_error("CPUTestComputationalModel::getTmpCPUHaloPtr: "
                 "This function should not be called by the Server Node");
+    size_t size_of_datatype = scheme->getSizeOfDatatype();
+    size_t nitems = scheme->getNumberOfElements();
     if(border_type == LEFT_BORDER)
-        return (void*)rcv_lr_halo;
-    else if(border_type == RIGHT_BORDER)
-        return (void*)(rcv_lr_halo + lN_Y);
-    else if(border_type == TOP_BORDER)
-        return (void*)rcv_tb_halo;
-    else if(border_type == BOTTOM_BORDER)
-        return (void*)(rcv_tb_halo + lN_X);
-    else
+        return rcv_lr_halo;
+    else if(border_type == RIGHT_BORDER) {
+        byte* rcv_lr_haloPtr = (byte*)rcv_lr_halo;
+        byte* rcv_r_haloPtr = rcv_lr_haloPtr + lN_Y * nitems * size_of_datatype;
+        return (void*)rcv_r_haloPtr;
+    } else if(border_type == TOP_BORDER)
+        return rcv_tb_halo;
+    else if(border_type == BOTTOM_BORDER) {
+        byte* rcv_tb_haloPtr = (byte*)rcv_tb_halo;
+        byte* rcv_b_haloPtr = rcv_tb_haloPtr + lN_X * nitems * size_of_datatype;
+        return (void*)rcv_b_haloPtr;
+    } else
         throw std::runtime_error("CPUTestComputationalModel::getTmpCPUHaloPtr: Wrong border_type");
 }
 
@@ -297,7 +337,14 @@ void CPUTestComputationalModel::setStopMarker()
     if(nodeType != NODE_TYPE::COMPUTATIONAL_NODE)
         throw std::runtime_error("CPUTestComputationalModel::setStopMarker: "
                 "This function should not be called by the Server Node");
-    tmpCPUField[0].r = -1;
+    size_t size_of_datatype = scheme->getSizeOfDatatype();
+    byte* markerValue = (byte*)scheme->getMarkerValue();
+    byte* tmpCPUFieldPtr = (byte*)tmpCPUField;
+    for(size_t s = 0; s < size_of_datatype; ++s) {
+        /// Go through all bytes of the STRUCT_DATA_TYPE
+        /// Update the byte
+        tmpCPUFieldPtr[s] = markerValue[s];
+    }
 }
 
 bool CPUTestComputationalModel::checkStopMarker()
@@ -305,6 +352,62 @@ bool CPUTestComputationalModel::checkStopMarker()
     if(nodeType != NODE_TYPE::SERVER_NODE)
         throw std::runtime_error("CPUTestComputationalModel::checkStopMarker: "
                 "This function should not be called by a Computational Node");
-    return field[0].r == -1;
+    size_t size_of_datatype = scheme->getSizeOfDatatype();
+    byte* markerValue = (byte*)scheme->getMarkerValue();
+    byte* fieldPtr = (byte*)field;
+    for(size_t s = 0; s < size_of_datatype; ++s) {
+        /// Go through all bytes of the STRUCT_DATA_TYPE
+        /// Update the byte
+        if(fieldPtr[s] != markerValue[s])
+            return false;
+    }
+    return true;
 }
 
+void CPUTestComputationalModel::memcpyField(size_t mpi_node_x, size_t mpi_node_y, TypeMemCpy cpyType)
+{
+    byte* fieldPtr = (byte*)field;
+    byte* tmpCPUFieldPtr = (byte*)tmpCPUField;
+    size_t size_of_datatype = scheme->getSizeOfDatatype();
+    size_t nitems = scheme->getNumberOfElements();
+    size_t global, globalTmp, x0, y0, x1, y1;
+    size_t global_shift, global_shiftTmp;
+    size_t global_shift_item, global_shiftTmp_item;
+    // calculate the shift for the particular subfield
+    x0 = static_cast<size_t>(N_X / MPI_NODES_X * mpi_node_x);
+    y0 = static_cast<size_t>(N_Y / MPI_NODES_Y * mpi_node_y);
+    for(size_t x = 0; x < lN_X; ++x) {
+        /// Go through all x elements of the subfield
+        /** Add the shift to the x-component since the subfield can be located
+         * somewhere inside the global field */
+        x1 = x0 + x;
+        for(size_t y = 0; y < lN_Y; ++y) {
+            /// Go through all y elements of the subfield
+            /** Add the shift to the y-component since the subfield can be located
+             * somewhere inside the global field */
+            y1 = y0 + y;
+            /** Calculate the global shifts for the 'global field' and 'subfield'
+             * using the fact that structure consists of nitems amount of 
+             * elements which are size_of_datatype amount of bytes each. */
+            global_shift = (y1 * N_X + x1) * nitems * size_of_datatype;
+            global_shiftTmp = (y * lN_X + x) * nitems * size_of_datatype;
+            for(size_t i = 0; i < nitems; ++i) {
+                /// Go through all elements of the Cell
+                /** Add shifts for the elements inside the Cell structure */
+                global_shift_item = global_shift + i * size_of_datatype;
+                global_shiftTmp_item = global_shiftTmp + i * size_of_datatype;
+                for(size_t s = 0; s < size_of_datatype; ++s) {
+                    /// Go through all bytes of the STRUCT_DATA_TYPE
+                    /** Add shifts for the bytes of the STRUCT_DATA_TYPE */
+                    global = global_shift_item + s;
+                    globalTmp = global_shiftTmp_item + s;
+                    /// Update the byte
+                    if(cpyType == TmpCPUFieldToField)
+                        fieldPtr[global] = tmpCPUFieldPtr[globalTmp];
+                    else // FieldToTmpCPUField
+                        tmpCPUFieldPtr[globalTmp] = fieldPtr[global];
+                }
+            }
+        }
+    }
+}

@@ -107,7 +107,7 @@ void ComputationalNode::runNode()
         }
         setStopMarker();
         sendUpdatedSubFieldToServer();
-        Log << "Simulation has been successfully finished";
+        MPI_Node::finalBarrierSync();
     } catch(const std::runtime_error& err) {
         Log << _ERROR_ << std::string("(ComputationalNode:runNode): ") + err.what();
         throw;

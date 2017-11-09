@@ -50,10 +50,10 @@ MPI_Node::~MPI_Node()
 {
     if(parserLibHandle != nullptr)
         dlclose(parserLibHandle);
-    if(compModelLibHandle != nullptr)
-        dlclose(compModelLibHandle);
     if(model != nullptr)
         delete model;
+    if(compModelLibHandle != nullptr) // ??????????
+        dlclose(compModelLibHandle);
 }
 
 void MPI_Node::initEnvironment()
@@ -62,7 +62,7 @@ void MPI_Node::initEnvironment()
     loadXMLParserLib();
     loadComputationalModelLib();
     parseConfigFile();
-    model->createMpiStructType();
+    model->createMpiStructType(Log);
 }
 
 void MPI_Node::loadXMLParserLib()
@@ -132,21 +132,26 @@ void MPI_Node::parseConfigFile()
     }
 
     model = (ComputationalModel*)createComputationalModel(compModel.c_str(), gridModel.c_str());
+    Log << "Computational model has been successfully created";
 
     if(checkParsedParameters() == false) {
         throw std::runtime_error("Not all required parameters are read from the configuration file!");
     }
+    
+    model->setAppPath(appPath);
+    model->initScheme(Log);
 
     lN_X = N_X / MPI_NODES_X;
     lN_Y = N_Y / MPI_NODES_Y;
     setLocalMPI_ids(globalMPI_id, localMPI_id_x, localMPI_id_y);
+    Log << "Successfully parsed the configuration file";
 }
 
 bool MPI_Node::checkParsedParameters()
 {
     if(MPI_NODES_X == 0 || MPI_NODES_Y == 0 || CUDA_Y_THREADS == 0 ||
             CUDA_Y_THREADS == 0 || TAU == 0.0 || TOTAL_TIME == 0.0 ||
-        STEP_LENGTH == 0.0 || N_X == 0 || N_Y == 0 || model == nullptr)
+            STEP_LENGTH == 0.0 || N_X == 0 || N_Y == 0 || model == nullptr)
         return false;
     else
         return true;
@@ -170,7 +175,6 @@ void MPI_Node::loadComputationalModelLib()
 
 void MPI_Node::setComputationalModelEnv(ComputationalModel::NODE_TYPE node_type)
 {
-    model->setAppPath(appPath);
     model->setMPI_NODES_X(MPI_NODES_X);
     model->setMPI_NODES_Y(MPI_NODES_Y);
     model->setCUDA_X_THREADS(CUDA_X_THREADS);
@@ -204,4 +208,10 @@ void MPI_Node::setLocalMPI_ids(const int globalId, int& localIdx, int& localIdy)
 size_t MPI_Node::getGlobalMPIid(size_t mpi_id_x, size_t mpi_id_y)
 {
     return mpi_id_y * MPI_NODES_X + mpi_id_x;
+}
+
+void MPI_Node::finalBarrierSync()
+{
+    MPI_Barrier(MPI_COMM_WORLD); 
+    Log << "Simulation has been successfully finished";
 }

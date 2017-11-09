@@ -9,7 +9,7 @@
 #include "FieldObject.hpp"
 #include "shader.h"
 #include <exception>
-#include "../../ComputationalModel/src/cell.h"
+#include "../../ComputationalScheme/src/cell.h"
 
 extern GLuint programID;
 

@@ -10,6 +10,6 @@
 
 void* createComputationalModel(const char* compModel, const char* gridModel)
 {
-    ComputationalModel* model = new CPUTestComputationalModel(compModel, gridModel);
+    CPUTestComputationalModel* model = new CPUTestComputationalModel(compModel, gridModel);
     return (void*) model;
 }

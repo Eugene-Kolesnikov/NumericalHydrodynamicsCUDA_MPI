@@ -59,7 +59,7 @@ void ServerNode::runNode()
         if(!DLV_terminate())
             throw std::runtime_error("Visualization library was not able"
                     " to terminate successfully!");
-        Log << "Simulation has been successfully finished";
+        MPI_Node::finalBarrierSync();
     } catch(const std::runtime_error& err) {
         Log << _ERROR_ << std::string("(ServerNode:runNode): ") + err.what();
         throw;

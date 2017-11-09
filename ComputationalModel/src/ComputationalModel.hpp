@@ -16,6 +16,9 @@
 
 #include <string>
 #include <mpi.h>
+#include "../../ComputationalScheme/src/ComputationalScheme.hpp"
+#include "../../MpiController/src/LoggingSystem/FileLogger.hpp"
+#include <dlfcn.h>
 
 #define LEFT_BORDER (0)
 #define RIGHT_BORDER (1)
@@ -25,8 +28,18 @@
 class ComputationalModel {
 public:
     enum NODE_TYPE {SERVER_NODE, COMPUTATIONAL_NODE};
-    ComputationalModel(const char* compModel, const char* gridModel){}
-    virtual ~ComputationalModel(){}
+    ComputationalModel(const char* comp, const char* grid)
+        : schemeModel(comp), gridModel(grid) {
+        compSchemeLibHandle = nullptr;
+        createScheme = nullptr;
+        scheme = nullptr;
+    }
+    virtual ~ComputationalModel() {
+        if(scheme != nullptr)
+            delete scheme;
+        if(compSchemeLibHandle != nullptr)
+            dlclose(compSchemeLibHandle);
+    }
 
 /// Virtual functions which are unique for each computational model
 public:
@@ -38,7 +51,7 @@ public:
      * of data is assigned to each field cell. It modifies the
      * MPI_CellType.
      */
-    virtual void createMpiStructType() = 0;
+    virtual void createMpiStructType(logging::FileLogger& Log) = 0;
 
     /**
      * @brief The function is called by both types of nodes: ComputationalNode and
@@ -331,6 +344,30 @@ public:
             borders[BOTTOM_BORDER] = 0;
         }
     }
+    
+    /**
+     * @brief 
+     */
+    void initScheme(logging::FileLogger& Log) 
+    {
+        /// Create a path to the lib
+        std::string libpath = appPath + "libComputationalScheme.1.0.0.dylib";
+        /// Open the library
+        compSchemeLibHandle = dlopen(libpath.c_str(), RTLD_LOCAL | RTLD_LAZY);
+        if (compSchemeLibHandle == nullptr)
+            throw std::runtime_error(dlerror());
+        else
+            Log << "Opened the computational scheme dynamic library";
+        /// Load the function
+        createScheme = (void* (*)(const char*,const char*))dlsym(compSchemeLibHandle, "createScheme");
+        if(createScheme == nullptr) {
+            throw std::runtime_error("Can't load the function from the Computational scheme library!");
+        }
+        
+        /// Initialize the scheme with the loaded function
+        scheme = (ComputationalScheme*)createScheme(schemeModel.c_str(), gridModel.c_str());
+        Log << "Computational scheme has been successfully created";
+    }
 
 public:
     MPI_Datatype MPI_CellType;
@@ -348,6 +385,13 @@ protected:
     size_t lN_X;
     size_t lN_Y;
     size_t borders[4];
+    std::string schemeModel;
+    std::string gridModel;
+    
+protected:
+    void* compSchemeLibHandle;
+    void* (*createScheme)(const char* scheme, const char* grid);
+    ComputationalScheme* scheme;
 };
 
 #endif /* COMPUTATIONALMODEL_HPP */

@@ -48,7 +48,7 @@ void MainWindow::create(std::string title)
     glfwWindowHint(GLFW_SAMPLES, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     /// set up the screen resolution
@@ -73,6 +73,7 @@ void MainWindow::create(std::string title)
      * Fragment Shader and combines them with the colors in the color buffers 
      * that these outputs map to)
     */
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 }
 
 /** 
@@ -82,7 +83,7 @@ void MainWindow::create(std::string title)
 */
 void MainWindow::error_callback(int error, const char* description)
 {
-    fprintf(stderr, "Error: %s\n", description);
+    throw std::runtime_error(description);
 }
 
 /** 

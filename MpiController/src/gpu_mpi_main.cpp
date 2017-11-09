@@ -12,6 +12,8 @@
 #include <string>
 #include <exception>
 
+#include <iostream>
+
 int main(int argc, char** argv) 
 {
     if(argc != 2)
@@ -51,7 +53,8 @@ int main(int argc, char** argv)
 
         /// Start the application
         node->runNode();
-    } catch(const std::runtime_error& err) {
+    } catch(const std::exception& err) {
+        std::cout << err.what() << std::endl;
         delete node;
         MPI_Finalize();
         throw;

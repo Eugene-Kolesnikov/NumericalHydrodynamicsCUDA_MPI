@@ -37,6 +37,7 @@ protected:
     void setLocalMPI_ids(const size_t globalId, size_t& localIdx, size_t& localIdy);
     void setLocalMPI_ids(const int globalId, int& localIdx, int& localIdy);
     size_t getGlobalMPIid(size_t mpi_id_x, size_t mpi_id_y);
+    void finalBarrierSync();
     
 protected:
     void* parserLibHandle;
