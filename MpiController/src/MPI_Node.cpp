@@ -212,6 +212,13 @@ size_t MPI_Node::getGlobalMPIid(size_t mpi_id_x, size_t mpi_id_y)
 
 void MPI_Node::finalBarrierSync()
 {
-    MPI_Barrier(MPI_COMM_WORLD); 
+    int mpi_err_status, resultlen;
+    char err_buffer[MPI_MAX_ERROR_STRING];
+    mpi_err_status = MPI_Barrier(MPI_COMM_WORLD);
+    // Check if the MPI barrier synchronization was successful
+    if(mpi_err_status != MPI_SUCCESS) {
+        MPI_Error_string(mpi_err_status, err_buffer, &resultlen);
+        throw std::runtime_error(err_buffer);
+    }
     Log << "Simulation has been successfully finished";
 }

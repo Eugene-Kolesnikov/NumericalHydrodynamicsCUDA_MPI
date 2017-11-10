@@ -43,7 +43,7 @@ void TestScheme::initField(void* field, size_t N_X, size_t N_Y)
 
 void* TestScheme::initHalos(size_t N)
 {
-    return (void*)(new Cell[2*N]);
+    return (void*)(new Cell[N]);
 }
 
 void TestScheme::performSimulationStep(void* tmpCPUField, void* lr_halo, 

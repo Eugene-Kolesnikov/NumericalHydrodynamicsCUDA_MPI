@@ -34,24 +34,30 @@ CPUTestComputationalModel::CPUTestComputationalModel(const char* compModel, cons
     tmpCPUField = nullptr;
     lr_halo = nullptr;
     tb_halo = nullptr;
+    lrtb_halo = nullptr;
     rcv_lr_halo = nullptr;
     rcv_tb_halo = nullptr;
+    rcv_lrtb_halo = nullptr;
 }
 
 CPUTestComputationalModel::~CPUTestComputationalModel() 
 {
     if(field != nullptr)
         delete[] (byte*)field;
+    if(tmpCPUField != nullptr)
+        delete[] (byte*)tmpCPUField;
     if(lr_halo != nullptr)
         delete[] (byte*)lr_halo;
     if(tb_halo != nullptr)
         delete[] (byte*)tb_halo;
+    if(lrtb_halo != nullptr)
+        delete[] (byte*)lrtb_halo;
     if(rcv_lr_halo != nullptr)
         delete[] (byte*)rcv_lr_halo;
     if(rcv_tb_halo != nullptr)
         delete[] (byte*)rcv_tb_halo;
-    if(tmpCPUField != nullptr)
-        delete[] (byte*)tmpCPUField;
+    if(rcv_lrtb_halo != nullptr)
+        delete[] (byte*)rcv_lrtb_halo;
 }
 
 void CPUTestComputationalModel::createMpiStructType(logging::FileLogger& Log) 
@@ -68,7 +74,8 @@ void CPUTestComputationalModel::createMpiStructType(logging::FileLogger& Log)
     } else if(data_typeid == typeid(long double)) {
         MPI_DATA_TYPE = MPI_LONG_DOUBLE;
     } else {
-        throw std::runtime_error("CPUTestComputationalModel::createMpiStructType: Wrong STRUCT_DATA_TYPE!");
+        throw std::runtime_error("CPUTestComputationalModel::createMpiStructType: "
+                "Wrong STRUCT_DATA_TYPE!");
     }
     size_t nitems = scheme->getNumberOfElements();
     int* blocklengths = new int[nitems];
@@ -79,7 +86,8 @@ void CPUTestComputationalModel::createMpiStructType(logging::FileLogger& Log)
         types[i] = MPI_DATA_TYPE;
         offsets[i] = i * size_of_datatype;
     }
-    mpi_err_status = MPI_Type_create_struct(nitems, blocklengths, offsets, types, &MPI_CellType);
+    mpi_err_status = MPI_Type_create_struct(nitems, blocklengths, offsets, 
+            types, &MPI_CellType);
     delete[] blocklengths;
     delete[] types;
     delete[] offsets;
@@ -99,10 +107,12 @@ void CPUTestComputationalModel::initializeField()
 {
     tmpCPUField = scheme->createField(lN_X, lN_Y);
     if(nodeType == NODE_TYPE::COMPUTATIONAL_NODE) {
-        lr_halo = scheme->initHalos(lN_Y);
-        tb_halo = scheme->initHalos(lN_X);
-        rcv_lr_halo = scheme->initHalos(lN_Y);
-        rcv_tb_halo = scheme->initHalos(lN_X);
+        lr_halo = scheme->initHalos(2*lN_Y);
+        tb_halo = scheme->initHalos(2*lN_X);
+        lrtb_halo = scheme->initHalos(4);
+        rcv_lr_halo = scheme->initHalos(2*lN_Y);
+        rcv_tb_halo = scheme->initHalos(2*lN_X);
+        rcv_lrtb_halo = scheme->initHalos(4);
     } else { // NODE_TYPE::SERVER_NODE
         field = scheme->createField(N_X, N_Y);
         scheme->initField(field, N_X, N_Y);
@@ -214,7 +224,6 @@ void CPUTestComputationalModel::prepareHaloElements()
     if(nodeType != NODE_TYPE::COMPUTATIONAL_NODE)
         throw std::runtime_error("CPUTestComputationalModel::prepareHaloElements: "
                 "This function should not be called by the Server Node");
-    // Later this function will be a simple data transfer from GPU
     size_t halo_shift, halo_shift_item, halo_global;
     size_t halo_shift1, halo_shift_item1, halo_global1;
     size_t field_shift, field_shift_item, field_global;
@@ -284,6 +293,28 @@ void CPUTestComputationalModel::prepareHaloElements()
             }
         }
     }
+    // update lrtb
+    byte* lrtb_haloPtr = (byte*)lrtb_halo;
+    size_t global_field_shifts[4] = 
+        {0, lN_X - 1, (lN_Y-1) * lN_X, lN_Y * lN_X - 1};
+    for(size_t border = 0; border < 4; ++border) {
+        halo_shift = border * nitems * size_of_datatype;
+        field_shift = global_field_shifts[border] * nitems * size_of_datatype;
+        for(size_t i = 0; i < nitems; ++i) {
+            /// Go through all elements of the Cell
+            /** Add shifts for the elements inside the Cell structure */
+            halo_shift_item = halo_shift + i * size_of_datatype;
+            field_shift_item = field_shift + i * size_of_datatype;
+            for(size_t s = 0; s < size_of_datatype; ++s) {
+                /// Go through all bytes of the STRUCT_DATA_TYPE
+                /** Add shifts for the bytes of the STRUCT_DATA_TYPE */
+                halo_global = halo_shift_item + s;
+                field_global = field_shift_item + s;
+                /// Update the byte
+                lrtb_haloPtr[halo_global] = tmpCPUFieldPtr[field_global];
+            }
+        }
+    }
 }
 
 void* CPUTestComputationalModel::getCPUHaloPtr(size_t border_type) 
@@ -306,7 +337,24 @@ void* CPUTestComputationalModel::getCPUHaloPtr(size_t border_type)
         byte* b_haloPtr = tb_haloPtr + lN_X * nitems * size_of_datatype;
         return (void*)b_haloPtr;
     } else
-        throw std::runtime_error("CPUTestComputationalModel::getCPUHaloPtr: Wrong border_type");
+        throw std::runtime_error("CPUTestComputationalModel::getCPUHaloPtr: "
+                "Wrong border_type");
+}
+
+void* CPUTestComputationalModel::getCPUDiagHaloPtr(size_t border_type)
+{
+    if(nodeType != NODE_TYPE::COMPUTATIONAL_NODE)
+        throw std::runtime_error("CPUTestComputationalModel::getCPUDiagHaloPtr: "
+                "This function should not be called by the Server Node");
+    size_t size_of_datatype = scheme->getSizeOfDatatype();
+    size_t nitems = scheme->getNumberOfElements();
+    if(border_type != LEFT_TOP_BORDER && border_type != RIGHT_TOP_BORDER && 
+            border_type != LEFT_BOTTOM_BORDER && border_type != RIGHT_BOTTOM_BORDER)
+        throw std::runtime_error("CPUTestComputationalModel::getCPUDiagHaloPtr: "
+                "Wrong border_type");
+    byte* lrtb_haloPtr = (byte*)lrtb_halo;
+    byte* haloPtr = lrtb_haloPtr + border_type * nitems * size_of_datatype;
+    return (void*)haloPtr;
 }
 
 void* CPUTestComputationalModel::getTmpCPUHaloPtr(size_t border_type) 
@@ -329,7 +377,24 @@ void* CPUTestComputationalModel::getTmpCPUHaloPtr(size_t border_type)
         byte* rcv_b_haloPtr = rcv_tb_haloPtr + lN_X * nitems * size_of_datatype;
         return (void*)rcv_b_haloPtr;
     } else
-        throw std::runtime_error("CPUTestComputationalModel::getTmpCPUHaloPtr: Wrong border_type");
+        throw std::runtime_error("CPUTestComputationalModel::getTmpCPUHaloPtr: "
+                "Wrong border_type");
+}
+
+void* CPUTestComputationalModel::getTmpCPUDiagHaloPtr(size_t border_type)
+{
+    if(nodeType != NODE_TYPE::COMPUTATIONAL_NODE)
+        throw std::runtime_error("CPUTestComputationalModel::getTmpCPUDiagHaloPtr: "
+                "This function should not be called by the Server Node");
+    size_t size_of_datatype = scheme->getSizeOfDatatype();
+    size_t nitems = scheme->getNumberOfElements();
+    if(border_type != LEFT_TOP_BORDER && border_type != RIGHT_TOP_BORDER && 
+            border_type != LEFT_BOTTOM_BORDER && border_type != RIGHT_BOTTOM_BORDER)
+        throw std::runtime_error("CPUTestComputationalModel::getTmpCPUDiagHaloPtr: "
+                "Wrong border_type");
+    byte* rcv_lrtb_haloPtr = (byte*)rcv_lrtb_halo;
+    byte* rcv_haloPtr = rcv_lrtb_haloPtr + border_type * nitems * size_of_datatype;
+    return (void*)rcv_haloPtr;
 }
 
 void CPUTestComputationalModel::setStopMarker() 
@@ -364,7 +429,8 @@ bool CPUTestComputationalModel::checkStopMarker()
     return true;
 }
 
-void CPUTestComputationalModel::memcpyField(size_t mpi_node_x, size_t mpi_node_y, TypeMemCpy cpyType)
+void CPUTestComputationalModel::memcpyField(size_t mpi_node_x, size_t mpi_node_y, 
+        TypeMemCpy cpyType)
 {
     byte* fieldPtr = (byte*)field;
     byte* tmpCPUFieldPtr = (byte*)tmpCPUField;

@@ -25,6 +25,11 @@
 #define TOP_BORDER (2)
 #define BOTTOM_BORDER (3)
 
+#define LEFT_TOP_BORDER (0)
+#define RIGHT_TOP_BORDER (1)
+#define LEFT_BOTTOM_BORDER (2)
+#define RIGHT_BOTTOM_BORDER (3)
+
 class ComputationalModel {
 public:
     enum NODE_TYPE {SERVER_NODE, COMPUTATIONAL_NODE};
@@ -174,9 +179,25 @@ public:
      * will be used later for transferring the halo elements which are contained
      * in this array to another ComputationalNode object.
      * @param border_type -- required border: left, right, top, bottom.
-     * @return Pointer to the field located in the CPU memory casted to (void*).
+     * @return Pointer to the array of halo points located in the CPU memory
+     * casted to (void*).
      */
     virtual void* getCPUHaloPtr(size_t border_type) = 0;
+    
+    /**
+     * @brief The function is called by a ComputationalNode object to obtain a pointer
+     * to an appropriate element of diagonal halos: left-top, right-top, left-bottom,
+     * right-bottom for one of the neighboring ComputationalNode objects. The
+     * value of the array referenced by the pointer should be updated (correct 
+     * values transferred from the GPU memory) prior to calling this function. 
+     * This pointer will be used later for transferring the diagonal halo element
+     * which is contained in this array to another ComputationalNode object.
+     * @param border_type -- required border: left-top, right-top, left-bottom,
+     * right-bottom.
+     * @return Pointer to the array of diagonal halo points located in the 
+     * CPU memory casted to (void*).
+     */
+    virtual void* getCPUDiagHaloPtr(size_t border_type) = 0;
 
     /**
      * @brief The function is called by a ComputationalNode object to obtain a
@@ -184,9 +205,22 @@ public:
      * point during the MPI transfer of halo elements between the current
      * ComputationalNode object and another one.
      * @param border_type -- required border: left, right, top, bottom.
-     * @return Pointer to the field located in the CPU memory casted to (void*).
+     * @return Pointer to the temporary array of halo points located in the CPU
+     * memory casted to (void*).
      */
     virtual void* getTmpCPUHaloPtr(size_t border_type) = 0;
+    
+    /**
+     * @brief The function is called by a ComputationalNode object to obtain a
+     * temporary pointer to a CPU memory which is used later as a destination
+     * point during the MPI transfer of diagonal halo element between the current
+     * ComputationalNode object and another one.
+     * @param border_type -- required border: left-top, right-top, left-bottom,
+     * right-bottom.
+     * @return Pointer to the temporary array of diagonal halo points located in
+     * the CPU memory casted to (void*).
+     */
+    virtual void* getTmpCPUDiagHaloPtr(size_t border_type) = 0;
 
     /**
      * @brief The function is called only by the first ComputationalNode to set

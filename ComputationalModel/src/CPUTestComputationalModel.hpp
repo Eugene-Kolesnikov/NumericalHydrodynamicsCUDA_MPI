@@ -35,7 +35,9 @@ public:
     virtual void updateHaloBorderElements();
     virtual void prepareHaloElements();
     virtual void* getCPUHaloPtr(size_t border_type);
+    virtual void* getCPUDiagHaloPtr(size_t border_type);
     virtual void* getTmpCPUHaloPtr(size_t border_type);
+    virtual void* getTmpCPUDiagHaloPtr(size_t border_type);
     virtual void setStopMarker();
     virtual bool checkStopMarker();
     
@@ -47,8 +49,10 @@ protected:
     void* tmpCPUField;
     void* lr_halo;
     void* tb_halo;
+    void* lrtb_halo;
     void* rcv_lr_halo;
     void* rcv_tb_halo;
+    void* rcv_lrtb_halo;
 };
 
 #endif /* CPUTESTCOMPUTATIONALMODEL_H */

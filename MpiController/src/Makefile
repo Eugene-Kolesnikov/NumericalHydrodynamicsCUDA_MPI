@@ -19,7 +19,7 @@ all: $(OBJECTS)
 	$(CXX) $(LIBS_PATH) $(LIBS) -o ../build/simulation_app $(addprefix ../build/,$(notdir $(OBJECTS)))
 
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) $(INCLUDE_PATH) $< -o ../build/$(notdir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDE_PATH) $< -o $(addprefix ../build/,$(notdir $@))
 
 clean:
 	rm ../build/*.o

@@ -64,6 +64,28 @@ void MainWindow::readPrevConfig()
 void MainWindow::startSimulation()
 {
     ui->startbtn->setEnabled(false);
+    if((int)ui->n_x->text().toDouble() % (int)ui->mpi_nodes_x->text().toDouble()) {
+        QMessageBox::question(this, "Error", "MPI_NODES_X", QMessageBox::Yes);
+        ui->startbtn->setEnabled(true);
+        return;
+    }
+    if((int)ui->n_y->text().toDouble() % (int)ui->mpi_nodes_y->text().toDouble()) {
+        QMessageBox::question(this, "Error", "MPI_NODES_Y", QMessageBox::Yes);
+        ui->startbtn->setEnabled(true);
+        return;
+    }
+    int cuda_x = ui->n_x->text().toDouble() / ui->mpi_nodes_x->text().toDouble();
+    int cuda_y = ui->n_y->text().toDouble() / ui->mpi_nodes_y->text().toDouble();
+    if(cuda_x % (int)ui->cuda_x_threads->text().toDouble()) {
+        QMessageBox::question(this, "Error", "CUDA_X_THREADS", QMessageBox::Yes);
+        ui->startbtn->setEnabled(true);
+        return;
+    }
+    if(cuda_y % (int)ui->cuda_y_threads->text().toDouble()) {
+        QMessageBox::question(this, "Error", "CUDA_Y_THREADS", QMessageBox::Yes);
+        ui->startbtn->setEnabled(true);
+        return;
+    }
     using namespace std;
     list<pair<string,double>> params;
     params.push_back(make_pair<string,double>("MPI_NODES_X",ui->mpi_nodes_x->text().toDouble()));
@@ -93,5 +115,5 @@ void MainWindow::startSimulation()
     process.start(system_call.c_str());
     process.waitForFinished();
     process.close();
-    emit close();
+    ui->startbtn->setEnabled(true);
 }

@@ -4,10 +4,10 @@
     <df root="." name="0">
       <in>CPUTestComputationalModel.cpp</in>
       <in>CPUTestComputationalModel.h</in>
+      <in>CPUTestComputationalModel.hpp</in>
       <in>ComputationalModel.hpp</in>
       <in>GPUComputationalModel.cpp</in>
       <in>GPUComputationalModel.hpp</in>
-      <in>cell.h</in>
       <in>computationalModel_interface.cpp</in>
       <in>computationalModel_interface.h</in>
     </df>

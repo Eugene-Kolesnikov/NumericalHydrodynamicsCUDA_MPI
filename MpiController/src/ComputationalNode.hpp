@@ -33,6 +33,7 @@ protected:
     void sendUpdatedSubFieldToServer();
     void shareHaloElements();
     void sndRcvHaloElements(int snd_id, int rvc_id, int snd_border, int rcv_border);
+    void sndRcvDiagHaloElements(int snd_id, int rcv_id, int snd_border, int rcv_border);
     void setStopMarker();
     
 protected:

@@ -130,13 +130,20 @@ void ServerNode::sendInitFieldToCompNodes()
     }
     Log << "Subfields has been successfully sent to all computational nodes";
     // make sure that every ComputationalNode received its part of data
-    MPI_Barrier(MPI_COMM_WORLD); 
+    mpi_err_status = MPI_Barrier(MPI_COMM_WORLD);
+    // Check if the MPI barrier synchronization was successful
+    if(mpi_err_status != MPI_SUCCESS) {
+        MPI_Error_string(mpi_err_status, err_buffer, &resultlen);
+        throw std::runtime_error(err_buffer);
+    }
     Log << "Barrier synchronization has been successfully performed.";
 }
 
 void ServerNode::loadUpdatedSubfields()
 {
     MPI_Status status;
+    int mpi_err_status, resultlen;
+    char err_buffer[MPI_MAX_ERROR_STRING];
     size_t totalAmountCellsToTransfer = lN_X * lN_Y;
     // The temporary storage doesn't change, so the pointer must be
     // obtained only once.
@@ -171,6 +178,11 @@ void ServerNode::loadUpdatedSubfields()
     }
     Log << "Data has been successfully received from all computational nodes";
     // make sure that every ComputationalNode sent their subfields
-    MPI_Barrier(MPI_COMM_WORLD);
+    mpi_err_status = MPI_Barrier(MPI_COMM_WORLD);
+    // Check if the MPI barrier synchronization was successful
+    if(mpi_err_status != MPI_SUCCESS) {
+        MPI_Error_string(mpi_err_status, err_buffer, &resultlen);
+        throw std::runtime_error(err_buffer);
+    }
     Log << "Barrier synchronization has been successfully performed.";
 }

@@ -218,6 +218,36 @@ void ComputationalNode::shareHaloElements()
     // Sending bottom halo elements to the bottom neighbor and at the same time,
     // receiving top halo elements from the top neighbor
     sndRcvHaloElements(bottom_neighbor_id, top_neighbor_id, BOTTOM_BORDER, TOP_BORDER);
+    
+    // Sending and receiving diagonal halo elements
+    int left_top_neighbor_id = 
+        (localMPI_id_x == 0 || localMPI_id_y == 0) ? MPI_PROC_NULL : 
+            getGlobalMPIid(localMPI_id_x - 1, localMPI_id_y - 1);
+    int right_top_neighbor_id = 
+        (localMPI_id_x == (MPI_NODES_X - 1) || localMPI_id_y == 0) ? MPI_PROC_NULL : 
+            getGlobalMPIid(localMPI_id_x + 1, localMPI_id_y - 1);
+    int left_bottom_neighbor_id = 
+        (localMPI_id_x == 0 || localMPI_id_y == (MPI_NODES_Y - 1)) ? MPI_PROC_NULL : 
+            getGlobalMPIid(localMPI_id_x - 1, localMPI_id_y + 1);
+    int right_bottom_neighbor_id = 
+        (localMPI_id_x == (MPI_NODES_X - 1) || localMPI_id_y == (MPI_NODES_Y - 1)) ? MPI_PROC_NULL : 
+            getGlobalMPIid(localMPI_id_x + 1, localMPI_id_y + 1);
+    // Sending left-top halo element to the left-top neighbor and at the same time,
+    // receiving right-bottom halo element from the right-bottom neighbor
+    sndRcvDiagHaloElements(left_top_neighbor_id, right_bottom_neighbor_id, 
+            LEFT_TOP_BORDER, RIGHT_BOTTOM_BORDER);
+    // Sending right-bottom halo element to the right-bottom neighbor and at the same time,
+    // receiving left-top halo element from the left-top neighbor
+    sndRcvDiagHaloElements(right_bottom_neighbor_id, left_top_neighbor_id, 
+            RIGHT_BOTTOM_BORDER, LEFT_TOP_BORDER);
+    // Sending right-top halo element to the right-top neighbor and at the same time,
+    // receiving left-bottom halo element from the left-bottom neighbor
+    sndRcvDiagHaloElements(right_top_neighbor_id, left_bottom_neighbor_id, 
+            RIGHT_TOP_BORDER, LEFT_BOTTOM_BORDER);
+    // Sending left-bottom halo element to the left-bottom neighbor and at the same time,
+    // receiving right-top halo element from the right-top neighbor
+    sndRcvDiagHaloElements(left_bottom_neighbor_id, right_top_neighbor_id, 
+            LEFT_BOTTOM_BORDER, RIGHT_TOP_BORDER);
 }
 
 void ComputationalNode::sndRcvHaloElements(int snd_id, int rcv_id, int snd_border, int rcv_border)
@@ -235,11 +265,11 @@ void ComputationalNode::sndRcvHaloElements(int snd_id, int rcv_id, int snd_borde
     setLocalMPI_ids(snd_id, sndLocalIdx, sndLocalIdy);
     setLocalMPI_ids(rcv_id, rcvLocalIdx, rcvLocalIdy);
     Log << "Trying to send " + std::to_string(AmountCellsToTransfer) +
-         " amount of field cells to node (" + std::to_string(sndLocalIdx) +
-         "," + std::to_string(sndLocalIdy) + " | global: " + 
+         " amount of field cells to node (" + std::to_string((int)sndLocalIdx) +
+         "," + std::to_string((int)sndLocalIdy) + " | global: " + 
          std::to_string(snd_id) + ") and to receive " + 
          std::to_string(AmountCellsToTransfer) + " amount of field cells from node (" + 
-         std::to_string(rcvLocalIdx) + "," + std::to_string(rcvLocalIdy) + 
+         std::to_string((int)rcvLocalIdx) + "," + std::to_string((int)rcvLocalIdy) + 
          " | global: " + std::to_string(rcv_id) + ").";
     // Obtain a pointer to the array with halo points for the neighboring 
     // ComputationalNode which were previously loaded from the GPU memory.
@@ -259,12 +289,64 @@ void ComputationalNode::sndRcvHaloElements(int snd_id, int rcv_id, int snd_borde
         throw std::runtime_error(err_buffer);
     }
     // After receiving the message, check the status to determine
-    // how many numbers were actually received
+    // how many cells were actually received
     int number_amount;
     MPI_Get_count(&status, model->MPI_CellType, &number_amount);
     if(number_amount != AmountCellsToTransfer) {
         Log << _WARNING_ << ("Received " + std::to_string(number_amount) + 
                 " amount of field cells instead of " + std::to_string(AmountCellsToTransfer));
+    }
+    Log << "Data has been successfully sent and received.";
+    // Make sure that every ComputationalNode sent and received halo elements
+    mpi_err_status = MPI_Barrier(MPI_COMM_COMPUTATIONAL);
+    // Check if the MPI barrier synchronization was successful
+    if(mpi_err_status != MPI_SUCCESS) {
+        MPI_Error_string(mpi_err_status, err_buffer, &resultlen);
+        throw std::runtime_error(err_buffer);
+    }
+    Log << "Barrier synchronization has been successfully performed";
+}
+
+void ComputationalNode::sndRcvDiagHaloElements(int snd_id, int rcv_id, int snd_border, int rcv_border)
+{
+    MPI_Status status;
+    int mpi_err_status, resultlen;
+    char err_buffer[MPI_MAX_ERROR_STRING];
+    size_t sndLocalIdx, sndLocalIdy, rcvLocalIdx, rcvLocalIdy;
+    size_t AmountCellsToTransfer = 1;
+    setLocalMPI_ids(snd_id, sndLocalIdx, sndLocalIdy);
+    setLocalMPI_ids(rcv_id, rcvLocalIdx, rcvLocalIdy);
+    Log << "Trying to send " + std::to_string(AmountCellsToTransfer) +
+         " amount of diagonal field cells to node (" + std::to_string((int)sndLocalIdx) +
+         "," + std::to_string((int)sndLocalIdy) + " | global: " + 
+         std::to_string(snd_id) + ") and to receive " + 
+         std::to_string(AmountCellsToTransfer) + " amount of diagonal field cells from node (" + 
+         std::to_string((int)rcvLocalIdx) + "," + std::to_string((int)rcvLocalIdy) + 
+         " | global: " + std::to_string(rcv_id) + ").";
+    // Obtain a pointer to the array of diagonal halo points for the neighboring 
+    // ComputationalNode which were previously loaded from the GPU memory.
+    void* sndDiagHaloPtr = model->getCPUDiagHaloPtr(snd_border);
+    // Obtain a pointer to the temporary array of diagonal halo points for the current
+    // ComputationalNode. After data transferring they will replace diagonal halo points
+    // which are stored in the GPU memory.
+    void* rcvDiagHaloPtr = model->getTmpCPUDiagHaloPtr(rcv_border);
+    // Sending a diagonal halo element to the snd_id ComputationalNode and at the same time,
+    // receiving a diagonal halo element from the rcv_id ComputationalNode.
+    mpi_err_status = MPI_Sendrecv(sndDiagHaloPtr, AmountCellsToTransfer, model->MPI_CellType, 
+            snd_id, globalMPI_id, rcvDiagHaloPtr, AmountCellsToTransfer, model->MPI_CellType, 
+            rcv_id, rcv_id, MPI_COMM_WORLD, &status);
+    // Check if the MPI transfer was successful
+    if(mpi_err_status != MPI_SUCCESS) {
+        MPI_Error_string(mpi_err_status, err_buffer, &resultlen);
+        throw std::runtime_error(err_buffer);
+    }
+    // After receiving the message, check the status to determine
+    // how many cells were actually received
+    int number_amount;
+    MPI_Get_count(&status, model->MPI_CellType, &number_amount);
+    if(number_amount != AmountCellsToTransfer) {
+        Log << _WARNING_ << ("Received " + std::to_string(number_amount) + 
+                " amount of diagonal field cells instead of " + std::to_string(AmountCellsToTransfer));
     }
     Log << "Data has been successfully sent and received.";
     // Make sure that every ComputationalNode sent and received halo elements
