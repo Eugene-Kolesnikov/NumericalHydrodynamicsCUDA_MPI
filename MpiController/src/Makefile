@@ -12,7 +12,8 @@ OBJECTS = gpu_mpi_main.o \
 	MPI_Node.o \
 	ServerNode.o \
 	ComputationalNode.o \
-	LoggingSystem/FileLogger.o
+	LoggingSystem/FileLogger.o \
+	../../ComputationalModel/src/ComputationalModel.o
 	
 
 all: $(OBJECTS)

@@ -11,14 +11,52 @@
  * Created on November 1, 2017, 2:20 PM
  */
 
-#include "LatticeBoltzmannModel.hpp"
+#include "GPUComputationalModel.hpp"
 
-LatticeBoltzmannModel::LatticeBoltzmannModel() {
+GPUComputationalModel::GPUComputationalModel() 
+{
 }
 
-LatticeBoltzmannModel::LatticeBoltzmannModel(const LatticeBoltzmannModel& orig) {
+GPUComputationalModel::~GPUComputationalModel() 
+{
 }
 
-LatticeBoltzmannModel::~LatticeBoltzmannModel() {
+void GPUComputationalModel::initializeField()
+{
+    
 }
 
+void GPUComputationalModel::updateGlobalField(size_t mpi_node_x, size_t mpi_node_y)
+{
+    
+}
+
+void GPUComputationalModel::prepareSubfield(size_t mpi_node_x = 0, size_t mpi_node_y = 0)
+{
+    
+}
+
+void GPUComputationalModel::loadSubFieldToGPU()
+{
+    
+}
+
+void GPUComputationalModel::gpuSync()
+{
+    
+}
+
+void GPUComputationalModel::performSimulationStep()
+{
+    
+}
+
+void GPUComputationalModel::updateHaloBorderElements()
+{
+    
+}
+
+void GPUComputationalModel::prepareHaloElements()
+{
+    
+}

@@ -62,7 +62,7 @@ void MPI_Node::initEnvironment()
     loadXMLParserLib();
     loadComputationalModelLib();
     parseConfigFile();
-    model->createMpiStructType(Log);
+    model->createMpiStructType();
 }
 
 void MPI_Node::loadXMLParserLib()
@@ -139,7 +139,8 @@ void MPI_Node::parseConfigFile()
     }
     
     model->setAppPath(appPath);
-    model->initScheme(Log);
+    model->setLog(&Log);
+    model->initScheme();
 
     lN_X = N_X / MPI_NODES_X;
     lN_Y = N_Y / MPI_NODES_Y;

@@ -6,10 +6,11 @@
 
 #include "computationalModel_interface.h"
 #include "ComputationalModel.hpp"
-#include "CPUTestComputationalModel.hpp"
+#include "CPUComputationalModel.hpp"
+//#include "GPUComputationalModel.hpp"
 
 void* createComputationalModel(const char* compModel, const char* gridModel)
 {
-    CPUTestComputationalModel* model = new CPUTestComputationalModel(compModel, gridModel);
+    CPUComputationalModel* model = new CPUComputationalModel(compModel, gridModel);
     return (void*) model;
 }

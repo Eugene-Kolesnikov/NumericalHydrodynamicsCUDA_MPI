@@ -31,59 +31,34 @@
 #define RIGHT_BOTTOM_BORDER (3)
 
 class ComputationalModel {
+protected:
+    /**
+    * byte type is actually a char type. The reason to use it is that all other 
+    * types like float, double, long double can be represented as a sequence of 
+    * chars, which means that size (memory) of each type is a multiple of the char size.
+    * It is useful to use byte since we don't know which one of the types (float, double,
+    * long double) will be used in the program.
+    */
+   typedef char byte;
+   
 public:
     enum NODE_TYPE {SERVER_NODE, COMPUTATIONAL_NODE};
-    ComputationalModel(const char* comp, const char* grid)
-        : schemeModel(comp), gridModel(grid) {
-        compSchemeLibHandle = nullptr;
-        createScheme = nullptr;
-        scheme = nullptr;
-    }
-    virtual ~ComputationalModel() {
-        if(scheme != nullptr)
-            delete scheme;
-        if(compSchemeLibHandle != nullptr)
-            dlclose(compSchemeLibHandle);
-    }
+    ComputationalModel(const char* comp, const char* grid);
+    virtual ~ComputationalModel();
 
 /// Virtual functions which are unique for each computational model
 public:
     /**
-     * @brief Function which is called by both types of nodes: ComputationalNode and
-     * ServerNode. This is a special function which is necessary for a correct
-     * MPI transferring system, since the type of field cells is a complex structure.
-     * It creates a special environment variable which determines how many bytes
-     * of data is assigned to each field cell. It modifies the
-     * MPI_CellType.
-     */
-    virtual void createMpiStructType(logging::FileLogger& Log) = 0;
-
-    /**
      * @brief The function is called by both types of nodes: ComputationalNode and
      * ServerNode when all necessary configuration variables are set. It allocates
      * memory on the CPU and GPU for all required computations.
-     *
-     * \TODO: write what fields it allocates and why
+     * For CPUComputationalModel only the following fields must be initialized:
+     * field, tmpCPUField, lr_halo, tb_halo, lrtb_halo, rcv_lr_halo, rcv_tb_halo, 
+     * rcv_lrtb_halo.
+     * For GPUComputationalModel, besides the listed variables, also GPU specific
+     * fields must be initialized.
      */
     virtual void initializeField() = 0;
-
-    /**
-     * @brief Function which is called by both types of nodes: ComputationalNode and
-     * ServerNode. It returns a pointer to an array located in the CPU memory
-     * which is used to store subfield data of each ComputationalNode
-     * (size: lN_X*lN_Y). This temporary storage is used by a ComputationalNode to
-     * 1) obtain the initial subfield from the ServerNode which initializes the
-     * whole field;
-     * 2) to load the subfield from the GPU memory and later send it to the
-     * ServerNode for further visualization.
-     * and by the ServerNode to:
-     * 1) collect a subfield from a ComputationalNode object to
-     * update the global field for further visualization;
-     * 2) to store a subfield of the global field, which must be sent to
-     * a particular ComputationalNode.
-     * @return Pointer to an array located in the CPU memory casted to (void*).
-     */
-    virtual void* getTmpCPUFieldStoragePtr() = 0;
 
     /**
      * @brief This function is called by the ServerNode to update the global field
@@ -131,14 +106,6 @@ public:
     virtual void loadSubFieldToGPU() = 0;
 
     /**
-     * @brief The function which is called only by the ServerNode for the visualization,
-     * since a pointer to the field is necessary for the visualization library (all
-     * field elements are used in the visualization process).
-     * @return Pointer to the field located in the CPU memory casted to (void*).
-     */
-    virtual void* getField() = 0;
-
-    /**
      * @brief This function is used to synchronize all GPU jobs that are in process
      * in the current moment, in particular, the purpose of this function is to
      * wait until all computations and CPU<->GPU memory transfers are finished.
@@ -170,6 +137,71 @@ public:
      */
     virtual void prepareHaloElements() = 0;
 
+/// Getters and setters for configuration parameters
+public:
+    void setLog(logging::FileLogger* _Log);
+    logging::FileLogger* getLog() const;
+    void setAppPath(std::string app_path);
+    std::string getAppPath() const;
+    void setNodeType(enum NODE_TYPE node_type);
+    NODE_TYPE getNodeType() const;
+    void setMPI_NODES_X(size_t val);
+    size_t getMPI_NODES_X() const;
+    void setMPI_NODES_Y(size_t val);
+    size_t getMPI_NODES_Y() const;
+    void setCUDA_X_THREADS(size_t val);
+    size_t getCUDA_X_THREADS() const;
+    void setCUDA_Y_THREADS(size_t val);
+    size_t getCUDA_Y_THREADS() const;
+    void setTAU(double val);
+    double getTAU() const;
+    void setN_X(size_t val);
+    size_t getN_X() const;
+    void setN_Y(size_t val);
+    size_t getN_Y() const;
+    void setLN_X(size_t val);
+    size_t getLN_X() const;
+    void setLN_Y(size_t val);
+    size_t getLN_Y() const;
+    
+/// Functions which are the same for each computational model
+public:
+    /**
+     * @brief Function which is called by both types of nodes: ComputationalNode and
+     * ServerNode. This is a special function which is necessary for a correct
+     * MPI transferring system, since the type of field cells is a complex structure.
+     * It creates a special environment variable which determines how many bytes
+     * of data is assigned to each field cell. It modifies the
+     * MPI_CellType.
+     */
+    void createMpiStructType();
+    
+    /**
+     * @brief Function which is called by both types of nodes: ComputationalNode and
+     * ServerNode. It returns a pointer to an array located in the CPU memory
+     * which is used to store subfield data of each ComputationalNode
+     * (size: lN_X*lN_Y). This temporary storage is used by a ComputationalNode to
+     * 1) obtain the initial subfield from the ServerNode which initializes the
+     * whole field;
+     * 2) to load the subfield from the GPU memory and later send it to the
+     * ServerNode for further visualization.
+     * and by the ServerNode to:
+     * 1) collect a subfield from a ComputationalNode object to
+     * update the global field for further visualization;
+     * 2) to store a subfield of the global field, which must be sent to
+     * a particular ComputationalNode.
+     * @return Pointer to an array located in the CPU memory casted to (void*).
+     */
+    void* getTmpCPUFieldStoragePtr();
+    
+    /**
+     * @brief The function which is called only by the ServerNode for the visualization,
+     * since a pointer to the field is necessary for the visualization library (all
+     * field elements are used in the visualization process).
+     * @return Pointer to the field located in the CPU memory casted to (void*).
+     */
+    void* getField();
+    
     /**
      * @brief The function is called by a ComputationalNode object to obtain a pointer
      * to an appropriate set of halos: right, left, top, or bottom for one of the
@@ -182,7 +214,7 @@ public:
      * @return Pointer to the array of halo points located in the CPU memory
      * casted to (void*).
      */
-    virtual void* getCPUHaloPtr(size_t border_type) = 0;
+    void* getCPUHaloPtr(size_t border_type);
     
     /**
      * @brief The function is called by a ComputationalNode object to obtain a pointer
@@ -197,7 +229,7 @@ public:
      * @return Pointer to the array of diagonal halo points located in the 
      * CPU memory casted to (void*).
      */
-    virtual void* getCPUDiagHaloPtr(size_t border_type) = 0;
+    void* getCPUDiagHaloPtr(size_t border_type);
 
     /**
      * @brief The function is called by a ComputationalNode object to obtain a
@@ -208,7 +240,7 @@ public:
      * @return Pointer to the temporary array of halo points located in the CPU
      * memory casted to (void*).
      */
-    virtual void* getTmpCPUHaloPtr(size_t border_type) = 0;
+    void* getTmpCPUHaloPtr(size_t border_type);
     
     /**
      * @brief The function is called by a ComputationalNode object to obtain a
@@ -220,7 +252,7 @@ public:
      * @return Pointer to the temporary array of diagonal halo points located in
      * the CPU memory casted to (void*).
      */
-    virtual void* getTmpCPUDiagHaloPtr(size_t border_type) = 0;
+    void* getTmpCPUDiagHaloPtr(size_t border_type);
 
     /**
      * @brief The function is called only by the first ComputationalNode to set
@@ -231,7 +263,7 @@ public:
      * The ServerNode will check if the stop marker has been set and successfully
      * stop its work.
      */
-    virtual void setStopMarker() = 0;
+    void setStopMarker();
 
     /**
      * @brief The function is called by the ServerNode to check if the stop marker
@@ -239,102 +271,8 @@ public:
      * must finish its work.
      * @return True if the stop marker has been set and false otherwise.
      */
-    virtual bool checkStopMarker() = 0;
-
-/// Getters and setters for configuration parameters
-public:
-    void setAppPath(std::string app_path)
-    {
-        appPath = app_path;
-    }
-
-    std::string getAppPath() const
-    {
-        return appPath;
-    }
-
-    void setNodeType(enum NODE_TYPE node_type) {
-        nodeType = node_type;
-    }
-
-    NODE_TYPE getNodeType() const {
-        return nodeType;
-    }
-
-    void setMPI_NODES_X(size_t val) {
-        MPI_NODES_X = val;
-    }
-
-    size_t getMPI_NODES_X() const {
-        return MPI_NODES_X;
-    }
-
-    void setMPI_NODES_Y(size_t val) {
-        MPI_NODES_Y = val;
-    }
-
-    size_t getMPI_NODES_Y() const {
-        return MPI_NODES_Y;
-    }
-
-    void setCUDA_X_THREADS(size_t val) {
-        CUDA_X_THREADS = val;
-    }
-
-    size_t getCUDA_X_THREADS() const {
-        return CUDA_X_THREADS;
-    }
-
-    void setCUDA_Y_THREADS(size_t val) {
-        CUDA_Y_THREADS = val;
-    }
-
-    size_t getCUDA_Y_THREADS() const {
-        return CUDA_Y_THREADS;
-    }
-
-    void setTAU(double val) {
-        TAU = val;
-    }
-
-    double getTAU() const {
-        return TAU;
-    }
-
-    void setN_X(size_t val) {
-        N_X = val;
-    }
-
-    size_t getN_X() const {
-        return N_X;
-    }
-
-    void setN_Y(size_t val) {
-        N_Y = val;
-    }
-
-    size_t getN_Y() const {
-        return N_Y;
-    }
-
-    void setLN_X(size_t val) {
-        lN_X = val;
-    }
-
-    size_t getLN_X() const {
-        return lN_X;
-    }
-
-    void setLN_Y(size_t val) {
-        lN_Y = val;
-    }
-
-    size_t getLN_Y() const {
-        return lN_Y;
-    }
-
-/// Functions which are the same for each computational node
-public:
+    bool checkStopMarker();
+    
     /**
      * @brief Since each computational node has 4 extra rows/cols for correct
      * computations of subfield border elements, it is important to know if
@@ -352,61 +290,18 @@ public:
      * @param mpi_node_y -- Y-coordinate of the ComputationalNode, which is
      * obtained from the MPI_Node::globalMPI_id
      */
-    void setBorders(size_t mpi_node_x, size_t mpi_node_y)
-    {
-        if(mpi_node_x == 0) {
-            borders[LEFT_BORDER] = 1;
-        } else {
-            borders[LEFT_BORDER] = 0;
-        }
-
-        if(mpi_node_x == (MPI_NODES_X - 1)) {
-            borders[RIGHT_BORDER] = 1;
-        } else {
-            borders[RIGHT_BORDER] = 0;
-        }
-
-        if(mpi_node_y == 0) {
-            borders[TOP_BORDER] = 1;
-        } else {
-            borders[TOP_BORDER] = 0;
-        }
-
-        if(mpi_node_y == (MPI_NODES_Y - 1)) {
-            borders[BOTTOM_BORDER] = 1;
-        } else {
-            borders[BOTTOM_BORDER] = 0;
-        }
-    }
+    void setBorders(size_t mpi_node_x, size_t mpi_node_y);
     
     /**
      * @brief 
      */
-    void initScheme(logging::FileLogger& Log) 
-    {
-        /// Create a path to the lib
-        std::string libpath = appPath + "libComputationalScheme.1.0.0.dylib";
-        /// Open the library
-        compSchemeLibHandle = dlopen(libpath.c_str(), RTLD_LOCAL | RTLD_LAZY);
-        if (compSchemeLibHandle == nullptr)
-            throw std::runtime_error(dlerror());
-        else
-            Log << "Opened the computational scheme dynamic library";
-        /// Load the function
-        createScheme = (void* (*)(const char*,const char*))dlsym(compSchemeLibHandle, "createScheme");
-        if(createScheme == nullptr) {
-            throw std::runtime_error("Can't load the function from the Computational scheme library!");
-        }
-        
-        /// Initialize the scheme with the loaded function
-        scheme = (ComputationalScheme*)createScheme(schemeModel.c_str(), gridModel.c_str());
-        Log << "Computational scheme has been successfully created";
-    }
+    void initScheme();
 
 public:
     MPI_Datatype MPI_CellType;
 
 protected:
+    logging::FileLogger* Log;
     std::string appPath;
     NODE_TYPE nodeType;
     size_t MPI_NODES_X;
@@ -426,6 +321,16 @@ protected:
     void* compSchemeLibHandle;
     void* (*createScheme)(const char* scheme, const char* grid);
     ComputationalScheme* scheme;
+    
+protected:
+    void* field;
+    void* tmpCPUField;
+    void* lr_halo;
+    void* tb_halo;
+    void* lrtb_halo;
+    void* rcv_lr_halo;
+    void* rcv_tb_halo;
+    void* rcv_lrtb_halo;
 };
 
 #endif /* COMPUTATIONALMODEL_HPP */

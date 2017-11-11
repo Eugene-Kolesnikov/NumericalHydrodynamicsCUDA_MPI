@@ -4,6 +4,7 @@
     <df root="." name="0">
       <in>CPUTestComputationalModel.cpp</in>
       <in>CPUTestComputationalModel.h</in>
+      <in>ComputationalModel.cpp</in>
       <in>GPUComputationalModel.cpp</in>
       <in>computationalModel_interface.cpp</in>
     </df>
@@ -43,6 +44,8 @@
       <item path="CPUTestComputationalModel.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="CPUTestComputationalModel.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ComputationalModel.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="GPUComputationalModel.cpp" ex="false" tool="1" flavor2="0">
       </item>

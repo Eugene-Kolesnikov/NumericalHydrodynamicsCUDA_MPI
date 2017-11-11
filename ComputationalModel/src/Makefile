@@ -9,7 +9,8 @@ INCLUDE_PATH = -I/usr/local/Cellar/mpich/3.2/include/
 CXXFLAGS = -c -O3 -std=c++11
 
 OBJECTS = computationalModel_interface.o \
-	CPUTestComputationalModel.o \
+	CPUComputationalModel.o \
+	ComputationalModel.o \
 	../../MpiController/src/LoggingSystem/FileLogger.o
 
 all: $(OBJECTS)
