@@ -23,7 +23,7 @@ public:
     virtual ~CPUComputationalModel();
 
 public:
-    virtual void initializeField();
+    virtual void initializeEnvironment();
     virtual void updateGlobalField(size_t mpi_node_x, size_t mpi_node_y);
     virtual void prepareSubfield(size_t mpi_node_x = 0, size_t mpi_node_y = 0);
     virtual void loadSubFieldToGPU();

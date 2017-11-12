@@ -16,7 +16,7 @@
 
 #include <string>
 #include <cstdlib>
-#include "LoggingSystem/FileLogger.hpp"
+#include "FileLogger.hpp"
 #include "../../ComputationalModel/src/ComputationalModel.hpp"
 
 class MPI_Node {

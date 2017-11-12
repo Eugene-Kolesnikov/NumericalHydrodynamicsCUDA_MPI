@@ -15,26 +15,17 @@
 #define GPUCOMPUTATIONALMODEL_HPP
 
 #include "ComputationalModel.hpp"
+#include "../../ComputationalScheme/src/GPUHeader.h"
 #include <cstdlib>
-#include <cuda.h>
 #include <exception>
-
-#define HANDLE_CUERROR(call) {										             \
-    cudaError err = call;												         \
-    if(err != cudaSuccess) {
-        std::string error = std::string("CUDA error in file '") + __FILE__ +  \
-                "' in line " + __LINE__ + ": " + cudaGetErrorString(err);     \
-        throw std::runtime_error(error);                                      \                          \
-    }                                                                         \
-} while (0)
 
 class GPUComputationalModel : public ComputationalModel {
 public:
-    GPUComputationalModel();
+    GPUComputationalModel(const char* compModel, const char* gridModel);
     virtual ~GPUComputationalModel();
     
 public:
-    virtual void initializeField();
+    virtual void initializeEnvironment();
     virtual void updateGlobalField(size_t mpi_node_x, size_t mpi_node_y);
     virtual void prepareSubfield(size_t mpi_node_x = 0, size_t mpi_node_y = 0);
     virtual void loadSubFieldToGPU();

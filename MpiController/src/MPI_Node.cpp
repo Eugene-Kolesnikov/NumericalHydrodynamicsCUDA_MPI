@@ -186,7 +186,7 @@ void MPI_Node::setComputationalModelEnv(ComputationalModel::NODE_TYPE node_type)
     model->setN_Y(N_Y);
     model->setLN_X(lN_X);
     model->setLN_Y(lN_Y);
-    model->initializeField();
+    model->initializeEnvironment();
 }
 
 void MPI_Node::setLocalMPI_ids(const size_t globalId, size_t& localIdx, size_t& localIdy)

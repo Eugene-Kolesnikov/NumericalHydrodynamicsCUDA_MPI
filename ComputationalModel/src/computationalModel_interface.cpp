@@ -7,7 +7,7 @@
 #include "computationalModel_interface.h"
 #include "ComputationalModel.hpp"
 #include "CPUComputationalModel.hpp"
-//#include "GPUComputationalModel.hpp"
+#include "GPUComputationalModel.hpp"
 
 void* createComputationalModel(const char* compModel, const char* gridModel)
 {

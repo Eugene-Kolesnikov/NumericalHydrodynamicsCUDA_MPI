@@ -25,22 +25,6 @@ ComputationalModel::ComputationalModel(const char* comp, const char* grid):
 
 ComputationalModel::~ComputationalModel() 
 {
-    if(field != nullptr)
-        delete[] (byte*)field;
-    if(tmpCPUField != nullptr)
-        delete[] (byte*)tmpCPUField;
-    if(lr_halo != nullptr)
-        delete[] (byte*)lr_halo;
-    if(tb_halo != nullptr)
-        delete[] (byte*)tb_halo;
-    if(lrtb_halo != nullptr)
-        delete[] (byte*)lrtb_halo;
-    if(rcv_lr_halo != nullptr)
-        delete[] (byte*)rcv_lr_halo;
-    if(rcv_tb_halo != nullptr)
-        delete[] (byte*)rcv_tb_halo;
-    if(rcv_lrtb_halo != nullptr)
-        delete[] (byte*)rcv_lrtb_halo;
     if(scheme != nullptr)
         delete scheme;
     if(compSchemeLibHandle != nullptr)
@@ -88,6 +72,14 @@ void ComputationalModel::createMpiStructType()
         throw std::runtime_error(err_buffer);
     }
     (*Log) << "MPI structure has been successfully created";
+}
+
+void ComputationalModel::initializeField() 
+{
+    if(nodeType != NODE_TYPE::SERVER_NODE)
+        throw std::runtime_error("ComputationalModel::initializeField: "
+                "This function should not be called by a Computational Node");
+    scheme->initField(field, N_X, N_Y);
 }
 
 void* ComputationalModel::getTmpCPUFieldStoragePtr()

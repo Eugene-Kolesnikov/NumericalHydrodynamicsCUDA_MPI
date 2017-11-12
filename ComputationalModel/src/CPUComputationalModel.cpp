@@ -24,9 +24,33 @@ CPUComputationalModel::CPUComputationalModel(const char* compModel, const char* 
 
 CPUComputationalModel::~CPUComputationalModel() 
 {
+    if(field != nullptr)
+        delete[] (byte*)field;
+    if(tmpCPUField != nullptr)
+        delete[] (byte*)tmpCPUField;
+    if(lr_halo != nullptr)
+        delete[] (byte*)lr_halo;
+    if(tb_halo != nullptr)
+        delete[] (byte*)tb_halo;
+    if(lrtb_halo != nullptr)
+        delete[] (byte*)lrtb_halo;
+    if(rcv_lr_halo != nullptr)
+        delete[] (byte*)rcv_lr_halo;
+    if(rcv_tb_halo != nullptr)
+        delete[] (byte*)rcv_tb_halo;
+    if(rcv_lrtb_halo != nullptr)
+        delete[] (byte*)rcv_lrtb_halo;
 }
 
-void CPUComputationalModel::initializeField() 
+void CPUComputationalModel::updateGlobalField(size_t mpi_node_x, size_t mpi_node_y) 
+{
+    if(nodeType != NODE_TYPE::SERVER_NODE)
+        throw std::runtime_error("CPUComputationalModel::updateGlobalField: "
+                "This function should not be called by a Computational Node");
+    memcpyField(mpi_node_x, mpi_node_y, TmpCPUFieldToField);
+}
+
+void CPUComputationalModel::initializeEnvironment()
 {
     tmpCPUField = scheme->createField(lN_X, lN_Y);
     if(nodeType == NODE_TYPE::COMPUTATIONAL_NODE) {
@@ -38,22 +62,13 @@ void CPUComputationalModel::initializeField()
         rcv_lrtb_halo = scheme->initHalos(4);
     } else { // NODE_TYPE::SERVER_NODE
         field = scheme->createField(N_X, N_Y);
-        scheme->initField(field, N_X, N_Y);
     }
-}
-
-void CPUComputationalModel::updateGlobalField(size_t mpi_node_x, size_t mpi_node_y) 
-{
-    if(nodeType != NODE_TYPE::SERVER_NODE)
-        throw std::runtime_error("CPUComputationalModel::updateGlobalField: "
-                "This function should not be called by a Computational Node");
-    memcpyField(mpi_node_x, mpi_node_y, TmpCPUFieldToField);
 }
 
 void CPUComputationalModel::prepareSubfield(size_t mpi_node_x, size_t mpi_node_y) 
 {
     if(nodeType == NODE_TYPE::COMPUTATIONAL_NODE) {
-        // nothing yet
+        // No CPU<->GPU interaction in the CPU version
     } else {
         memcpyField(mpi_node_x, mpi_node_y, FieldToTmpCPUField);
     }
@@ -61,12 +76,12 @@ void CPUComputationalModel::prepareSubfield(size_t mpi_node_x, size_t mpi_node_y
 
 void CPUComputationalModel::loadSubFieldToGPU() 
 {
-    // nothing yet
+    // No CPU<->GPU interaction in the CPU version
 }
 
 void CPUComputationalModel::gpuSync() 
 {
-    // nothing yet
+    // No CPU<->GPU interaction in the CPU version
 }
 
 void CPUComputationalModel::performSimulationStep() 
@@ -74,8 +89,8 @@ void CPUComputationalModel::performSimulationStep()
     if(nodeType != NODE_TYPE::COMPUTATIONAL_NODE)
         throw std::runtime_error("CPUComputationalModel::performSimulationStep: "
                 "This function should not be called by the Server Node");
-    // for now use the CPU field
-    scheme->performSimulationStep(tmpCPUField, lr_halo, tb_halo, lN_X, lN_Y);
+    // Use the CPU field in the CPU version
+    scheme->performCPUSimulationStep(tmpCPUField, lr_halo, tb_halo, lN_X, lN_Y);
 }
 
 void CPUComputationalModel::updateHaloBorderElements() 

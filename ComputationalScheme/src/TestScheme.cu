@@ -26,6 +26,20 @@ void* TestScheme::createField(size_t N_X, size_t N_Y)
     return (void*)(new Cell[N_X * N_Y]);
 }
 
+void* TestScheme::createPageLockedField(size_t N_X, size_t N_Y)
+{
+    Cell* ptr;
+    HANDLE_CUERROR( cudaHostAlloc((void**)&ptr, N_X * N_Y * sizeof(Cell), cudaHostAllocDefault) );
+    return (void*)ptr;
+}
+
+void* TestScheme::createGPUField(size_t N_X, size_t N_Y)
+{
+    Cell* ptr;
+    HANDLE_CUERROR( cudaMalloc((void**)&ptr, N_X * N_Y * sizeof(Cell)) );
+    return (void*)ptr;
+}
+
 void TestScheme::initField(void* field, size_t N_X, size_t N_Y)
 {
     Cell* cfield = (Cell*)field;
@@ -46,7 +60,21 @@ void* TestScheme::initHalos(size_t N)
     return (void*)(new Cell[N]);
 }
 
-void TestScheme::performSimulationStep(void* tmpCPUField, void* lr_halo, 
+void* TestScheme::initPageLockedHalos(size_t N)
+{
+    Cell* ptr;
+    HANDLE_CUERROR( cudaHostAlloc((void**)&ptr, N * sizeof(Cell), cudaHostAllocDefault) );
+    return (void*)ptr;
+}
+
+void* TestScheme::initGPUHalos(size_t N)
+{
+    Cell* ptr;
+    HANDLE_CUERROR( cudaMalloc((void**)&ptr, N * sizeof(Cell)) );
+    return (void*)ptr;
+}
+
+void TestScheme::performCPUSimulationStep(void* tmpCPUField, void* lr_halo, 
         void* tb_halo, size_t N_X, size_t N_Y)
 {
     Cell* ctmpCPUField = (Cell*)tmpCPUField;

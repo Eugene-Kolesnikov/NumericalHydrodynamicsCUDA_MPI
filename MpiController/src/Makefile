@@ -4,7 +4,7 @@ LIBS_PATH = -L/usr/local/Cellar/mpich/3.2/lib/
 
 LIBS = -lmpi -lopa -lmpl -lpthread
 
-INCLUDE_PATH = -I/usr/local/Cellar/mpich/3.2/include/
+INCLUDE_PATH = -I/usr/local/Cellar/mpich/3.2/include/ -I/Developer/NVIDIA/CUDA-9.0/include/
 
 CXXFLAGS = -c -O3 -std=c++11
 
@@ -12,7 +12,7 @@ OBJECTS = gpu_mpi_main.o \
 	MPI_Node.o \
 	ServerNode.o \
 	ComputationalNode.o \
-	LoggingSystem/FileLogger.o \
+	FileLogger.o \
 	../../ComputationalModel/src/ComputationalModel.o
 	
 

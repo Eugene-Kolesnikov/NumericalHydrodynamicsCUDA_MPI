@@ -37,6 +37,7 @@ void ServerNode::initEnvironment()
         MPI_Node::initEnvironment();
         loadVisualizationLib();
         MPI_Node::setComputationalModelEnv(ComputationalModel::NODE_TYPE::SERVER_NODE);
+        model->initializeField();
         sendInitFieldToCompNodes();
         DLV_init(N_X, N_Y, OUTPUT_OPTION::MPEG, (appPath + "../../../").c_str());
     } catch(const std::runtime_error& err) {

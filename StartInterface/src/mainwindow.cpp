@@ -110,9 +110,16 @@ void MainWindow::startSimulation()
     }
     size_t mpi_nodes = ui->mpi_nodes_x->text().toUInt() * ui->mpi_nodes_y->text().toUInt() + 1;
     string system_call = "mpiexec -l -np " + std::to_string(mpi_nodes) +
-            " " + filepath + "./simulation_app " + filepath;
+            " " + filepath + "simulation_app " + filepath;
     QProcess process;
-    process.start(system_call.c_str());
+    //process.start(system_call.c_str());
+    process.start("/usr/local/bin/mpiexec",
+        QStringList() << "-l" << "-np" << std::to_string(mpi_nodes).c_str()
+            << (filepath + "simulation_app").c_str() << filepath.c_str());
+    bool success = process.waitForStarted();
+    if(!success) {
+    	QMessageBox::question(this, "Error", "Cannot start the program!", QMessageBox::Yes);
+    }
     process.waitForFinished();
     process.close();
     ui->startbtn->setEnabled(true);

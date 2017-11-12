@@ -17,7 +17,7 @@
 #include <string>
 #include <mpi.h>
 #include "../../ComputationalScheme/src/ComputationalScheme.hpp"
-#include "../../MpiController/src/LoggingSystem/FileLogger.hpp"
+#include "../../MpiController/src/FileLogger.hpp"
 #include <dlfcn.h>
 
 #define LEFT_BORDER (0)
@@ -49,18 +49,6 @@ public:
 /// Virtual functions which are unique for each computational model
 public:
     /**
-     * @brief The function is called by both types of nodes: ComputationalNode and
-     * ServerNode when all necessary configuration variables are set. It allocates
-     * memory on the CPU and GPU for all required computations.
-     * For CPUComputationalModel only the following fields must be initialized:
-     * field, tmpCPUField, lr_halo, tb_halo, lrtb_halo, rcv_lr_halo, rcv_tb_halo, 
-     * rcv_lrtb_halo.
-     * For GPUComputationalModel, besides the listed variables, also GPU specific
-     * fields must be initialized.
-     */
-    virtual void initializeField() = 0;
-
-    /**
      * @brief This function is called by the ServerNode to update the global field
      * with values of a subfield which have been sent from a ComputationalNode with
      * 2D MPI ids (mpi_node_x, mpi_node_y) and are saved in a temporary array,
@@ -72,6 +60,19 @@ public:
      * from which the subfield was received.
      */
     virtual void updateGlobalField(size_t mpi_node_x, size_t mpi_node_y) = 0;
+    
+    /**
+     * @brief The function is called by both types of nodes: ComputationalNode and
+     * ServerNode when all necessary configuration variables are set. It allocates
+     * memory on the CPU and GPU for all required computations.
+     * For CPUComputationalModel only the following fields must be initialized:
+     * field, tmpCPUField, lr_halo, tb_halo, lrtb_halo, rcv_lr_halo, rcv_tb_halo, 
+     * rcv_lrtb_halo.
+     * For GPUComputationalModel, besides the listed variables, also GPU specific
+     * fields must be initialized. Moreover, allocated memory on the CPU must be 
+     * page-locked and accessible to the device for asynchronous data transferring.
+     */
+    virtual void initializeEnvironment() = 0;
 
     /**
      * @brief Function which is called by both types of nodes: ComputationalNode and
@@ -175,6 +176,12 @@ public:
      * MPI_CellType.
      */
     void createMpiStructType();
+    
+    /**
+     * @brief The function is called by the ServerNode to initialize the field
+     * at time t = 0.
+     */
+    void initializeField();
     
     /**
      * @brief Function which is called by both types of nodes: ComputationalNode and
