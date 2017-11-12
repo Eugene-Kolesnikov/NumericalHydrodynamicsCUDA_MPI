@@ -8,13 +8,13 @@ INCLUDE_PATH = -I/usr/local/Cellar/mpich/3.2/include/ -I/Developer/NVIDIA/CUDA-9
 
 CXXFLAGS = -c -O3 -std=c++11
 
-OBJECTS = gpu_mpi_main.o \
+OBJECTS = mpi_main.o \
 	MPI_Node.o \
 	ServerNode.o \
 	ComputationalNode.o \
 	FileLogger.o \
 	../../ComputationalModel/src/ComputationalModel.o
-	
+
 
 all: $(OBJECTS)
 	$(CXX) $(LIBS_PATH) $(LIBS) -o ../build/simulation_app $(addprefix ../build/,$(notdir $(OBJECTS)))
