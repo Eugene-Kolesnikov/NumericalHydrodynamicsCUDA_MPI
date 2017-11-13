@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-/* 
+/*
  * File:   CPUComputationalModel.h
  * Author: eugene
  *
@@ -17,7 +17,6 @@
 #include "ComputationalModel.hpp"
 
 class CPUComputationalModel : public ComputationalModel {
-    enum TypeMemCpy {TmpCPUFieldToField, FieldToTmpCPUField};
 public:
     CPUComputationalModel(const char* compModel, const char* gridModel);
     virtual ~CPUComputationalModel();
@@ -31,10 +30,6 @@ public:
     virtual void performSimulationStep();
     virtual void updateHaloBorderElements();
     virtual void prepareHaloElements();
-    
-protected:
-    void memcpyField(size_t mpi_node_x, size_t mpi_node_y, TypeMemCpy cpyType);
 };
 
 #endif /* CPUCOMPUTATIONALMODEL_H */
-

@@ -22,7 +22,11 @@ public:
     virtual void* initPageLockedHalos(size_t N);
     virtual void* initGPUHalos(size_t N);
     virtual void performCPUSimulationStep(void* tmpCPUField, void* lr_halo,
-        void* tb_halo, size_t N_X, size_t N_Y);
+        void* tb_halo, void* lrtb_halo, size_t N_X, size_t N_Y);
+    virtual void performGPUSimulationStep(void* cu_field, void* cu_lr_halo,
+            void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y);
+    void updateGPUGlobalBorders(void* cu_field, void* cu_lr_halo,
+                void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y);
     virtual void* getMarkerValue();
 
 protected:

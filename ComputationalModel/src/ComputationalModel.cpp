@@ -7,8 +7,8 @@
 #include <mpi.h>
 #include "ComputationalModel.hpp"
 
-ComputationalModel::ComputationalModel(const char* comp, const char* grid): 
-    schemeModel(comp), gridModel(grid) 
+ComputationalModel::ComputationalModel(const char* comp, const char* grid):
+    schemeModel(comp), gridModel(grid)
 {
     compSchemeLibHandle = nullptr;
     createScheme = nullptr;
@@ -23,7 +23,7 @@ ComputationalModel::ComputationalModel(const char* comp, const char* grid):
     rcv_lrtb_halo = nullptr;
 }
 
-ComputationalModel::~ComputationalModel() 
+ComputationalModel::~ComputationalModel()
 {
     if(scheme != nullptr)
         delete scheme;
@@ -57,7 +57,7 @@ void ComputationalModel::createMpiStructType()
         types[i] = MPI_DATA_TYPE;
         offsets[i] = i * size_of_datatype;
     }
-    mpi_err_status = MPI_Type_create_struct(nitems, blocklengths, offsets, 
+    mpi_err_status = MPI_Type_create_struct(nitems, blocklengths, offsets,
             types, &MPI_CellType);
     delete[] blocklengths;
     delete[] types;
@@ -74,7 +74,7 @@ void ComputationalModel::createMpiStructType()
     (*Log) << "MPI structure has been successfully created";
 }
 
-void ComputationalModel::initializeField() 
+void ComputationalModel::initializeField()
 {
     if(nodeType != NODE_TYPE::SERVER_NODE)
         throw std::runtime_error("ComputationalModel::initializeField: "
@@ -126,7 +126,7 @@ void* ComputationalModel::getCPUDiagHaloPtr(size_t border_type)
                 "This function should not be called by the Server Node");
     size_t size_of_datatype = scheme->getSizeOfDatatype();
     size_t nitems = scheme->getNumberOfElements();
-    if(border_type != LEFT_TOP_BORDER && border_type != RIGHT_TOP_BORDER && 
+    if(border_type != LEFT_TOP_BORDER && border_type != RIGHT_TOP_BORDER &&
             border_type != LEFT_BOTTOM_BORDER && border_type != RIGHT_BOTTOM_BORDER)
         throw std::runtime_error("ComputationalModel::getCPUDiagHaloPtr: "
                 "Wrong border_type");
@@ -166,7 +166,7 @@ void* ComputationalModel::getTmpCPUDiagHaloPtr(size_t border_type)
                 "This function should not be called by the Server Node");
     size_t size_of_datatype = scheme->getSizeOfDatatype();
     size_t nitems = scheme->getNumberOfElements();
-    if(border_type != LEFT_TOP_BORDER && border_type != RIGHT_TOP_BORDER && 
+    if(border_type != LEFT_TOP_BORDER && border_type != RIGHT_TOP_BORDER &&
             border_type != LEFT_BOTTOM_BORDER && border_type != RIGHT_BOTTOM_BORDER)
         throw std::runtime_error("ComputationalModel::getTmpCPUDiagHaloPtr: "
                 "Wrong border_type");
@@ -234,7 +234,7 @@ void ComputationalModel::setBorders(size_t mpi_node_x, size_t mpi_node_y)
     }
 }
 
-void ComputationalModel::initScheme() 
+void ComputationalModel::initScheme()
 {
     /// Create a path to the lib
     std::string libpath = appPath + "libComputationalScheme.1.0.0.dylib";
@@ -253,6 +253,54 @@ void ComputationalModel::initScheme()
     /// Initialize the scheme with the loaded function
     scheme = (ComputationalScheme*)createScheme(schemeModel.c_str(), gridModel.c_str());
     (*Log) << "Computational scheme has been successfully created";
+}
+
+void ComputationalModel::memcpyField(size_t mpi_node_x, size_t mpi_node_y, TypeMemCpy cpyType)
+{
+    byte* fieldPtr = (byte*)field;
+    byte* tmpCPUFieldPtr = (byte*)tmpCPUField;
+    size_t size_of_datatype = scheme->getSizeOfDatatype();
+    size_t nitems = scheme->getNumberOfElements();
+    size_t global, globalTmp, x0, y0, x1, y1;
+    size_t global_shift, global_shiftTmp;
+    size_t global_shift_item, global_shiftTmp_item;
+    // calculate the shift for the particular subfield
+    x0 = static_cast<size_t>(N_X / MPI_NODES_X * mpi_node_x);
+    y0 = static_cast<size_t>(N_Y / MPI_NODES_Y * mpi_node_y);
+    for(size_t x = 0; x < lN_X; ++x) {
+        /// Go through all x elements of the subfield
+        /** Add the shift to the x-component since the subfield can be located
+         * somewhere inside the global field */
+        x1 = x0 + x;
+        for(size_t y = 0; y < lN_Y; ++y) {
+            /// Go through all y elements of the subfield
+            /** Add the shift to the y-component since the subfield can be located
+             * somewhere inside the global field */
+            y1 = y0 + y;
+            /** Calculate the global shifts for the 'global field' and 'subfield'
+             * using the fact that structure consists of nitems amount of
+             * elements which are size_of_datatype amount of bytes each. */
+            global_shift = (y1 * N_X + x1) * nitems * size_of_datatype;
+            global_shiftTmp = (y * lN_X + x) * nitems * size_of_datatype;
+            for(size_t i = 0; i < nitems; ++i) {
+                /// Go through all elements of the Cell
+                /** Add shifts for the elements inside the Cell structure */
+                global_shift_item = global_shift + i * size_of_datatype;
+                global_shiftTmp_item = global_shiftTmp + i * size_of_datatype;
+                for(size_t s = 0; s < size_of_datatype; ++s) {
+                    /// Go through all bytes of the STRUCT_DATA_TYPE
+                    /** Add shifts for the bytes of the STRUCT_DATA_TYPE */
+                    global = global_shift_item + s;
+                    globalTmp = global_shiftTmp_item + s;
+                    /// Update the byte
+                    if(cpyType == TmpCPUFieldToField)
+                        fieldPtr[global] = tmpCPUFieldPtr[globalTmp];
+                    else // FieldToTmpCPUField
+                        tmpCPUFieldPtr[globalTmp] = fieldPtr[global];
+                }
+            }
+        }
+    }
 }
 
 void ComputationalModel::setLog(logging::FileLogger* _Log) {

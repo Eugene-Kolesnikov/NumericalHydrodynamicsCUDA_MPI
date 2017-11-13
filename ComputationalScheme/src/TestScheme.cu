@@ -74,8 +74,8 @@ void* TestScheme::initGPUHalos(size_t N)
     return (void*)ptr;
 }
 
-void TestScheme::performCPUSimulationStep(void* tmpCPUField, void* lr_halo, 
-        void* tb_halo, size_t N_X, size_t N_Y)
+void TestScheme::performCPUSimulationStep(void* tmpCPUField, void* lr_halo,
+        void* tb_halo, void* lrtb_halo, size_t N_X, size_t N_Y)
 {
     Cell* ctmpCPUField = (Cell*)tmpCPUField;
     size_t global, global1;
@@ -105,6 +105,18 @@ void TestScheme::performCPUSimulationStep(void* tmpCPUField, void* lr_halo,
         ctmpCPUField[global].e = tmpField[y-1].e;
     }
     delete[] tmpField;
+}
+
+void TestScheme::performGPUSimulationStep(void* cu_field, void* cu_lr_halo,
+        void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y)
+{
+
+}
+
+void TestScheme::updateGPUGlobalBorders(void* cu_field, void* cu_lr_halo,
+                void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y)
+{
+
 }
 
 void* TestScheme::getMarkerValue()

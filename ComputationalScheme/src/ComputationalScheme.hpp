@@ -95,11 +95,36 @@ public:
      * @param tmpCPUField
      * @param lr_halo
      * @param tb_halo
+     * @param lrtb_halo
      * @param N_X
      * @param N_Y
      */
-    virtual void performCPUSimulationStep(void* tmpCPUField, void* lr_halo, 
-        void* tb_halo, size_t N_X, size_t N_Y) = 0;
+    virtual void performCPUSimulationStep(void* tmpCPUField, void* lr_halo,
+            void* tb_halo, void* lrtb_halo, size_t N_X, size_t N_Y) = 0;
+    
+    /**
+     * @brief 
+     * @param cu_field
+     * @param cu_lr_halo
+     * @param cu_tb_halo
+     * @param cu_lrtb_halo
+     * @param N_X
+     * @param N_Y
+     */
+    virtual void performGPUSimulationStep(void* cu_field, void* cu_lr_halo,
+                void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y) = 0;
+    
+    /**
+	 * @brief 
+	 * @param cu_field
+	 * @param cu_lr_halo
+	 * @param cu_tb_halo
+	 * @param cu_lrtb_halo
+	 * @param N_X
+	 * @param N_Y
+	 */
+    virtual void updateGPUGlobalBorders(void* cu_field, void* cu_lr_halo,
+            void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y) = 0;
     
     /**
      * @brief 

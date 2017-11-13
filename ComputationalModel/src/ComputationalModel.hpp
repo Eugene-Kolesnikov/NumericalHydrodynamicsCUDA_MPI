@@ -33,14 +33,19 @@
 class ComputationalModel {
 protected:
     /**
-    * byte type is actually a char type. The reason to use it is that all other 
-    * types like float, double, long double can be represented as a sequence of 
+    * byte type is actually a char type. The reason to use it is that all other
+    * types like float, double, long double can be represented as a sequence of
     * chars, which means that size (memory) of each type is a multiple of the char size.
     * It is useful to use byte since we don't know which one of the types (float, double,
     * long double) will be used in the program.
     */
    typedef char byte;
    
+   /**
+    * 
+    */
+   enum TypeMemCpy {TmpCPUFieldToField, FieldToTmpCPUField};
+
 public:
     enum NODE_TYPE {SERVER_NODE, COMPUTATIONAL_NODE};
     ComputationalModel(const char* comp, const char* grid);
@@ -60,16 +65,16 @@ public:
      * from which the subfield was received.
      */
     virtual void updateGlobalField(size_t mpi_node_x, size_t mpi_node_y) = 0;
-    
+
     /**
      * @brief The function is called by both types of nodes: ComputationalNode and
      * ServerNode when all necessary configuration variables are set. It allocates
      * memory on the CPU and GPU for all required computations.
      * For CPUComputationalModel only the following fields must be initialized:
-     * field, tmpCPUField, lr_halo, tb_halo, lrtb_halo, rcv_lr_halo, rcv_tb_halo, 
+     * field, tmpCPUField, lr_halo, tb_halo, lrtb_halo, rcv_lr_halo, rcv_tb_halo,
      * rcv_lrtb_halo.
      * For GPUComputationalModel, besides the listed variables, also GPU specific
-     * fields must be initialized. Moreover, allocated memory on the CPU must be 
+     * fields must be initialized. Moreover, allocated memory on the CPU must be
      * page-locked and accessible to the device for asynchronous data transferring.
      */
     virtual void initializeEnvironment() = 0;
@@ -164,7 +169,7 @@ public:
     size_t getLN_X() const;
     void setLN_Y(size_t val);
     size_t getLN_Y() const;
-    
+
 /// Functions which are the same for each computational model
 public:
     /**
@@ -176,13 +181,13 @@ public:
      * MPI_CellType.
      */
     void createMpiStructType();
-    
+
     /**
      * @brief The function is called by the ServerNode to initialize the field
      * at time t = 0.
      */
     void initializeField();
-    
+
     /**
      * @brief Function which is called by both types of nodes: ComputationalNode and
      * ServerNode. It returns a pointer to an array located in the CPU memory
@@ -200,7 +205,7 @@ public:
      * @return Pointer to an array located in the CPU memory casted to (void*).
      */
     void* getTmpCPUFieldStoragePtr();
-    
+
     /**
      * @brief The function which is called only by the ServerNode for the visualization,
      * since a pointer to the field is necessary for the visualization library (all
@@ -208,7 +213,7 @@ public:
      * @return Pointer to the field located in the CPU memory casted to (void*).
      */
     void* getField();
-    
+
     /**
      * @brief The function is called by a ComputationalNode object to obtain a pointer
      * to an appropriate set of halos: right, left, top, or bottom for one of the
@@ -222,18 +227,18 @@ public:
      * casted to (void*).
      */
     void* getCPUHaloPtr(size_t border_type);
-    
+
     /**
      * @brief The function is called by a ComputationalNode object to obtain a pointer
      * to an appropriate element of diagonal halos: left-top, right-top, left-bottom,
      * right-bottom for one of the neighboring ComputationalNode objects. The
-     * value of the array referenced by the pointer should be updated (correct 
-     * values transferred from the GPU memory) prior to calling this function. 
+     * value of the array referenced by the pointer should be updated (correct
+     * values transferred from the GPU memory) prior to calling this function.
      * This pointer will be used later for transferring the diagonal halo element
      * which is contained in this array to another ComputationalNode object.
      * @param border_type -- required border: left-top, right-top, left-bottom,
      * right-bottom.
-     * @return Pointer to the array of diagonal halo points located in the 
+     * @return Pointer to the array of diagonal halo points located in the
      * CPU memory casted to (void*).
      */
     void* getCPUDiagHaloPtr(size_t border_type);
@@ -248,7 +253,7 @@ public:
      * memory casted to (void*).
      */
     void* getTmpCPUHaloPtr(size_t border_type);
-    
+
     /**
      * @brief The function is called by a ComputationalNode object to obtain a
      * temporary pointer to a CPU memory which is used later as a destination
@@ -279,7 +284,7 @@ public:
      * @return True if the stop marker has been set and false otherwise.
      */
     bool checkStopMarker();
-    
+
     /**
      * @brief Since each computational node has 4 extra rows/cols for correct
      * computations of subfield border elements, it is important to know if
@@ -298,11 +303,19 @@ public:
      * obtained from the MPI_Node::globalMPI_id
      */
     void setBorders(size_t mpi_node_x, size_t mpi_node_y);
-    
+
     /**
-     * @brief 
+     * @brief
      */
     void initScheme();
+
+    /**
+     * @brief
+     * @param mpi_node_x [description]
+     * @param mpi_node_y [description]
+     * @param cpyType    [description]
+     */
+    void memcpyField(size_t mpi_node_x, size_t mpi_node_y, TypeMemCpy cpyType);
 
 public:
     MPI_Datatype MPI_CellType;
@@ -323,12 +336,12 @@ protected:
     size_t borders[4];
     std::string schemeModel;
     std::string gridModel;
-    
+
 protected:
     void* compSchemeLibHandle;
     void* (*createScheme)(const char* scheme, const char* grid);
     ComputationalScheme* scheme;
-    
+
 protected:
     void* field;
     void* tmpCPUField;
