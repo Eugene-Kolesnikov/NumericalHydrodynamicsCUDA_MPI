@@ -12,7 +12,7 @@
         std::string error = std::string("CUDA error in file '") +     \
             std::string(__FILE__) + std::string("' in line ") +       \
             std::to_string(__LINE__) + std::string(": ") +            \
-            std::string(cudaGetErrorString(err));                  \
+            std::string(cudaGetErrorString(err));                     \
         throw std::runtime_error(error);                              \
     }                                                                 \
 } while (0)

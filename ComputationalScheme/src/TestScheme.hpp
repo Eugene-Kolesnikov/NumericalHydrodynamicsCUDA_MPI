@@ -1,6 +1,7 @@
 #ifndef TESTSCHEME_HPP
 #define TESTSCHEME_HPP
 
+#include "GPUHeader.h"
 #include "cell.h"
 #include "ComputationalScheme.hpp"
 
@@ -8,7 +9,7 @@ class TestScheme : public ComputationalScheme {
 public:
     TestScheme();
     virtual ~TestScheme(){}
-    
+
 public:
     virtual const std::type_info& getDataTypeid();
     virtual size_t getSizeOfDatatype();
@@ -20,10 +21,10 @@ public:
     virtual void* initHalos(size_t N);
     virtual void* initPageLockedHalos(size_t N);
     virtual void* initGPUHalos(size_t N);
-    virtual void performCPUSimulationStep(void* tmpCPUField, void* lr_halo, 
+    virtual void performCPUSimulationStep(void* tmpCPUField, void* lr_halo,
         void* tb_halo, size_t N_X, size_t N_Y);
     virtual void* getMarkerValue();
-    
+
 protected:
     STRUCT_DATA_TYPE marker;
 };

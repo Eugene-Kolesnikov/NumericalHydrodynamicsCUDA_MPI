@@ -9,6 +9,10 @@
 #include "FieldObject.hpp"
 #include "shader.h"
 #include <exception>
+
+// Is necessary because right now the visualization module doesn't work with "unknown" structures
+#define __device__
+
 #include "../../ComputationalScheme/src/cell.h"
 
 extern GLuint programID;
