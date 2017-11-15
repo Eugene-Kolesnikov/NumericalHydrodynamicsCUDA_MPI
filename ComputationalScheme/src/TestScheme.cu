@@ -1,5 +1,25 @@
 #include "TestScheme.hpp"
 
+#include <string>
+#include <exception>
+#include <cmath>
+
+__global__ void performGPUSimulationStep_kernel(Cell* cu_field, Cell* cu_lr_halo,
+		Cell* cu_tb_halo, Cell* cu_lrtb_halo, size_t N_X, size_t N_Y)
+{
+    int tid_x = blockIdx.x * blockDim.x + threadIdx.x;
+	int tid_y = blockIdx.y * blockDim.y + threadIdx.y;
+	double k = cu_field[tid_y * N_X + tid_x].r;
+	cu_field[tid_y * N_X + tid_x].r = k + 0.01;
+	__syncthreads();
+}
+
+__global__ void updateGPUGlobalBorders_kernel(Cell* cu_field, Cell* cu_lr_halo,
+		Cell* cu_tb_halo, Cell* cu_lrtb_halo, size_t N_X, size_t N_Y, size_t type)
+{
+
+}
+
 TestScheme::TestScheme():
     ComputationalScheme()
 {
@@ -29,30 +49,31 @@ void* TestScheme::createField(size_t N_X, size_t N_Y)
 void* TestScheme::createPageLockedField(size_t N_X, size_t N_Y)
 {
     Cell* ptr;
-    HANDLE_CUERROR( cudaHostAlloc((void**)&ptr, N_X * N_Y * sizeof(Cell), cudaHostAllocDefault) );
+    HANDLE_CUERROR_PTR( cudaHostAlloc((void**)&ptr, N_X * N_Y * sizeof(Cell), cudaHostAllocDefault) );
     return (void*)ptr;
 }
 
 void* TestScheme::createGPUField(size_t N_X, size_t N_Y)
 {
     Cell* ptr;
-    HANDLE_CUERROR( cudaMalloc((void**)&ptr, N_X * N_Y * sizeof(Cell)) );
+    HANDLE_CUERROR_PTR( cudaMalloc((void**)&ptr, N_X * N_Y * sizeof(Cell)) );
     return (void*)ptr;
 }
 
-void TestScheme::initField(void* field, size_t N_X, size_t N_Y)
+ErrorStatus TestScheme::initField(void* field, size_t N_X, size_t N_Y)
 {
     Cell* cfield = (Cell*)field;
     size_t global;
     for(size_t x = 0; x < N_X; ++x) {
         for(size_t y = 0; y < N_Y; ++y) {
             global = y * N_X + x;
-            cfield[global].r = drand48();
+            cfield[global].r = ((double)x+(double)y)/((double)N_X+(double)N_Y)/2;
             cfield[global].u = 0.0;
             cfield[global].v = 0.0;
             cfield[global].e = 0.0;
         }
     }
+	return GPU_SUCCESS;
 }
 
 void* TestScheme::initHalos(size_t N)
@@ -63,18 +84,18 @@ void* TestScheme::initHalos(size_t N)
 void* TestScheme::initPageLockedHalos(size_t N)
 {
     Cell* ptr;
-    HANDLE_CUERROR( cudaHostAlloc((void**)&ptr, N * sizeof(Cell), cudaHostAllocDefault) );
+    HANDLE_CUERROR_PTR( cudaHostAlloc((void**)&ptr, N * sizeof(Cell), cudaHostAllocDefault) );
     return (void*)ptr;
 }
 
 void* TestScheme::initGPUHalos(size_t N)
 {
     Cell* ptr;
-    HANDLE_CUERROR( cudaMalloc((void**)&ptr, N * sizeof(Cell)) );
+    HANDLE_CUERROR_PTR( cudaMalloc((void**)&ptr, N * sizeof(Cell)) );
     return (void*)ptr;
 }
 
-void TestScheme::performCPUSimulationStep(void* tmpCPUField, void* lr_halo,
+ErrorStatus TestScheme::performCPUSimulationStep(void* tmpCPUField, void* lr_halo,
         void* tb_halo, void* lrtb_halo, size_t N_X, size_t N_Y)
 {
     Cell* ctmpCPUField = (Cell*)tmpCPUField;
@@ -105,18 +126,57 @@ void TestScheme::performCPUSimulationStep(void* tmpCPUField, void* lr_halo,
         ctmpCPUField[global].e = tmpField[y-1].e;
     }
     delete[] tmpField;
+	return GPU_SUCCESS;
 }
 
-void TestScheme::performGPUSimulationStep(void* cu_field, void* cu_lr_halo,
-        void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y)
+ErrorStatus TestScheme::performGPUSimulationStep(void* cu_field, void* cu_lr_halo,
+        void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y,
+        size_t CUDA_X_BLOCKS, size_t CUDA_Y_BLOCKS, size_t CUDA_X_THREADS,
+        size_t CUDA_Y_THREADS, void* stream)
 {
-
+	size_t SharedMemoryPerBlock = CUDA_X_THREADS * CUDA_Y_THREADS * sizeof(Cell);
+	float blocksPerSM = ceil((float)CUDA_X_BLOCKS * (float)CUDA_Y_BLOCKS / (float)amountSMs);
+	size_t totalSharedMemoryPerBlock = ceil((float)totalSharedMemoryPerSM / blocksPerSM);
+	/// Check if there is enough shared memory
+	if(totalSharedMemoryPerBlock < SharedMemoryPerBlock) {
+		errorString = std::string("Trying to allocate too much CUDA shared memory: ") +
+			std::to_string(totalSharedMemoryPerBlock) + std::string(" bytes is available per block, ") +
+			std::to_string(SharedMemoryPerBlock) + std::string(" bytes per block is requested!");
+		return GPU_ERROR;
+	}
+    cudaStream_t* cuStream = (cudaStream_t*)stream;
+	performGPUSimulationStep_kernel <<< dim3(CUDA_X_BLOCKS, CUDA_Y_BLOCKS, 1),
+		dim3(CUDA_X_THREADS, CUDA_Y_THREADS, 1), SharedMemoryPerBlock,
+		*cuStream >>> ((Cell*)cu_field, (Cell*)cu_lr_halo, (Cell*)cu_tb_halo,
+            (Cell*)cu_lrtb_halo, N_X, N_Y);
+	/// Check if the kernel executed without errors
+	lastCudaError = cudaGetLastError();
+	if(lastCudaError != cudaSuccess) {
+		errorString = std::string("performGPUSimulationStep: ") +
+			std::string(cudaGetErrorString(lastCudaError));
+		return GPU_ERROR;
+	}
+	return GPU_SUCCESS;
 }
 
-void TestScheme::updateGPUGlobalBorders(void* cu_field, void* cu_lr_halo,
-                void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y)
+ErrorStatus TestScheme::updateGPUGlobalBorders(void* cu_field, void* cu_lr_halo,
+            void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y,
+            size_t type, size_t CUDA_X_BLOCKS, size_t CUDA_Y_BLOCKS,
+            size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS, void* stream)
 {
-
+    cudaStream_t* cuStream = (cudaStream_t*)stream;
+	updateGPUGlobalBorders_kernel <<< dim3(CUDA_X_BLOCKS, CUDA_Y_BLOCKS, 1),
+		dim3(CUDA_X_THREADS, CUDA_Y_THREADS, 1), 0,
+		*cuStream >>> ((Cell*)cu_field, (Cell*)cu_lr_halo, (Cell*)cu_tb_halo,
+            (Cell*)cu_lrtb_halo, N_X, N_Y, type);
+	/// Check if the kernel executed without errors
+	lastCudaError = cudaGetLastError();
+	if(lastCudaError != cudaSuccess) {
+		errorString = std::string("performGPUSimulationStep: ") +
+			std::string(cudaGetErrorString(lastCudaError));
+		return GPU_SUCCESS;
+	}
+	return GPU_SUCCESS;
 }
 
 void* TestScheme::getMarkerValue()

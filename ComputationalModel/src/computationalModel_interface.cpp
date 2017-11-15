@@ -11,6 +11,6 @@
 
 void* createComputationalModel(const char* compModel, const char* gridModel)
 {
-    CPUComputationalModel* model = new CPUComputationalModel(compModel, gridModel);
+    GPUComputationalModel* model = new GPUComputationalModel(compModel, gridModel);
     return (void*) model;
 }

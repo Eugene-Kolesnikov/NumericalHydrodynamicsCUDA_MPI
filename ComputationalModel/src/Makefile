@@ -16,7 +16,8 @@ OBJECTS = computationalModel_interface.o \
 	CPUComputationalModel.o \
 	GPUComputationalModel.o \
 	ComputationalModel.o \
-	../../MpiController/src/FileLogger.o
+	../../MpiController/src/FileLogger.o \
+	../../ComputationalScheme/src/ComputationalScheme.o
 
 all: $(OBJECTS)
 	$(NVCC) --shared --compiler-options '-fPIC' -o ../build/libComputationalModel.1.0.0.dylib $(addprefix ../build/,$(notdir $(OBJECTS))) $(LIBS_PATH) $(LIBS)

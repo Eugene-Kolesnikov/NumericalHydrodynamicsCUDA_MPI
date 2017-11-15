@@ -16,6 +16,7 @@
 
 #include <string>
 #include <mpi.h>
+#include "GPU_Status.h"
 #include "../../ComputationalScheme/src/ComputationalScheme.hpp"
 #include "../../MpiController/src/FileLogger.hpp"
 #include <dlfcn.h>
@@ -40,9 +41,9 @@ protected:
     * long double) will be used in the program.
     */
    typedef char byte;
-   
+
    /**
-    * 
+    *
     */
    enum TypeMemCpy {TmpCPUFieldToField, FieldToTmpCPUField};
 
@@ -64,7 +65,7 @@ public:
      * @param mpi_node_y -- Y-coordinate of a 2D MPI ids of a ComputationalNode
      * from which the subfield was received.
      */
-    virtual void updateGlobalField(size_t mpi_node_x, size_t mpi_node_y) = 0;
+    virtual ErrorStatus updateGlobalField(size_t mpi_node_x, size_t mpi_node_y) = 0;
 
     /**
      * @brief The function is called by both types of nodes: ComputationalNode and
@@ -77,7 +78,7 @@ public:
      * fields must be initialized. Moreover, allocated memory on the CPU must be
      * page-locked and accessible to the device for asynchronous data transferring.
      */
-    virtual void initializeEnvironment() = 0;
+    virtual ErrorStatus initializeEnvironment() = 0;
 
     /**
      * @brief Function which is called by both types of nodes: ComputationalNode and
@@ -101,7 +102,7 @@ public:
      * function, no arguments are submitted to the function and, therefore, by the
      * default rule, mpi_node_y = 0.
      */
-    virtual void prepareSubfield(size_t mpi_node_x = 0, size_t mpi_node_y = 0) = 0;
+    virtual ErrorStatus prepareSubfield(size_t mpi_node_x = 0, size_t mpi_node_y = 0) = 0;
 
     /**
      * @brief The function which is called only by ComputationalNode objects during the
@@ -109,21 +110,21 @@ public:
      * to the GPU memory.
      * Stream 'streamInternal' is responsible for this task.
      */
-    virtual void loadSubFieldToGPU() = 0;
+    virtual ErrorStatus loadSubFieldToGPU() = 0;
 
     /**
      * @brief This function is used to synchronize all GPU jobs that are in process
      * in the current moment, in particular, the purpose of this function is to
      * wait until all computations and CPU<->GPU memory transfers are finished.
      */
-    virtual void gpuSync() = 0;
+    virtual ErrorStatus gpuSync() = 0;
 
     /**
      * @brief The function is called by ComputationalNode objects to compute
      * internal elements of the subfield. Stream 'streamInternal' is responsible
      * for this task.
      */
-    virtual void performSimulationStep() = 0;
+    virtual ErrorStatus performSimulationStep() = 0;
 
     /**
      * @brief The function is called by ComputationalNode objects to transfer
@@ -133,7 +134,7 @@ public:
      * are essential for obtaining correct halo elements and global borders.
      * Stream 'streamHaloBorder' is responsible for this task.
      */
-    virtual void updateHaloBorderElements() = 0;
+    virtual ErrorStatus updateHaloBorderElements(size_t mpi_node_x, size_t mpi_node_y) = 0;
 
     /**
      * @brief The function is called by ComputationalNode objects during the
@@ -141,7 +142,13 @@ public:
      * to the CPU memory for further transferring among ComputationalNode objects.
      * Stream 'streamHaloBorder' is responsible for this task.
      */
-    virtual void prepareHaloElements() = 0;
+    virtual ErrorStatus prepareHaloElements() = 0;
+
+    /**
+     * [deinitModel description]
+     * @return [description]
+     */
+    virtual ErrorStatus deinitModel() = 0;
 
 /// Getters and setters for configuration parameters
 public:
@@ -317,6 +324,12 @@ public:
      */
     void memcpyField(size_t mpi_node_x, size_t mpi_node_y, TypeMemCpy cpyType);
 
+    /**
+     * [getErrorString description]
+     * @return [description]
+     */
+    std::string getErrorString();
+
 public:
     MPI_Datatype MPI_CellType;
 
@@ -351,6 +364,9 @@ protected:
     void* rcv_lr_halo;
     void* rcv_tb_halo;
     void* rcv_lrtb_halo;
+
+protected:
+    std::string errorString;
 };
 
 #endif /* COMPUTATIONALMODEL_HPP */

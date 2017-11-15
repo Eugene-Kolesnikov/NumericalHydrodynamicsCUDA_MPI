@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-/* 
+/*
  * File:   LatticeBoltzmannModel.hpp
  * Author: eugene
  *
@@ -23,27 +23,33 @@ class GPUComputationalModel : public ComputationalModel {
 public:
     GPUComputationalModel(const char* compModel, const char* gridModel);
     virtual ~GPUComputationalModel();
-    
+
 public:
-    virtual void initializeEnvironment();
-    virtual void updateGlobalField(size_t mpi_node_x, size_t mpi_node_y);
-    virtual void prepareSubfield(size_t mpi_node_x = 0, size_t mpi_node_y = 0);
-    virtual void loadSubFieldToGPU();
-    virtual void gpuSync();
-    virtual void performSimulationStep();
-    virtual void updateHaloBorderElements();
-    virtual void prepareHaloElements();
-    
+    virtual ErrorStatus initializeEnvironment();
+    virtual ErrorStatus updateGlobalField(size_t mpi_node_x, size_t mpi_node_y);
+    virtual ErrorStatus prepareSubfield(size_t mpi_node_x = 0, size_t mpi_node_y = 0);
+    virtual ErrorStatus loadSubFieldToGPU();
+    virtual ErrorStatus gpuSync();
+    virtual ErrorStatus performSimulationStep();
+    virtual ErrorStatus updateHaloBorderElements(size_t mpi_node_x, size_t mpi_node_y);
+    virtual ErrorStatus prepareHaloElements();
+    virtual ErrorStatus deinitModel();
+
 protected:
     cudaStream_t streamInternal;
     cudaStream_t streamHaloBorder;
-    
+
 protected:
     void* cu_field;
     void* cu_lr_halo;
     void* cu_tb_halo;
     void* cu_lrtb_halo;
+
+protected:
+    cudaDeviceProp devProp;
+    cudaError_t lastCudaError;
+    size_t amountSMs;
+    size_t totalSharedMemoryPerSM;
 };
 
 #endif /* GPUCOMPUTATIONALMODEL_HPP */
-

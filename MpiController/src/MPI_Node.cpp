@@ -137,7 +137,7 @@ void MPI_Node::parseConfigFile()
     if(checkParsedParameters() == false) {
         throw std::runtime_error("Not all required parameters are read from the configuration file!");
     }
-    
+
     model->setAppPath(appPath);
     model->setLog(&Log);
     model->initScheme();

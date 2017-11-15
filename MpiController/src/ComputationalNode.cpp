@@ -39,21 +39,21 @@ void ComputationalNode::initEnvironment()
         loadInitSubFieldFromServer();
         // Transfer initial subfield from the CPU memory to the GPU memory
         // Stream 'streamInternal' is responsible for this task.
-        model->loadSubFieldToGPU();
+        HANDLE_GPUERROR(model->loadSubFieldToGPU());
         // Wait for the stream 'streamInternal' to finish its tasks
-        model->gpuSync();
+        HANDLE_GPUERROR(model->gpuSync());
         // Transfer halo elements from the GPU memory to the CPU memory
         // Stream 'streamHaloBorder' is responsible for this task.
-        model->prepareHaloElements();
+        HANDLE_GPUERROR(model->prepareHaloElements());
         // Wait for the stream 'streamHaloBorder' to finish its tasks
-        model->gpuSync();
+        HANDLE_GPUERROR(model->gpuSync());
         // Share halo elements among ComputationalNode objects
         shareHaloElements();
         // Transfer halo elements to the GPU memory and update global borders.
         // Stream 'streamHaloBorder' is responsible for this task.
-        model->updateHaloBorderElements();
+        HANDLE_GPUERROR(model->updateHaloBorderElements(localMPI_id_x,localMPI_id_y));
         // Wait for the stream 'streamHaloBorder' to finish its tasks
-        model->gpuSync();
+        HANDLE_GPUERROR(model->gpuSync());
     } catch(const std::runtime_error& err) {
         if(Log.is_open())
             Log << _ERROR_ << std::string("(ComputationalNode:initEnvironment): ") + err.what();
@@ -72,21 +72,21 @@ void ComputationalNode::runNode()
             Log << "Start calculations at time: " + std::to_string(curTime);
             // Compute internal elements of the subfield.
             // Stream 'streamInternal' is responsible for this task.
-            model->performSimulationStep();
+            HANDLE_GPUERROR(model->performSimulationStep());
             // Wait for the stream 'streamInternal' to finish computations,
             // since the correct values of the subfield are essential for
             // obtaining correct halo elements and global borders.
-            model->gpuSync();
+            HANDLE_GPUERROR(model->gpuSync());
             // Transfer halo elements from the GPU memory to the CPU memory
             // Stream 'streamHaloBorder' is responsible for this task.
-            model->prepareHaloElements();
+            HANDLE_GPUERROR(model->prepareHaloElements());
             // Wait for the stream 'streamHaloBorder' to finish its tasks
-            model->gpuSync();
+            HANDLE_GPUERROR(model->gpuSync());
             // Share halo elements among ComputationalNode objects
             shareHaloElements();
             // Transfer halo elements to the GPU memory and update global borders.
             // Stream 'streamHaloBorder' is responsible for this task.
-            model->updateHaloBorderElements();
+            HANDLE_GPUERROR(model->updateHaloBorderElements(localMPI_id_x, localMPI_id_y));
             ++perfSteps;
             if(perfSteps == STEP_LENGTH) {
                 // Request to transfer the subfield from the GPU memory to the
@@ -94,21 +94,22 @@ void ComputationalNode::runNode()
                 // Stream 'streamInternal' is used for this task.
                 // Since tasks of streams 'streamInternal' and 'streamHaloBorder'
                 // don't intersect, the synchronization is not needed.
-                model->prepareSubfield();
+                HANDLE_GPUERROR(model->prepareSubfield());
                 // Wait for the stream 'streamHaloBorder' and 'streamInternal'
                 // to finish their tasks
-                model->gpuSync();
+                HANDLE_GPUERROR(model->gpuSync());
                 sendUpdatedSubFieldToServer();
                 perfSteps = 0;
             } else {
                 // Wait for the stream 'streamHaloBorder' to finish its tasks
-                model->gpuSync();
+                HANDLE_GPUERROR(model->gpuSync());
             }
             curTime += TAU;
         }
         setStopMarker();
         sendUpdatedSubFieldToServer();
         MPI_Node::finalBarrierSync();
+        model->deinitModel();
     } catch(const std::runtime_error& err) {
         Log << _ERROR_ << std::string("(ComputationalNode:runNode): ") + err.what();
         throw;

@@ -22,14 +22,15 @@ public:
     virtual ~CPUComputationalModel();
 
 public:
-    virtual void initializeEnvironment();
-    virtual void updateGlobalField(size_t mpi_node_x, size_t mpi_node_y);
-    virtual void prepareSubfield(size_t mpi_node_x = 0, size_t mpi_node_y = 0);
-    virtual void loadSubFieldToGPU();
-    virtual void gpuSync();
-    virtual void performSimulationStep();
-    virtual void updateHaloBorderElements();
-    virtual void prepareHaloElements();
+    virtual ErrorStatus initializeEnvironment();
+    virtual ErrorStatus updateGlobalField(size_t mpi_node_x, size_t mpi_node_y);
+    virtual ErrorStatus prepareSubfield(size_t mpi_node_x = 0, size_t mpi_node_y = 0);
+    virtual ErrorStatus loadSubFieldToGPU();
+    virtual ErrorStatus gpuSync();
+    virtual ErrorStatus performSimulationStep();
+    virtual ErrorStatus updateHaloBorderElements(size_t mpi_node_x, size_t mpi_node_y);
+    virtual ErrorStatus prepareHaloElements();
+    virtual ErrorStatus deinitModel();
 };
 
 #endif /* CPUCOMPUTATIONALMODEL_H */

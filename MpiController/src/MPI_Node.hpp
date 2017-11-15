@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-/* 
+/*
  * File:   MPI_Node.hpp
  * Author: eugene
  *
@@ -18,6 +18,7 @@
 #include <cstdlib>
 #include "FileLogger.hpp"
 #include "../../ComputationalModel/src/ComputationalModel.hpp"
+#include "../../ComputationalModel/src/GPU_Status.h"
 
 class MPI_Node {
 public:
@@ -27,7 +28,7 @@ public:
 public:
     virtual void initEnvironment();
     virtual void runNode() = 0;
-    
+
 protected:
     void loadXMLParserLib();
     void parseConfigFile();
@@ -38,12 +39,12 @@ protected:
     void setLocalMPI_ids(const int globalId, int& localIdx, int& localIdy);
     size_t getGlobalMPIid(size_t mpi_id_x, size_t mpi_id_y);
     void finalBarrierSync();
-    
+
 protected:
     void* parserLibHandle;
     void (*createConfig)(void* params, const char* filepath);
     void* (*readConfig)(const char* filepath);
-    
+
 protected:
     std::string appPath;
     logging::FileLogger Log;
@@ -51,12 +52,12 @@ protected:
     size_t globalMPI_id;
     size_t localMPI_id_x;
     size_t localMPI_id_y;
-    
+
 protected:
     void* compModelLibHandle;
     void* (*createComputationalModel)(const char* compModel, const char* gridModel);
     ComputationalModel* model;
-    
+
 protected: // Configuration parameters \TODO: move configuration parameters to
     // the computational model
     size_t MPI_NODES_X;
@@ -73,4 +74,3 @@ protected: // Configuration parameters \TODO: move configuration parameters to
 };
 
 #endif /* MPI_NODE_HPP */
-

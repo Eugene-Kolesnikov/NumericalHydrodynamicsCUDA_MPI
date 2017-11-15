@@ -1,4 +1,4 @@
-CXX = g++
+CXX = clang++
 
 NVCC = nvcc
 
@@ -11,6 +11,7 @@ NVCCFLAGS = -c -arch=sm_30 -O3 -ccbin=$(CXX) -std=c++11 --compiler-options '-fPI
 INCLUDE_PATH = -I/Developer/NVIDIA/CUDA-9.0/include/
 
 OBJECTS = computationalScheme_interface.o \
+	ComputationalScheme.o \
 	TestScheme.o
 
 all: $(OBJECTS)

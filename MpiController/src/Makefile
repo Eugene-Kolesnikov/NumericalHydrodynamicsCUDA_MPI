@@ -6,7 +6,7 @@ LIBS = -lmpi -lopa -lmpl -lpthread
 
 INCLUDE_PATH = -I/usr/local/Cellar/mpich/3.2/include/ -I/Developer/NVIDIA/CUDA-9.0/include/
 
-CXXFLAGS = -c -O3 -std=c++11
+CXXFLAGS = -c -O3 -std=c++11 -Wempty-body
 
 OBJECTS = mpi_main.o \
 	MPI_Node.o \

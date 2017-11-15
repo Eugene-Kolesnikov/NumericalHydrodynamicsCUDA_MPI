@@ -24,33 +24,18 @@ CPUComputationalModel::CPUComputationalModel(const char* compModel, const char* 
 
 CPUComputationalModel::~CPUComputationalModel()
 {
-    if(field != nullptr)
-        delete[] (byte*)field;
-    if(tmpCPUField != nullptr)
-        delete[] (byte*)tmpCPUField;
-    if(lr_halo != nullptr)
-        delete[] (byte*)lr_halo;
-    if(tb_halo != nullptr)
-        delete[] (byte*)tb_halo;
-    if(lrtb_halo != nullptr)
-        delete[] (byte*)lrtb_halo;
-    if(rcv_lr_halo != nullptr)
-        delete[] (byte*)rcv_lr_halo;
-    if(rcv_tb_halo != nullptr)
-        delete[] (byte*)rcv_tb_halo;
-    if(rcv_lrtb_halo != nullptr)
-        delete[] (byte*)rcv_lrtb_halo;
 }
 
-void CPUComputationalModel::updateGlobalField(size_t mpi_node_x, size_t mpi_node_y)
+ErrorStatus CPUComputationalModel::updateGlobalField(size_t mpi_node_x, size_t mpi_node_y)
 {
     if(nodeType != NODE_TYPE::SERVER_NODE)
         throw std::runtime_error("CPUComputationalModel::updateGlobalField: "
                 "This function should not be called by a Computational Node");
     memcpyField(mpi_node_x, mpi_node_y, TmpCPUFieldToField);
+    return GPU_SUCCESS;
 }
 
-void CPUComputationalModel::initializeEnvironment()
+ErrorStatus CPUComputationalModel::initializeEnvironment()
 {
     tmpCPUField = scheme->createField(lN_X, lN_Y);
     if(nodeType == NODE_TYPE::COMPUTATIONAL_NODE) {
@@ -63,37 +48,42 @@ void CPUComputationalModel::initializeEnvironment()
     } else { // NODE_TYPE::SERVER_NODE
         field = scheme->createField(N_X, N_Y);
     }
+    return GPU_SUCCESS;
 }
 
-void CPUComputationalModel::prepareSubfield(size_t mpi_node_x, size_t mpi_node_y)
+ErrorStatus CPUComputationalModel::prepareSubfield(size_t mpi_node_x, size_t mpi_node_y)
 {
     if(nodeType == NODE_TYPE::COMPUTATIONAL_NODE) {
         // No CPU<->GPU interaction in the CPU version
     } else {
         memcpyField(mpi_node_x, mpi_node_y, FieldToTmpCPUField);
     }
+    return GPU_SUCCESS;
 }
 
-void CPUComputationalModel::loadSubFieldToGPU()
+ErrorStatus CPUComputationalModel::loadSubFieldToGPU()
 {
     // No CPU<->GPU interaction in the CPU version
+    return GPU_SUCCESS;
 }
 
-void CPUComputationalModel::gpuSync()
+ErrorStatus CPUComputationalModel::gpuSync()
 {
     // No CPU<->GPU interaction in the CPU version
+    return GPU_SUCCESS;
 }
 
-void CPUComputationalModel::performSimulationStep()
+ErrorStatus CPUComputationalModel::performSimulationStep()
 { // shift from right to the left
     if(nodeType != NODE_TYPE::COMPUTATIONAL_NODE)
         throw std::runtime_error("CPUComputationalModel::performSimulationStep: "
                 "This function should not be called by the Server Node");
     // Use the CPU field in the CPU version
     scheme->performCPUSimulationStep(tmpCPUField, lr_halo, tb_halo, lrtb_halo, lN_X, lN_Y);
+    return GPU_SUCCESS;
 }
 
-void CPUComputationalModel::updateHaloBorderElements()
+ErrorStatus CPUComputationalModel::updateHaloBorderElements(size_t mpi_node_x, size_t mpi_node_y)
 {
     if(nodeType != NODE_TYPE::COMPUTATIONAL_NODE)
         throw std::runtime_error("CPUComputationalModel::updateHaloBorderElements: "
@@ -145,9 +135,10 @@ void CPUComputationalModel::updateHaloBorderElements()
             }
         }
     }
+    return GPU_SUCCESS;
 }
 
-void CPUComputationalModel::prepareHaloElements()
+ErrorStatus CPUComputationalModel::prepareHaloElements()
 {
     if(nodeType != NODE_TYPE::COMPUTATIONAL_NODE)
         throw std::runtime_error("CPUComputationalModel::prepareHaloElements: "
@@ -243,4 +234,26 @@ void CPUComputationalModel::prepareHaloElements()
             }
         }
     }
+    return GPU_SUCCESS;
+}
+
+ErrorStatus CPUComputationalModel::deinitModel()
+{
+    if(field != nullptr)
+        delete[] (byte*)field;
+    if(tmpCPUField != nullptr)
+        delete[] (byte*)tmpCPUField;
+    if(lr_halo != nullptr)
+        delete[] (byte*)lr_halo;
+    if(tb_halo != nullptr)
+        delete[] (byte*)tb_halo;
+    if(lrtb_halo != nullptr)
+        delete[] (byte*)lrtb_halo;
+    if(rcv_lr_halo != nullptr)
+        delete[] (byte*)rcv_lr_halo;
+    if(rcv_tb_halo != nullptr)
+        delete[] (byte*)rcv_tb_halo;
+    if(rcv_lrtb_halo != nullptr)
+        delete[] (byte*)rcv_lrtb_halo;
+    return GPU_SUCCESS;
 }

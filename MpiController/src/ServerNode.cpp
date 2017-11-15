@@ -4,10 +4,10 @@
  * and open the template in the editor.
  */
 
-/* 
+/*
  * File:   ServerNode.cpp
  * Author: eugene
- * 
+ *
  * Created on November 1, 2017, 12:49 PM
  */
 
@@ -25,10 +25,10 @@ ServerNode::ServerNode(size_t globalRank, size_t totalNodes, std::string app_pat
     DLV_terminate = nullptr;
 }
 
-ServerNode::~ServerNode() 
+ServerNode::~ServerNode()
 {
     if(m_visualizationLibHandle != nullptr)
-        dlclose(m_visualizationLibHandle); 
+        dlclose(m_visualizationLibHandle);
 }
 
 void ServerNode::initEnvironment()
@@ -61,6 +61,7 @@ void ServerNode::runNode()
             throw std::runtime_error("Visualization library was not able"
                     " to terminate successfully!");
         MPI_Node::finalBarrierSync();
+        model->deinitModel();
     } catch(const std::runtime_error& err) {
         Log << _ERROR_ << std::string("(ServerNode:runNode): ") + err.what();
         throw;
@@ -77,7 +78,7 @@ void ServerNode::loadVisualizationLib()
         Log << "Opened the dynamic visualization library";
     }
 
-    DLV_init = (bool (*)(size_t, size_t, 
+    DLV_init = (bool (*)(size_t, size_t,
             enum OUTPUT_OPTION, const char*))dlsym(m_visualizationLibHandle, "DLV_init");
     DLV_visualize = (bool (*)(void*,
         size_t, size_t))dlsym(m_visualizationLibHandle, "DLV_visualize");
@@ -99,8 +100,8 @@ void ServerNode::sendInitFieldToCompNodes()
     // sending data to computational nodes
     for(size_t mpi_node_x = 0; mpi_node_x < MPI_NODES_X; ++mpi_node_x) {
         for(size_t mpi_node_y = 0; mpi_node_y < MPI_NODES_Y; ++mpi_node_y) {
-            Log << "Sending a request to prepare a subfield for node (" + 
-                std::to_string(mpi_node_x) + "," + 
+            Log << "Sending a request to prepare a subfield for node (" +
+                std::to_string(mpi_node_x) + "," +
                 std::to_string(mpi_node_y) + ")";
             model->prepareSubfield(mpi_node_x, mpi_node_y);
             Log << "Preparation of a subfield successfully performed";
@@ -112,19 +113,19 @@ void ServerNode::sendInitFieldToCompNodes()
             // the 2D MPI id must be converted to the global MPI
             globalMPIidReceiver = getGlobalMPIid(mpi_node_x, mpi_node_y);
             Log << "Trying to send " + std::to_string(totalAmountCellsToTransfer) +
-                " amount of field cells to the node (" + 
-                std::to_string(mpi_node_x) + "," + 
+                " amount of field cells to the node (" +
+                std::to_string(mpi_node_x) + "," +
                 std::to_string(mpi_node_y) + "), (global id: " +
                 std::to_string(globalMPIidReceiver) + ")";
-            mpi_err_status = MPI_Send(tmpStoragePtr, totalAmountCellsToTransfer, 
+            mpi_err_status = MPI_Send(tmpStoragePtr, totalAmountCellsToTransfer,
                 model->MPI_CellType, globalMPIidReceiver, globalMPIidReceiver, MPI_COMM_WORLD);
             // Check if the MPI transfer was successful
             if(mpi_err_status != MPI_SUCCESS) {
                 MPI_Error_string(mpi_err_status, err_buffer, &resultlen);
                 throw std::runtime_error(err_buffer);
             }
-            Log << "Data has been successfully sent to the node (" + 
-                std::to_string(mpi_node_x) + "," + 
+            Log << "Data has been successfully sent to the node (" +
+                std::to_string(mpi_node_x) + "," +
                 std::to_string(mpi_node_y) + "), (global id: " +
                 std::to_string(globalMPIidReceiver) + ")";
         }
@@ -153,26 +154,26 @@ void ServerNode::loadUpdatedSubfields()
         for(size_t mpi_node_y = 0; mpi_node_y < MPI_NODES_Y; ++mpi_node_y) {
             size_t globalMPIidSender = getGlobalMPIid(mpi_node_x, mpi_node_y);
             Log << "Trying to receive " + std::to_string(totalAmountCellsToTransfer) +
-                " amount of field cells from the node (" + 
-                std::to_string(mpi_node_x) + "," + 
+                " amount of field cells from the node (" +
+                std::to_string(mpi_node_x) + "," +
                 std::to_string(mpi_node_y) + "), (global id: " +
                 std::to_string(globalMPIidSender) + ")";
-            MPI_Recv(tmpStoragePtr, totalAmountCellsToTransfer, model->MPI_CellType, 
+            MPI_Recv(tmpStoragePtr, totalAmountCellsToTransfer, model->MPI_CellType,
                     globalMPIidSender, globalMPIidSender, MPI_COMM_WORLD, &status);
             // After receiving the message, check the status to determine
             // how many numbers were actually received
             int number_amount;
             MPI_Get_count(&status, model->MPI_CellType, &number_amount);
             if(number_amount != totalAmountCellsToTransfer) {
-                Log << _WARNING_ << ("Received " + std::to_string(number_amount) + 
+                Log << _WARNING_ << ("Received " + std::to_string(number_amount) +
                         " amount of field cells instead of " + std::to_string(totalAmountCellsToTransfer));
             }
-            Log << "Data has been successfully received from the node (" + 
-                std::to_string(mpi_node_x) + "," + 
+            Log << "Data has been successfully received from the node (" +
+                std::to_string(mpi_node_x) + "," +
                 std::to_string(mpi_node_y) + "), (global id: " +
                 std::to_string(globalMPIidSender) + ")";
-            // On the next iteration the values of the array to which the 
-            // tmpStoragePtr is referenced will be changed, so it is 
+            // On the next iteration the values of the array to which the
+            // tmpStoragePtr is referenced will be changed, so it is
             // important to update the global field first.
             model->updateGlobalField(mpi_node_x, mpi_node_y);
         }

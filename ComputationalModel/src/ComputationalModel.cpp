@@ -303,6 +303,11 @@ void ComputationalModel::memcpyField(size_t mpi_node_x, size_t mpi_node_y, TypeM
     }
 }
 
+std::string ComputationalModel::getErrorString()
+{
+    return errorString;
+}
+
 void ComputationalModel::setLog(logging::FileLogger* _Log) {
     Log = _Log;
 }
