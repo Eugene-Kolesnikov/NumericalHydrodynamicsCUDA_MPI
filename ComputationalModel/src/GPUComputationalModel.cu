@@ -161,42 +161,87 @@ ErrorStatus GPUComputationalModel::updateHaloBorderElements(size_t mpi_node_x, s
 	if(mpi_node_x == 0) {
 		/// Update global top border
 		CUDA_X_BLOCKS = (size_t)(lN_X / CUDA_X_THREADS);
-		CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo, cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, TOP_BORDER,
+		CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
+            cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_TOP_BORDER,
 			CUDA_X_BLOCKS, 1, CUDA_X_THREADS, 1, &streamHaloBorder));
 	} else if(mpi_node_x == (MPI_NODES_X - 1)) {
 		/// Update global bottom border
 		CUDA_X_BLOCKS = (size_t)(lN_X / CUDA_X_THREADS);
-		CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo, cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, BOTTOM_BORDER,
+		CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
+            cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_BOTTOM_BORDER,
 			CUDA_X_BLOCKS, 1, CUDA_X_THREADS, 1, &streamHaloBorder));
 	}
 	if(mpi_node_y == 0) {
 		/// Update global left border
 		CUDA_X_BLOCKS = (size_t)(lN_Y / CUDA_Y_THREADS);
-		CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo, cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, LEFT_BORDER,
+		CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
+            cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_LEFT_BORDER,
 			CUDA_X_BLOCKS, 1, CUDA_Y_THREADS, 1, &streamHaloBorder));
 	} else if(mpi_node_y == (MPI_NODES_Y - 1)) {
 		/// Update global right border
 		CUDA_X_BLOCKS = (size_t)(lN_Y / CUDA_Y_THREADS);
-		CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo, cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, RIGHT_BORDER,
+		CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
+            cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_RIGHT_BORDER,
 			CUDA_X_BLOCKS, 1, CUDA_Y_THREADS, 1, &streamHaloBorder));
 	}
-	int border = -1;
-	if(mpi_node_x == 0 && mpi_node_y == 0) {
-		border = LEFT_TOP_BORDER;
-	} else if(mpi_node_x == (MPI_NODES_X - 1) && mpi_node_y == 0) {
-		border = LEFT_BOTTOM_BORDER;
-	} else if(mpi_node_x == 0 && mpi_node_y == (MPI_NODES_Y - 1)) {
-		border = RIGHT_TOP_BORDER;
-	} else if(mpi_node_x == (MPI_NODES_X - 1) && mpi_node_y == (MPI_NODES_Y - 1)) {
-		border = RIGHT_BOTTOM_BORDER;
-	}
-	if(border == -1) {
-		/// Exit function if no diagonal element must be updated
-		return GPU_SUCCESS;
-	}
-	/// Update a diagonal element
-	CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo, cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, border,
-		1, 1, 1, 1, &streamHaloBorder));
+    /// Update global diagonal border elements
+    if(mpi_node_y == 0) {
+        /// First row of nodes have the top global border which means that
+        /// they have to update top diagonal border elements
+        /// Update the left-top diagonal element
+    	CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
+            cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_LEFT_TOP_BORDER,
+    		1, 1, 1, 1, &streamHaloBorder));
+        /// Update the right-top diagonal element
+        CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
+            cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_RIGHT_TOP_BORDER,
+    		1, 1, 1, 1, &streamHaloBorder));
+    } else if(mpi_node_y == (MPI_NODES_Y - 1)) {
+        /// Last row of nodes have the bottom global border which means that
+        /// they have to update bottom diagonal border elements
+        /// Update the left-bottom diagonal element
+    	CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
+            cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_LEFT_BOTTOM_BORDER,
+    		1, 1, 1, 1, &streamHaloBorder));
+        /// Update the right-bottom diagonal element
+        CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
+            cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_RIGHT_BOTTOM_BORDER,
+    		1, 1, 1, 1, &streamHaloBorder));
+    }
+    if(mpi_node_x == 0) {
+        /// First column of nodes have the left global border which means that
+        /// they have to update left-top and left-bottom diagonal border elements
+        /// Update the left-top diagonal element
+        if(mpi_node_y != 0) {
+            /// Since the first block has already updated the left-top diagonal element
+            CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
+                cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_LEFT_TOP_BORDER,
+        		1, 1, 1, 1, &streamHaloBorder));
+        }
+        if(mpi_node_y != (MPI_NODES_Y - 1)) {
+            /// Since the last block has already updated the left-bottom diagonal element
+            CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
+                cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_LEFT_BOTTOM_BORDER,
+        		1, 1, 1, 1, &streamHaloBorder));
+        }
+    } else if(mpi_node_x == (MPI_NODES_X - 1)) {
+        /// Last column of nodes have the right global border which means that
+        /// they have to update right-top and right-bottom diagonal border elements
+        /// Update the right-top diagonal element
+        if(mpi_node_y != 0) {
+            /// Since the first block has already updated the right-top diagonal element
+            CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
+                cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_RIGHT_TOP_BORDER,
+        		1, 1, 1, 1, &streamHaloBorder));
+        }
+        /// Update the right-bottom diagonal element
+        if(mpi_node_y != (MPI_NODES_Y - 1)) {
+            /// Since the last block has already updated the right-bottom diagonal element
+            CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
+                cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_RIGHT_BOTTOM_BORDER,
+        		1, 1, 1, 1, &streamHaloBorder));
+        }
+    }
     return GPU_SUCCESS;
 }
 

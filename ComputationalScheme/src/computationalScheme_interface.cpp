@@ -1,7 +1,7 @@
 #include "computationalScheme_interface.h"
-#include "TestScheme.hpp"
+#include "LatticeBoltzmannScheme.hpp"
 
 void* createScheme(const char* schemeModel, const char* gridModel)
 {
-    return (void*) (new TestScheme());
+    return (void*) (new LatticeBoltzmannScheme());
 }

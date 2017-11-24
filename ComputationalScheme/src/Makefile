@@ -12,7 +12,7 @@ INCLUDE_PATH = -I/Developer/NVIDIA/CUDA-9.0/include/
 
 OBJECTS = computationalScheme_interface.o \
 	ComputationalScheme.o \
-	TestScheme.o
+	LatticeBoltzmannScheme.o
 
 all: $(OBJECTS)
 	$(NVCC) --shared --compiler-options '-fPIC' -o ../build/libComputationalScheme.1.0.0.dylib $(addprefix ../build/,$(notdir $(OBJECTS))) $(LIBS)

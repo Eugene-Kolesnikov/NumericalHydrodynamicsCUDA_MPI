@@ -8,6 +8,15 @@
 
 #include "../../ComputationalModel/src/GPU_Status.h"
 
+#define CU_LEFT_BORDER (0)
+#define CU_RIGHT_BORDER (1)
+#define CU_TOP_BORDER (2)
+#define CU_BOTTOM_BORDER (3)
+#define CU_LEFT_TOP_BORDER (4)
+#define CU_RIGHT_TOP_BORDER (5)
+#define CU_LEFT_BOTTOM_BORDER (6)
+#define CU_RIGHT_BOTTOM_BORDER (7)
+
 class ComputationalScheme {
 public:
     ComputationalScheme();

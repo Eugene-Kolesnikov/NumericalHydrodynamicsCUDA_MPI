@@ -13,7 +13,7 @@
 // Is necessary because right now the visualization module doesn't work with "unknown" structures
 #define __device__
 
-#include "../../ComputationalScheme/src/cell.h"
+#include "../../ComputationalScheme/src/LB_Cell.h"
 
 extern GLuint programID;
 
