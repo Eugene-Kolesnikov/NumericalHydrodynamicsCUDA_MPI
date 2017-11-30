@@ -1,0 +1,165 @@
+#include "Simplevisualizer.hpp"
+#include <QDateTime>
+#include <exception>
+
+SimpleVisualizer::SimpleVisualizer(logging::FileLogger* _Log):
+    Visualizer(_Log)
+{
+    colorMap = nullptr;
+    colorScale = nullptr;
+    marginGroup = nullptr;
+    app = static_cast<QApplication*>(QApplication::instance());
+    *Log << "Constructed SimpleVisualizer";
+}
+
+SimpleVisualizer::~SimpleVisualizer()
+{
+}
+
+void SimpleVisualizer::initVisualizer()
+{
+    *Log << "Initialization of the visualizer";
+    openReportFile();
+    initQtEnv();
+    initCustomPlot();
+    window.show();
+    *Log << "Opened window";
+    app->processEvents();
+    *Log << "QApplication has processed pending events";
+}
+
+void SimpleVisualizer::openReportFile()
+{
+    std::string time = QDateTime::currentDateTime().toString().toStdString();
+    report = appPath + "report." + time + ".data";
+    file.open(report.c_str(), std::fstream::out);
+    if(file.is_open() == false)
+        throw std::runtime_error("Can't create the report file!");
+    *Log << "Opened report file";
+    writeEnvironment();
+}
+
+void SimpleVisualizer::initQtEnv()
+{
+    *Log << "Initialization of the Qt environment";
+    window.setWindowTitle("Simulation computation");
+    window.setProgress(0);
+    window.setEnvironment(MPI_NODES_X, MPI_NODES_Y, CUDA_X_THREADS,
+        CUDA_Y_THREADS, TAU, TOTAL_TIME, STEP_LENGTH, N_X, N_Y, X_MAX, Y_MAX);
+    window.setWindowSize(X_MAX, Y_MAX);
+    *Log << "Initialized Qt environment";
+}
+
+void SimpleVisualizer::initCustomPlot()
+{
+    *Log << "Initialization of the QCustomPlot";
+    customPlot = window.getCustomPlot();
+    // configure axis rect:
+    customPlot->axisRect()->setupFullAxesBox(true);
+    customPlot->xAxis->setLabel("x");
+    customPlot->yAxis->setLabel("y");
+    // set up the QCPColorMap:
+    colorMap = new QCPColorMap(customPlot->xAxis, customPlot->yAxis);
+    colorMap->data()->setSize(N_X, N_Y);
+    // Span the coordinate range appropriately
+    colorMap->data()->setRange(QCPRange(0, X_MAX), QCPRange(0, Y_MAX));
+    colorScale = new QCPColorScale(customPlot);
+    // add it to the right of the main axis rect
+    customPlot->plotLayout()->addElement(0, 1, colorScale);
+    // scale shall be vertical bar with tick/axis labels right (actually atRight is already the default)
+    colorScale->setType(QCPAxis::atRight);
+    // associate the color map with the color scale
+    colorMap->setColorScale(colorScale);
+    colorScale->axis()->setLabel(params.begin()->first.c_str());
+    // set the color gradient of the color map to one of the presets:
+    colorMap->setGradient(QCPColorGradient::gpJet);
+    // make sure the axis rect and color scale synchronize their bottom and top margins (so they line up):
+    marginGroup = new QCPMarginGroup(customPlot);
+    customPlot->axisRect()->setMarginGroup(QCP::msBottom|QCP::msTop, marginGroup);
+    colorScale->setMarginGroup(QCP::msBottom|QCP::msTop, marginGroup);
+    // rescale the data dimension (color) such that all data points lie in the span visualized by the color gradient:
+    colorMap->rescaleDataRange();
+    // rescale the key (x) and value (y) axes so the whole color map is visible:
+    customPlot->rescaleAxes();
+    *Log << "Initialized QCustomPlot";
+}
+
+void SimpleVisualizer::renderFrame(void* field)
+{
+    writeFrame((byte*)field);
+    if(size_of_datatype == sizeof(float)) {
+        updateColorMap((float*)field);
+    } else if(size_of_datatype == sizeof(double)) {
+        updateColorMap((double*)field);
+    } else if(size_of_datatype == sizeof(long double)) {
+        updateColorMap((long double*)field);
+    } else {
+        throw std::runtime_error("SimpleVisualizer::renderFrame: Unknown data type!");
+    }
+    *Log << "rendered frame";
+}
+
+void SimpleVisualizer::setProgress(double val)
+{
+    window.setProgress(val);
+    *Log << "set progress value";
+}
+
+void SimpleVisualizer::deinitVisualizer()
+{
+    file.close();
+}
+
+void SimpleVisualizer::writeEnvironment()
+{
+    file << MPI_NODES_X << ' ' << MPI_NODES_Y << ' ' << CUDA_X_THREADS << ' ' << CUDA_Y_THREADS
+         << ' ' << TAU << ' ' << TOTAL_TIME << ' ' << STEP_LENGTH << ' ' << N_X << ' ' << N_Y
+         << ' ' << X_MAX << ' ' << Y_MAX << ' ' << size_of_datatype << ' ' << nitems << ' '
+         << params.size();
+    for(auto it = params.begin(); it != params.end(); ++it) {
+        file << ' ' << it->first;
+    }
+    file << '\n';
+    *Log << "saved environment to the report file";
+}
+
+void SimpleVisualizer::writeFrame(byte* field)
+{
+    size_t global;
+    size_t id_shift;
+    size_t items = ids.size();
+    for(size_t k = 0; k < items; ++k) {
+        id_shift = ids[k] * size_of_datatype;
+        for(size_t x = 0; x < N_X; ++x) {
+            for(size_t y = 0; y < N_Y; ++y) {
+                global = (y * N_X + x) * nitems * size_of_datatype;
+                for(size_t b = 0; b < size_of_datatype; ++b) {
+                    file << field[global + id_shift + b];
+                }
+                file << ' ';
+            }
+        }
+        file << '\n';
+    }
+}
+
+template<typename T> void SimpleVisualizer::updateColorMap(T* field)
+{
+    size_t id_shift = ids[0];
+    size_t global;
+    size_t globalLocal;
+    for(size_t x = 0; x < N_X; ++x) {
+        for(size_t y = 0; y < N_Y; ++y) {
+            global = (y * N_X + x) * nitems;
+            globalLocal = y * N_X + x;
+            colorMap->data()->setCell(x, y, (double)field[global + id_shift]);
+        }
+    }
+    *Log << "Updated the ColorMap";
+    colorMap->rescaleDataRange();
+    *Log << "Rescaled data range";
+    customPlot->replot();
+    *Log << "CustomPlot replotted";
+    app->processEvents();
+    *Log << "QApplication has processed pending events";
+}

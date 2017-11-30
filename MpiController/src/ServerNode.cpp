@@ -16,17 +16,18 @@
 #include <dlfcn.h>
 #include <mpi.h>
 
-ServerNode::ServerNode(size_t globalRank, size_t totalNodes, std::string app_path):
-    MPI_Node(globalRank, totalNodes, app_path)
+ServerNode::ServerNode(size_t globalRank, size_t totalNodes, std::string app_path, int* _argc, char** _argv):
+    MPI_Node(globalRank, totalNodes, app_path, _argc, _argv)
 {
     m_visualizationLibHandle = nullptr;
-    DLV_init = nullptr;
-    DLV_visualize = nullptr;
-    DLV_terminate = nullptr;
+    visualizer = nullptr;
+    createVisualizer = nullptr;
 }
 
 ServerNode::~ServerNode()
 {
+    if(visualizer != nullptr)
+        delete visualizer;
     if(m_visualizationLibHandle != nullptr)
         dlclose(m_visualizationLibHandle);
 }
@@ -39,7 +40,13 @@ void ServerNode::initEnvironment()
         MPI_Node::setComputationalModelEnv(ComputationalModel::NODE_TYPE::SERVER_NODE);
         model->initializeField();
         sendInitFieldToCompNodes();
-        DLV_init(N_X, N_Y, OUTPUT_OPTION::MPEG, (appPath + "../../../").c_str());
+        visualizer->setEnvironment((appPath + "../../../"), MPI_NODES_X, MPI_NODES_Y,
+            CUDA_X_THREADS, CUDA_Y_THREADS, TAU, TOTAL_TIME, STEP_LENGTH,
+            N_X, N_Y, X_MAX, Y_MAX, model->getScheme()->getDrawParams(),
+            model->getScheme()->getSizeOfDatatype(), model->getScheme()->getNumberOfElements());
+        Log << "Set the visualizer's environment";
+        visualizer->initVisualizer();
+        Log << "Initialized the visualizer";
     } catch(const std::runtime_error& err) {
         if(Log.is_open())
             Log << _ERROR_ << std::string("(ServerNode:initEnvironment): ") + err.what();
@@ -50,18 +57,25 @@ void ServerNode::initEnvironment()
 void ServerNode::runNode()
 {
     try {
+        size_t counter = 0;
+        double amountOfSteps = TOTAL_TIME / TAU;
+        Log << "Starting the rendering loop";
         // Continue loading updated fields and visualize them
         // until the stop marker is set
         while(model->checkStopMarker() == false) {
-            DLV_visualize(model->getField(), N_X, N_Y);
             loadUpdatedSubfields();
+            visualizer->setProgress(counter * (double)STEP_LENGTH / amountOfSteps * 100.0);
+            Log << "Set the progress";
+            visualizer->renderFrame(model->getField());
+            Log << "Rendered the frame";
+            counter++;
         }
         // Finish the visualization process
-        if(!DLV_terminate())
-            throw std::runtime_error("Visualization library was not able"
-                    " to terminate successfully!");
+        visualizer->deinitVisualizer();
+        Log << "Visualizer has been deinitialized";
         MPI_Node::finalBarrierSync();
         model->deinitModel();
+        Log << "Computational model has been deinitialized";
     } catch(const std::runtime_error& err) {
         Log << _ERROR_ << std::string("(ServerNode:runNode): ") + err.what();
         throw;
@@ -70,23 +84,19 @@ void ServerNode::runNode()
 
 void ServerNode::loadVisualizationLib()
 {
-    std::string libpath = appPath + "libVisuzalization.1.0.0.dylib";
+    std::string libpath = appPath + "libVisualization.2.0.0.dylib";
     void* m_visualizationLibHandle = dlopen(libpath.c_str(), RTLD_LOCAL | RTLD_LAZY);
     if (m_visualizationLibHandle == nullptr) {
         throw std::runtime_error(dlerror());
     } else {
         Log << "Opened the dynamic visualization library";
     }
-
-    DLV_init = (bool (*)(size_t, size_t,
-            enum OUTPUT_OPTION, const char*))dlsym(m_visualizationLibHandle, "DLV_init");
-    DLV_visualize = (bool (*)(void*,
-        size_t, size_t))dlsym(m_visualizationLibHandle, "DLV_visualize");
-    DLV_terminate = (bool (*)())dlsym(m_visualizationLibHandle, "DLV_terminate");
-
-    if(DLV_init == nullptr || DLV_visualize == nullptr || DLV_terminate == nullptr) {
+    createVisualizer = (void* (*)(int*, char**, void*))dlsym(m_visualizationLibHandle, "createVisualizer");
+    if(createVisualizer == nullptr) {
         throw std::runtime_error("Can't load functions from the visualization library!");
     }
+    visualizer = (Visualizer*)createVisualizer(argc, argv, &Log);
+    Log << "Created a visualizer";
 }
 
 void ServerNode::sendInitFieldToCompNodes()

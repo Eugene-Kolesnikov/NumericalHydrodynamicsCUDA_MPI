@@ -172,10 +172,15 @@ public:
     size_t getN_X() const;
     void setN_Y(size_t val);
     size_t getN_Y() const;
+    void setX_MAX(double val);
+    double getX_MAX() const;
+    void setY_MAX(double val);
+    double getY_MAX() const;
     void setLN_X(size_t val);
     size_t getLN_X() const;
     void setLN_Y(size_t val);
     size_t getLN_Y() const;
+    ComputationalScheme* getScheme() const;
 
 /// Functions which are the same for each computational model
 public:
@@ -344,6 +349,8 @@ protected:
     double TAU;
     size_t N_X;
     size_t N_Y;
+    double X_MAX;
+    double Y_MAX;
     size_t lN_X;
     size_t lN_Y;
     size_t borders[4];

@@ -388,6 +388,26 @@ size_t ComputationalModel::getN_Y() const {
     return N_Y;
 }
 
+void ComputationalModel::setX_MAX(double val)
+{
+    X_MAX = val;
+}
+
+double ComputationalModel::getX_MAX() const
+{
+    return X_MAX;
+}
+
+void ComputationalModel::setY_MAX(double val)
+{
+    Y_MAX = val;
+}
+
+double ComputationalModel::getY_MAX() const
+{
+    return Y_MAX;
+}
+
 void ComputationalModel::setLN_X(size_t val) {
     lN_X = val;
 }
@@ -402,4 +422,9 @@ void ComputationalModel::setLN_Y(size_t val) {
 
 size_t ComputationalModel::getLN_Y() const {
     return lN_Y;
+}
+
+ComputationalScheme* ComputationalModel::getScheme() const
+{
+    return scheme;
 }

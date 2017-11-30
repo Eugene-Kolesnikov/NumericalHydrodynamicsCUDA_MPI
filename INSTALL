@@ -1,7 +1,7 @@
 rm -rf ./StartInterface.app
 cd ./StartInterface/src/ && qmake StartInterface.pro && make && make clean &&
 cd ../../ConfigParser/src && qmake ConfigParser.pro && make && make clean &&
-cd ../../Visualization/src && make && make clean &&
+cd ../../Visualization/src && qmake Visualization.pro && make && make clean &&
 cd ../../MpiController/src && make && make clean &&
 cd ../../ComputationalModel/src && make && make clean &&
 cd ../../ComputationalScheme/src && make && make clean &&
@@ -9,7 +9,7 @@ cd ../../ &&
 mv -v ./StartInterface/build/StartInterface.app . &&
 mkdir ./StartInterface.app/Contents/MacOS/log &&
 mv ./ConfigParser/build/libConfigParser.1.0.0.dylib ./StartInterface.app/Contents/MacOS/ &&
-mv ./Visualization/build/libVisuzalization.1.0.0.dylib ./StartInterface.app/Contents/MacOS/ &&
+mv ./Visualization/build/libVisualization.2.0.0.dylib ./StartInterface.app/Contents/MacOS/ &&
 mv ./MpiController/build/simulation_app ./StartInterface.app/Contents/MacOS/ &&
 mv ./ComputationalModel/build/libComputationalModel.1.0.0.dylib ./StartInterface.app/Contents/MacOS/ &&
 mv ./ComputationalScheme/build/libComputationalScheme.1.0.0.dylib ./StartInterface.app/Contents/MacOS/

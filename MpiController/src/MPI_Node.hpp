@@ -22,7 +22,7 @@
 
 class MPI_Node {
 public:
-    MPI_Node(size_t globalRank, size_t totalNodes, std::string app_path);
+    MPI_Node(size_t globalRank, size_t totalNodes, std::string app_path, int* _argc, char** _argv);
     virtual ~MPI_Node();
 
 public:
@@ -69,8 +69,14 @@ protected: // Configuration parameters \TODO: move configuration parameters to
     double STEP_LENGTH;
     size_t N_X;
     size_t N_Y;
+    double X_MAX;
+    double Y_MAX;
     size_t lN_X; // local N_X for computational nodes
     size_t lN_Y; // local N_Y for computational nodes
+
+protected:
+    int* argc;
+    char** argv;
 };
 
 #endif /* MPI_NODE_HPP */

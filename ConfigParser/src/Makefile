@@ -98,11 +98,15 @@ DIST          = ../../../Qt/5.10.0/clang_64/mkspecs/features/spec_pre.prf \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_bluetooth.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_bluetooth_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_bootstrap_private.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_charts.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_charts_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_clipboard_support_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_concurrent.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_concurrent_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_core.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_core_private.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_datavisualization.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_datavisualization_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_dbus.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_dbus_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_designer.pri \
@@ -130,6 +134,8 @@ DIST          = ../../../Qt/5.10.0/clang_64/mkspecs/features/spec_pre.prf \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_multimediawidgets_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_network.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_network_private.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_networkauth.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_networkauth_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_nfc.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_nfc_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_opengl.pri \
@@ -142,6 +148,8 @@ DIST          = ../../../Qt/5.10.0/clang_64/mkspecs/features/spec_pre.prf \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_positioning_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_printsupport.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_printsupport_private.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_purchasing.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_purchasing_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_qml.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_qml_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_qmldebug_private.pri \
@@ -157,6 +165,10 @@ DIST          = ../../../Qt/5.10.0/clang_64/mkspecs/features/spec_pre.prf \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_quicktemplates2_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_quickwidgets.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_quickwidgets_private.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_remoteobjects.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_remoteobjects_private.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_repparser.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_repparser_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_scxml.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_scxml_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_sensors.pri \
@@ -179,6 +191,13 @@ DIST          = ../../../Qt/5.10.0/clang_64/mkspecs/features/spec_pre.prf \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_uitools_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webchannel.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webchannel_private.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webengine.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webengine_private.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webenginecore.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webenginecore_private.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webenginecoreheaders_private.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webenginewidgets.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webenginewidgets_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_websockets.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_websockets_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webview.pri \
@@ -236,8 +255,8 @@ TARGET2       = libConfigParser.1.0.dylib
 
 ####### Custom Variables
 EXPORT_VALID_ARCHS = x86_64
-EXPORT_ARCH_ARGS = $(foreach arch, $(if $(EXPORT_ACTIVE_ARCHS), $(EXPORT_ACTIVE_ARCHS), $(EXPORT_VALID_ARCHS)), -arch $(arch))
 EXPORT_ACTIVE_ARCHS = $(filter $(EXPORT_VALID_ARCHS), $(ARCHS))
+EXPORT_ARCH_ARGS = $(foreach arch, $(if $(EXPORT_ACTIVE_ARCHS), $(EXPORT_ACTIVE_ARCHS), $(EXPORT_VALID_ARCHS)), -arch $(arch))
 
 
 first: all
@@ -308,11 +327,15 @@ Makefile: ConfigParser.pro ../../../Qt/5.10.0/clang_64/mkspecs/macx-clang/qmake.
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_bluetooth.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_bluetooth_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_bootstrap_private.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_charts.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_charts_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_clipboard_support_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_concurrent.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_concurrent_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_core.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_core_private.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_datavisualization.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_datavisualization_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_dbus.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_dbus_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_designer.pri \
@@ -340,6 +363,8 @@ Makefile: ConfigParser.pro ../../../Qt/5.10.0/clang_64/mkspecs/macx-clang/qmake.
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_multimediawidgets_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_network.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_network_private.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_networkauth.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_networkauth_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_nfc.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_nfc_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_opengl.pri \
@@ -352,6 +377,8 @@ Makefile: ConfigParser.pro ../../../Qt/5.10.0/clang_64/mkspecs/macx-clang/qmake.
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_positioning_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_printsupport.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_printsupport_private.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_purchasing.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_purchasing_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_qml.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_qml_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_qmldebug_private.pri \
@@ -367,6 +394,10 @@ Makefile: ConfigParser.pro ../../../Qt/5.10.0/clang_64/mkspecs/macx-clang/qmake.
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_quicktemplates2_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_quickwidgets.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_quickwidgets_private.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_remoteobjects.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_remoteobjects_private.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_repparser.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_repparser_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_scxml.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_scxml_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_sensors.pri \
@@ -389,6 +420,13 @@ Makefile: ConfigParser.pro ../../../Qt/5.10.0/clang_64/mkspecs/macx-clang/qmake.
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_uitools_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webchannel.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webchannel_private.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webengine.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webengine_private.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webenginecore.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webenginecore_private.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webenginecoreheaders_private.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webenginewidgets.pri \
+		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webenginewidgets_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_websockets.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_websockets_private.pri \
 		../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webview.pri \
@@ -474,11 +512,15 @@ Makefile: ConfigParser.pro ../../../Qt/5.10.0/clang_64/mkspecs/macx-clang/qmake.
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_bluetooth.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_bluetooth_private.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_bootstrap_private.pri:
+../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_charts.pri:
+../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_charts_private.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_clipboard_support_private.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_concurrent.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_concurrent_private.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_core.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_core_private.pri:
+../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_datavisualization.pri:
+../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_datavisualization_private.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_dbus.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_dbus_private.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_designer.pri:
@@ -506,6 +548,8 @@ Makefile: ConfigParser.pro ../../../Qt/5.10.0/clang_64/mkspecs/macx-clang/qmake.
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_multimediawidgets_private.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_network.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_network_private.pri:
+../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_networkauth.pri:
+../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_networkauth_private.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_nfc.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_nfc_private.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_opengl.pri:
@@ -518,6 +562,8 @@ Makefile: ConfigParser.pro ../../../Qt/5.10.0/clang_64/mkspecs/macx-clang/qmake.
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_positioning_private.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_printsupport.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_printsupport_private.pri:
+../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_purchasing.pri:
+../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_purchasing_private.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_qml.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_qml_private.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_qmldebug_private.pri:
@@ -533,6 +579,10 @@ Makefile: ConfigParser.pro ../../../Qt/5.10.0/clang_64/mkspecs/macx-clang/qmake.
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_quicktemplates2_private.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_quickwidgets.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_quickwidgets_private.pri:
+../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_remoteobjects.pri:
+../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_remoteobjects_private.pri:
+../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_repparser.pri:
+../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_repparser_private.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_scxml.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_scxml_private.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_sensors.pri:
@@ -555,6 +605,13 @@ Makefile: ConfigParser.pro ../../../Qt/5.10.0/clang_64/mkspecs/macx-clang/qmake.
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_uitools_private.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webchannel.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webchannel_private.pri:
+../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webengine.pri:
+../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webengine_private.pri:
+../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webenginecore.pri:
+../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webenginecore_private.pri:
+../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webenginecoreheaders_private.pri:
+../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webenginewidgets.pri:
+../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webenginewidgets_private.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_websockets.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_websockets_private.pri:
 ../../../Qt/5.10.0/clang_64/mkspecs/modules/qt_lib_webview.pri:

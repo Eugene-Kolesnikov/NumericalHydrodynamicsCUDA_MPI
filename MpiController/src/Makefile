@@ -13,7 +13,8 @@ OBJECTS = mpi_main.o \
 	ServerNode.o \
 	ComputationalNode.o \
 	FileLogger.o \
-	../../ComputationalModel/src/ComputationalModel.o
+	../../ComputationalModel/src/ComputationalModel.o \
+	../../Visualization/src/Visualizer.o
 
 
 all: $(OBJECTS)

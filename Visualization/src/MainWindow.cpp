@@ -1,130 +1,54 @@
-/**
-* @file MainWindow.cpp
-* @brief This file contains descriptions of functions (MainWindow class methods) which are responsible for all necessary functions
- * related to the window itself: creation, termination, events handling, cleaning.
-* @author Eugene Kolesnikov 
-* @date 8/10/2017 
-*/
+#include "Mainwindow.hpp"
+#include "ui_mainwindow.h"
+#include <cmath>
 
-#include "MainWindow.hpp"
-#include <exception>
-#include <OpenGL/gl3.h>
-#include "offscreen.h"
-
-
-MainWindow::MainWindow()
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
 {
-    _window = 0;
+    ui->setupUi(this);
+    setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
 }
 
 MainWindow::~MainWindow()
 {
-    glfwTerminate();
+    delete ui;
 }
 
-/**
- * @brief This method returns the resolution of the 
-  * screen to open the window of an appropriate size.
- * @return minimum of the height-width resolution of the screen in pixels.
-*/
-unsigned short MainWindow::get_resolution() 
+void MainWindow::setWindowSize(size_t WSize, size_t HSize)
 {
-    const GLFWvidmode * mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    return (mode->width > mode->height ? mode->height : mode->width);
+    int xoffcet = 190;
+    int yoffcet = 40;
+    size_t XSize = (size_t)(800 * sqrt((double)WSize / HSize));
+    size_t YSize = (size_t)(800 * sqrt((double)HSize / WSize));
+    this->setFixedSize(XSize + xoffcet, YSize + yoffcet);
 }
 
-/**
- * @brief Creates the window with a specified title.
- * @param title -- the title of the window.
-*/
-void MainWindow::create(std::string title)
+void MainWindow::setProgress(double val)
 {
-    /// Initialize GLFW
-    if( !glfwInit() ) {
-        throw std::runtime_error("Failed to initialize GLFW.");
-    }
-
-    /// set up the OpenGL 4.1 context
-    glfwWindowHint(GLFW_SAMPLES, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    /// set up the screen resolution
-    unsigned short size_wh = 0.49 * get_resolution();
-    set_output_windowsize(size_wh);
-    
-    /// Open a window and create its OpenGL context
-    _window = glfwCreateWindow(size_wh, size_wh, title.c_str(), NULL, NULL);
-    if( _window == NULL ){
-        glfwTerminate();
-        throw std::runtime_error("Failed to open GLFW window.");
-    }
-    glfwMakeContextCurrent(_window);
-
-    /// Ensure we can capture the escape key being pressed below
-    glfwSetInputMode(_window, GLFW_STICKY_KEYS, GL_TRUE);
-
-    glEnable(GL_DEPTH_TEST); /// Enable the depth-test
-    glDepthFunc(GL_LEQUAL); /// Use LEQUAL function for the depth-test
-    glEnable(GL_BLEND); /** allow blending (Blending is the stage of OpenGL 
-     * rendering pipeline that takes the fragment color outputs from the 
-     * Fragment Shader and combines them with the colors in the color buffers 
-     * that these outputs map to)
-    */
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    ui->progress_lbl->setText(QString::number(val) + "%");
+    ui->progressBar->setValue((int)ceil(val));
 }
 
-/** 
- * @brief Function which is called each time a GLFW error occurs.
- * @param error -- error code.
- * @param description -- human-readable description.
-*/
-void MainWindow::error_callback(int error, const char* description)
+QCustomPlot* MainWindow::getCustomPlot() const
 {
-    throw std::runtime_error(description);
+    return ui->customPlot;
 }
 
-/** 
- * @brief Key event function which notifies when a physical key is pressed or released or when it repeats
- * @param window -- The window that received the event.
- * @param key -- The keyboard key that was pressed or released.
- * @param scancode -- The system-specific scancode of the key.
- * @param action -- GLFW_PRESS, GLFW_RELEASE or GLFW_REPEAT.
- * @param mods -- Bit field describing which modifier keys were held down: 
-  * GLFW_MOD_ALT, GLFW_MOD_CONTROL, GLFW_MOD_SHIFT, or GLFW_MOD_SUPER.
-*/
-void MainWindow::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void MainWindow::setEnvironment(size_t MPI_NODES_X,
+  size_t MPI_NODES_Y, size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS,
+  double TAU, double TOTAL_TIME, double STEP_LENGTH, size_t N_X, size_t N_Y,
+  size_t X_MAX, size_t Y_MAX)
 {
-    /// Not Implemented
+    ui->mpi_nodes_x->setText(QString::number(MPI_NODES_X));
+    ui->mpi_nodes_y->setText(QString::number(MPI_NODES_Y));
+    ui->cuda_x_threads->setText(QString::number(CUDA_X_THREADS));
+    ui->cuda_y_threads->setText(QString::number(CUDA_Y_THREADS));
+    ui->tau->setText(QString::number(TAU));
+    ui->total_time->setText(QString::number(TOTAL_TIME));
+    ui->step_length->setText(QString::number(STEP_LENGTH));
+    ui->n_x->setText(QString::number(N_X));
+    ui->n_y->setText(QString::number(N_Y));
+    ui->x_max->setText(QString::number(X_MAX));
+    ui->y_max->setText(QString::number(Y_MAX));
 }
-
-/** 
- * @brief mouse button event function which notifies when a mouse button is pressed or released
- * @param window -- The window that received the event..
- * @param button -- The mouse button that was pressed or released: 
-  * GLFW_MOUSE_BUTTON_1, ..., GLFW_MOUSE_BUTTON_8, GLFW_MOUSE_BUTTON_LAST, GLFW_MOUSE_BUTTON_LEFT,
-  * GLFW_MOUSE_BUTTON_MIDDLE, GLFW_MOUSE_BUTTON_RIGHT.
- * @param action -- One of GLFW_PRESS or GLFW_RELEASE.
- * @param mods -- Bit field describing which modifier keys were held down: 
-  * GLFW_MOD_ALT, GLFW_MOD_CONTROL, GLFW_MOD_SHIFT, or GLFW_MOD_SUPER.
-*/
-void MainWindow::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
-{
-    /// Not Implemented
-}
-
-/** 
- * @brief mouse button event function which notifies when the cursor moves over the window.
-  * The callback functions receives the cursor position, measured in screen 
-  * coordinates but relative to the top-left corner of the window client area.
- * @param x -- x-coordinate.
- * @param y -- y-coordinate.
-*/
-void MainWindow::cursor_position_callback(GLFWwindow* window, double x, double y)
-{
-    /// Not Implemented
-}
-
-

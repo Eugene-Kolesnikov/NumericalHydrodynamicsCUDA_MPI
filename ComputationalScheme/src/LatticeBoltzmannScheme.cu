@@ -459,6 +459,16 @@ size_t LatticeBoltzmannScheme::getNumberOfElements()
     return static_cast<size_t>(sizeof(Cell) / sizeof(STRUCT_DATA_TYPE));
 }
 
+std::list<std::pair<std::string,size_t>> LatticeBoltzmannScheme::getDrawParams()
+{
+	std::list<std::pair<std::string,size_t>> params;
+	params.push_back(std::make_pair<std::string,size_t>("Density",0));
+	params.push_back(std::make_pair<std::string,size_t>("X-Velocity",1));
+	params.push_back(std::make_pair<std::string,size_t>("Y-Velocity",2));
+	params.push_back(std::make_pair<std::string,size_t>("Pressure",3));
+	return params;
+}
+
 void* LatticeBoltzmannScheme::createField(size_t N_X, size_t N_Y)
 {
     return (void*)(new Cell[N_X * N_Y]);
@@ -550,6 +560,7 @@ ErrorStatus LatticeBoltzmannScheme::performGPUSimulationStep(void* cu_field, voi
         size_t CUDA_X_BLOCKS, size_t CUDA_Y_BLOCKS, size_t CUDA_X_THREADS,
         size_t CUDA_Y_THREADS, void* stream)
 {
+	return GPU_SUCCESS;
 	size_t SHARED_X = CUDA_X_THREADS + 2;
 	size_t SHARED_Y = CUDA_Y_THREADS + 2;
 	size_t SharedMemoryPerBlock = SHARED_X * SHARED_Y * sizeof(Cell);

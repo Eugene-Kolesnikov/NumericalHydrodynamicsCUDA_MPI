@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-/* 
+/*
  * File:   ProcessNode.hpp
  * Author: eugene
  *
@@ -21,12 +21,12 @@
 
 class ComputationalNode : public MPI_Node {
 public:
-    ComputationalNode(size_t globalRank, size_t totalNodes, std::string app_path);
+    ComputationalNode(size_t globalRank, size_t totalNodes, std::string app_path, int* _argc, char** _argv);
     virtual ~ComputationalNode();
-    
+
     virtual void initEnvironment();
     virtual void runNode();
-    
+
 protected:
     void createComputationalMPIgroup();
     void loadInitSubFieldFromServer();
@@ -35,7 +35,7 @@ protected:
     void sndRcvHaloElements(int snd_id, int rvc_id, int snd_border, int rcv_border);
     void sndRcvDiagHaloElements(int snd_id, int rcv_id, int snd_border, int rcv_border);
     void setStopMarker();
-    
+
 protected:
     int* compRanks;
     MPI_Group world_group;
@@ -44,4 +44,3 @@ protected:
 };
 
 #endif /* COMPUTATIONALNODE_HPP */
-

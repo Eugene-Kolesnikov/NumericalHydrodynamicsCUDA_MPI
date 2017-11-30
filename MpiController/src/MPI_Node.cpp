@@ -20,7 +20,7 @@
 #include <cmath> // floor
 
 
-MPI_Node::MPI_Node(size_t globalRank, size_t totalNodes, std::string app_path):
+MPI_Node::MPI_Node(size_t globalRank, size_t totalNodes, std::string app_path, int* _argc, char** _argv):
     Log(globalRank)
 {
     totalMPINodes = totalNodes;
@@ -36,6 +36,8 @@ MPI_Node::MPI_Node(size_t globalRank, size_t totalNodes, std::string app_path):
     STEP_LENGTH = 0.0;
     N_X = 0;
     N_Y = 0;
+    X_MAX = 0;
+    Y_MAX = 0;
 
     model = nullptr;
 
@@ -44,6 +46,9 @@ MPI_Node::MPI_Node(size_t globalRank, size_t totalNodes, std::string app_path):
     readConfig = nullptr;
     compModelLibHandle = nullptr;
     createComputationalModel = nullptr;
+
+    argc = _argc;
+    argv = _argv;
 }
 
 MPI_Node::~MPI_Node()
@@ -112,6 +117,10 @@ void MPI_Node::parseConfigFile()
             N_X = static_cast<size_t>(it->second);
         } else if(it->first == "N_Y") {
             N_Y = static_cast<size_t>(it->second);
+        } else if(it->first == "X_MAX") {
+            X_MAX = it->second;
+        } else if(it->first == "Y_MAX") {
+            Y_MAX = it->second;
         } else if(it->first == "LBM" && it->second == 1) {
             compModel = "LBM";
         } else if(it->first == "NS" && it->second == 1) {
@@ -152,7 +161,8 @@ bool MPI_Node::checkParsedParameters()
 {
     if(MPI_NODES_X == 0 || MPI_NODES_Y == 0 || CUDA_Y_THREADS == 0 ||
             CUDA_Y_THREADS == 0 || TAU == 0.0 || TOTAL_TIME == 0.0 ||
-            STEP_LENGTH == 0.0 || N_X == 0 || N_Y == 0 || model == nullptr)
+            STEP_LENGTH == 0.0 || N_X == 0 || N_Y == 0 || X_MAX == 0 ||
+            Y_MAX == 0 || model == nullptr)
         return false;
     else
         return true;
@@ -184,6 +194,8 @@ void MPI_Node::setComputationalModelEnv(ComputationalModel::NODE_TYPE node_type)
     model->setNodeType(node_type);
     model->setN_X(N_X);
     model->setN_Y(N_Y);
+    model->setX_MAX(X_MAX);
+    model->setY_MAX(Y_MAX);
     model->setLN_X(lN_X);
     model->setLN_Y(lN_Y);
     model->initializeEnvironment();

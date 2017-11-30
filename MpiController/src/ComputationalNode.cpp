@@ -15,8 +15,8 @@
 #include "../../ComputationalModel/src/ComputationalModel.hpp" /// ComputationalModel::NODE_TYPE
 #include <mpi.h>
 
-ComputationalNode::ComputationalNode(size_t globalRank, size_t totalNodes, std::string app_path):
-    MPI_Node(globalRank, totalNodes, app_path)
+ComputationalNode::ComputationalNode(size_t globalRank, size_t totalNodes, std::string app_path, int* _argc, char** _argv):
+    MPI_Node(globalRank, totalNodes, app_path, _argc, _argv)
 {
     compRanks = nullptr;
 }

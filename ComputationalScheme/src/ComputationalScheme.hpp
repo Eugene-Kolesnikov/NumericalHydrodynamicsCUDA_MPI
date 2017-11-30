@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include "GPUHeader.h"
 #include <string>
+#include <list>
+#include <map>
 
 #include "../../ComputationalModel/src/GPU_Status.h"
 
@@ -44,6 +46,12 @@ public:
      * @return static_cast<size_t>(sizeof(Cell) / sizeof(STRUCT_DATA_TYPE));
      */
     virtual size_t getNumberOfElements() = 0;
+
+    /**
+     * @brief
+     * @return
+     */
+    virtual std::list<std::pair<std::string,size_t>> getDrawParams() = 0;
 
     /**
      *

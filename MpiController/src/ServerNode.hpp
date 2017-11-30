@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-/* 
+/*
  * File:   ServerNode.hpp
  * Author: eugene
  *
@@ -15,29 +15,28 @@
 #define SERVERNODE_HPP
 
 #include "MPI_Node.hpp"
-#include "../../Visualization/src/interface.h"
+#include "../../Visualization/src/interface_visualization.h"
+#include "../../Visualization/src/Visualizer.hpp"
 #include <string>
 #include <cstdlib>
 
 class ServerNode : public MPI_Node {
 public:
-    ServerNode(size_t globalRank, size_t totalNodes, std::string app_path);
+    ServerNode(size_t globalRank, size_t totalNodes, std::string app_path, int* _argc, char** _argv);
     virtual ~ServerNode();
-    
+
     virtual void initEnvironment();
     virtual void runNode();
-    
+
 protected:
     void loadVisualizationLib();
     void sendInitFieldToCompNodes();
     void loadUpdatedSubfields();
-    
+
 protected:
     void* m_visualizationLibHandle;
-    bool (*DLV_init)(size_t N_X, size_t N_Y, enum OUTPUT_OPTION outOption, const char* path);
-    bool (*DLV_visualize)(void* field, size_t N_X, size_t N_Y);
-    bool (*DLV_terminate)();
+    void* (*createVisualizer)(int* argc, char** argv, void* Log);
+    Visualizer* visualizer;
 };
 
 #endif /* SERVERNODE_HPP */
-

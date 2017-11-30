@@ -58,6 +58,8 @@ void MainWindow::readPrevConfig()
     ui->step_length->setText(QString::number((it++)->second));
     ui->n_x->setText(QString::number((it++)->second));
     ui->n_y->setText(QString::number((it++)->second));
+    ui->x_max->setText(QString::number((it++)->second));
+    ui->y_max->setText(QString::number((it++)->second));
     delete params;
 }
 
@@ -97,6 +99,8 @@ void MainWindow::startSimulation()
     params.push_back(make_pair<string,double>("STEP_LENGTH",ui->step_length->text().toDouble()));
     params.push_back(make_pair<string,double>("N_X",ui->n_x->text().toDouble()));
     params.push_back(make_pair<string,double>("N_Y",ui->n_y->text().toDouble()));
+    params.push_back(make_pair<string,double>("X_MAX",ui->x_max->text().toDouble()));
+    params.push_back(make_pair<string,double>("Y_MAX",ui->y_max->text().toDouble()));
     params.push_back(make_pair<string,double>("LBM",1));
     params.push_back(make_pair<string,double>("NS",0));
     params.push_back(make_pair<string,double>("USG",1));

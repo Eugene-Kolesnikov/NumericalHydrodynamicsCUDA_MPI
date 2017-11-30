@@ -1,4 +1,4 @@
-QMAKE_LICHECK_TIMESTAMP = "Wed Nov 1"
+QMAKE_LICHECK_TIMESTAMP = "Wed Nov 29"
 QMAKE_MAC_SDK.macosx.--show-sdk-path = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk
 QMAKE_MAC_SDK.macosx.--show-sdk-platform-path = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform
 QMAKE_MAC_SDK.macosx.--show-sdk-version = 10.12
@@ -41,4 +41,3 @@ QMAKE_CXX.COMPILER_MACROS = \
     QMAKE_GCC_PATCH_VERSION
 QMAKE_XCODE_DEVELOPER_PATH = /Applications/Xcode.app/Contents/Developer
 QMAKE_XCODE_VERSION = 8.3.3
-QMAKE_LICHECK_TIMESTAMP = "Wed Nov 29"

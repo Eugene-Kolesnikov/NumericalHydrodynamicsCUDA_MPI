@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   gpu_mpi_main.cpp
  * Author: eugene
  *
@@ -14,12 +14,12 @@
 
 #include <iostream>
 
-int main(int argc, char** argv) 
+int main(int argc, char** argv)
 {
     if(argc != 2)
         throw std::runtime_error("Wrong application call (wrong number of arguments)!");
     std::string appPath(argv[1]);
-    
+
     int globalRank, totalNodes;
 
     /** Initialize the MPI environment and get the global id of the process
@@ -38,14 +38,14 @@ int main(int argc, char** argv)
      */
     if(globalRank == (totalNodes - 1)) {
         // the last node is a server node
-        node = new ServerNode(globalRank, totalNodes, appPath);
+        node = new ServerNode(globalRank, totalNodes, appPath, &argc, argv);
     } else {
         // all other nodes are computational nodes
-        node = new ComputationalNode(globalRank, totalNodes, appPath);
+        node = new ComputationalNode(globalRank, totalNodes, appPath, &argc, argv);
     }
-    
+
     try {
-        /** Initialize the process's environment: 
+        /** Initialize the process's environment:
          * 1) connect all libraries: visualization library, configuration parser, computational library;
          * 2) initialize all necessary variables by parsing the configuration file.
          */
@@ -59,7 +59,7 @@ int main(int argc, char** argv)
         MPI_Finalize();
         throw;
     }
-    
+
     delete node;
 
     MPI_Finalize();
