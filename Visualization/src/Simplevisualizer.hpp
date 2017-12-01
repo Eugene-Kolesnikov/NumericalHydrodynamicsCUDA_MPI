@@ -29,7 +29,7 @@ protected:
 
 protected:
     void writeEnvironment();
-    void writeFrame(byte* field);
+    template<typename T> void writeFrame(T* field);
     template<typename T> void updateColorMap(T* field);
 
 protected:

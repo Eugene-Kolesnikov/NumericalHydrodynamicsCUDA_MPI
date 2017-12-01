@@ -11,7 +11,7 @@
 #include "CellConstruction.h"
 #include <cmath>
 
-#define STRUCT_DATA_TYPE float
+#define STRUCT_DATA_TYPE double
 CREATE_CELL_STRUCT((r)(u)(v)(p)(Fx)(Fmx)(Fy)(Fmy)(Fxy)(Fxmy)(Fmxy)(Fmxmy)(F0));
 
 

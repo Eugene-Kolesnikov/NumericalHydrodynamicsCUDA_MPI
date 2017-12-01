@@ -86,13 +86,15 @@ void SimpleVisualizer::initCustomPlot()
 
 void SimpleVisualizer::renderFrame(void* field)
 {
-    writeFrame((byte*)field);
     if(size_of_datatype == sizeof(float)) {
-        updateColorMap((float*)field);
+        writeFrame<float>((float*)field);
+        updateColorMap<float>((float*)field);
     } else if(size_of_datatype == sizeof(double)) {
-        updateColorMap((double*)field);
+        writeFrame<double>((double*)field);
+        updateColorMap<double>((double*)field);
     } else if(size_of_datatype == sizeof(long double)) {
-        updateColorMap((long double*)field);
+        writeFrame<long double>((long double*)field);
+        updateColorMap<long double>((long double*)field);
     } else {
         throw std::runtime_error("SimpleVisualizer::renderFrame: Unknown data type!");
     }
@@ -114,32 +116,27 @@ void SimpleVisualizer::writeEnvironment()
 {
     file << MPI_NODES_X << ' ' << MPI_NODES_Y << ' ' << CUDA_X_THREADS << ' ' << CUDA_Y_THREADS
          << ' ' << TAU << ' ' << TOTAL_TIME << ' ' << STEP_LENGTH << ' ' << N_X << ' ' << N_Y
-         << ' ' << X_MAX << ' ' << Y_MAX << ' ' << size_of_datatype << ' ' << nitems << ' '
-         << params.size();
+         << ' ' << X_MAX << ' ' << Y_MAX << ' ' << params.size();
     for(auto it = params.begin(); it != params.end(); ++it) {
         file << ' ' << it->first;
     }
-    file << '\n';
+    file << ' ';
     *Log << "saved environment to the report file";
 }
 
-void SimpleVisualizer::writeFrame(byte* field)
+template<typename T> void SimpleVisualizer::writeFrame(T* field)
 {
     size_t global;
     size_t id_shift;
     size_t items = ids.size();
+    size_t fieldSize = N_X * N_Y;
     for(size_t k = 0; k < items; ++k) {
-        id_shift = ids[k] * size_of_datatype;
-        for(size_t x = 0; x < N_X; ++x) {
-            for(size_t y = 0; y < N_Y; ++y) {
-                global = (y * N_X + x) * nitems * size_of_datatype;
-                for(size_t b = 0; b < size_of_datatype; ++b) {
-                    file << field[global + id_shift + b];
-                }
-                file << ' ';
-            }
+        id_shift = ids[k];
+        for(size_t i = 0; i < fieldSize; ++i) {
+            global = i * nitems;
+            file << (double)field[global + id_shift];
+            file << ' ';
         }
-        file << '\n';
     }
 }
 
