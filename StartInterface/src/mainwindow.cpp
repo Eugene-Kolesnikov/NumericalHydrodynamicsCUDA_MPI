@@ -122,9 +122,20 @@ void MainWindow::startSimulation()
             << (filepath + "simulation_app").c_str() << filepath.c_str());
     bool success = process.waitForStarted();
     if(!success) {
-    	QMessageBox::question(this, "Error", "Cannot start the program!", QMessageBox::Yes);
+        std::string error_msg = "Cannot start the program: " + process.readAllStandardError().toStdString();
+    	QMessageBox::question(this, "Error", error_msg.c_str(), QMessageBox::Yes);
+        process.close();
+        ui->startbtn->setEnabled(true);
+        return;
     }
-    process.waitForFinished();
+    success = process.waitForFinished();
+    if(!success) {
+        std::string error_msg = "The program finished unsuccessfully: " + process.readAllStandardError().toStdString();
+    	QMessageBox::question(this, "Error", error_msg.c_str(), QMessageBox::Yes);
+        process.close();
+        ui->startbtn->setEnabled(true);
+        return;
+    }
     process.close();
     ui->startbtn->setEnabled(true);
 }

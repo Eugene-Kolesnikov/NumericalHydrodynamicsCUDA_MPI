@@ -1,7 +1,7 @@
 #ifndef SIMPLEVISUALIZER_H
 #define SIMPLEVISUALIZER_H
 
-#include "Mainwindow.hpp"
+#include "MainWindow.hpp"
 #include <QApplication>
 #include "Visualizer.hpp"
 #include "Qcustomplot.hpp"

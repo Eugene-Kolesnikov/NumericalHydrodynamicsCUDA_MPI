@@ -2,9 +2,9 @@ CXX = g++
 
 NVCC = nvcc
 
-LIBS_PATH = -L/usr/local/Cellar/mpich/3.2/lib/
+LIBS_PATH = -L/usr/local/Cellar/mpich/3.2/lib/ -L/Developer/NVIDIA/CUDA-9.0/lib/ -Xlinker -rpath,/Developer/NVIDIA/CUDA-9.0/lib/
 
-LIBS = -lmpi -lopa -lmpl -lpthread -L/Developer/NVIDIA/CUDA-9.0/lib/ -lcudart
+LIBS = -lmpi -lopa -lmpl -lpthread -lcudart
 
 INCLUDE_PATH = -I/usr/local/Cellar/mpich/3.2/include/ -I/Developer/NVIDIA/CUDA-9.0/include/
 
