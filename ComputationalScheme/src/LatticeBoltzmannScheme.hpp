@@ -7,7 +7,7 @@
 
 class LatticeBoltzmannScheme : public ComputationalScheme {
 public:
-	LatticeBoltzmannScheme();
+	LatticeBoltzmannScheme(): ComputationalScheme(){}
     virtual ~LatticeBoltzmannScheme(){}
 
 public:
@@ -35,7 +35,7 @@ public:
     virtual void* getMarkerValue() override;
 
 protected:
-    STRUCT_DATA_TYPE marker;
+    STRUCT_DATA_TYPE marker = -1;
 };
 
 

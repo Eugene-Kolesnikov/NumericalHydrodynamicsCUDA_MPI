@@ -438,12 +438,6 @@ __global__ void updateGPUGlobalBorders_kernel(Cell* cu_field, Cell* cu_lr_halo,
 	}
 }
 
-LatticeBoltzmannScheme::LatticeBoltzmannScheme():
-    ComputationalScheme()
-{
-    marker = -1.0;
-}
-
 const std::type_info& LatticeBoltzmannScheme::getDataTypeid()
 {
     return typeid(STRUCT_DATA_TYPE);

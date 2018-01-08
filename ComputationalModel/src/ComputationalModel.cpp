@@ -59,9 +59,6 @@ void ComputationalModel::createMpiStructType()
     }
     mpi_err_status = MPI_Type_create_struct(nitems, blocklengths, offsets,
             types, &MPI_CellType);
-    delete[] blocklengths;
-    delete[] types;
-    delete[] offsets;
     if(mpi_err_status != MPI_SUCCESS) {
         MPI_Error_string(mpi_err_status, err_buffer, &resultlen);
         throw std::runtime_error(err_buffer);
@@ -71,6 +68,9 @@ void ComputationalModel::createMpiStructType()
         MPI_Error_string(mpi_err_status, err_buffer, &resultlen);
         throw std::runtime_error(err_buffer);
     }
+    delete[] blocklengths;
+    delete[] types;
+    delete[] offsets;
     (*Log) << "MPI structure has been successfully created";
 }
 
