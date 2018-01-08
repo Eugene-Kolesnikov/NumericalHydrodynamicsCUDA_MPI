@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 #include "../../MpiController/src/FileLogger.hpp"
+#include "Visualizationproperty.hpp"
 
 using namespace std;
 
@@ -20,8 +21,8 @@ public:
     void setEnvironment(const string& _appPath, size_t _MPI_NODES_X,
       size_t _MPI_NODES_Y, size_t _CUDA_X_THREADS, size_t _CUDA_Y_THREADS,
       double _TAU, double _TOTAL_TIME, double _STEP_LENGTH, size_t _N_X, size_t _N_Y,
-      size_t _X_MAX, size_t _Y_MAX, const list<pair<string,size_t>>& _params,
-      size_t _size_of_datatype, size_t _nitems);
+      size_t _X_MAX, size_t _Y_MAX, const vector<VisualizationProperty>* _params,
+      size_t _size_of_datastruct, size_t _nitems);
 
 public:
     virtual void initVisualizer() = 0;
@@ -44,10 +45,9 @@ protected:
     size_t Y_MAX;
 
 protected:
-    size_t size_of_datatype;
+    size_t size_of_datastruct;
     size_t nitems;
-    list<pair<string,size_t>> params;
-    vector<size_t> ids;
+    const vector<VisualizationProperty>* params;
 
 protected:
     logging::FileLogger* Log;

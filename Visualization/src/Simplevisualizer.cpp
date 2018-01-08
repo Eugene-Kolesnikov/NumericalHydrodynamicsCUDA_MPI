@@ -1,6 +1,7 @@
 #include "Simplevisualizer.hpp"
 #include <QDateTime>
 #include <exception>
+#include <typeinfo>
 
 SimpleVisualizer::SimpleVisualizer(logging::FileLogger* _Log):
     Visualizer(_Log)
@@ -70,7 +71,7 @@ void SimpleVisualizer::initCustomPlot()
     colorScale->setType(QCPAxis::atRight);
     // associate the color map with the color scale
     colorMap->setColorScale(colorScale);
-    colorScale->axis()->setLabel(params.begin()->first.c_str());
+    colorScale->axis()->setLabel(params->begin()->propertyName.c_str());
     // set the color gradient of the color map to one of the presets:
     colorMap->setGradient(QCPColorGradient::gpJet);
     // make sure the axis rect and color scale synchronize their bottom and top margins (so they line up):
@@ -86,15 +87,16 @@ void SimpleVisualizer::initCustomPlot()
 
 void SimpleVisualizer::renderFrame(void* field)
 {
-    if(size_of_datatype == sizeof(float)) {
-        writeFrame<float>((float*)field);
-        updateColorMap<float>((float*)field);
-    } else if(size_of_datatype == sizeof(double)) {
-        writeFrame<double>((double*)field);
-        updateColorMap<double>((double*)field);
-    } else if(size_of_datatype == sizeof(long double)) {
-        writeFrame<long double>((long double*)field);
-        updateColorMap<long double>((long double*)field);
+    std::type_index data_type_index = (*params)[0].typeInfo;
+    if(data_type_index == std::type_index(typeid(float))) {
+        writeFrame<float>(field);
+        updateColorMap<float>(field);
+    } else if(data_type_index == std::type_index(typeid(double))) {
+        writeFrame<double>(field);
+        updateColorMap<double>(field);
+    } else if(data_type_index == std::type_index(typeid(long double))) {
+        writeFrame<long double>(field);
+        updateColorMap<long double>(field);
     } else {
         throw std::runtime_error("SimpleVisualizer::renderFrame: Unknown data type!");
     }
@@ -116,40 +118,56 @@ void SimpleVisualizer::writeEnvironment()
 {
     file << MPI_NODES_X << ' ' << MPI_NODES_Y << ' ' << CUDA_X_THREADS << ' ' << CUDA_Y_THREADS
          << ' ' << TAU << ' ' << TOTAL_TIME << ' ' << STEP_LENGTH << ' ' << N_X << ' ' << N_Y
-         << ' ' << X_MAX << ' ' << Y_MAX << ' ' << params.size();
-    for(auto it = params.begin(); it != params.end(); ++it) {
-        file << ' ' << it->first;
+         << ' ' << X_MAX << ' ' << Y_MAX << ' ' << params->size();
+    for(auto it = params->begin(); it != params->end(); ++it) {
+        file << ' ' << it->propertyName << ' ' << it->variables;
     }
     file << ' ';
     *Log << "saved environment to the report file";
 }
 
-template<typename T> void SimpleVisualizer::writeFrame(T* field)
+template<typename T> void SimpleVisualizer::writeFrame(void* field)
 {
-    size_t global;
-    size_t id_shift;
-    size_t items = ids.size();
+    byte* cfield = (byte*)field; // pointer to the first Cell
+    byte* tcfield = nullptr; // current Cell address
+    size_t offset; // offset of a particular element inside the Cell
+    size_t items = params->size(); // total amount of parameters
     size_t fieldSize = N_X * N_Y;
-    for(size_t k = 0; k < items; ++k) {
-        id_shift = ids[k];
-        for(size_t i = 0; i < fieldSize; ++i) {
-            global = i * nitems;
-            file << (double)field[global + id_shift];
-            file << ' ';
+    size_t totalVars; // total amount of variables of an element
+    for(size_t k = 0; k < items; ++k) { // go through all elements
+        offset = (*params)[k].offset; // save the offset
+        totalVars = (*params)[k].variables; // save the amount of variables of the element
+        if(totalVars != 1) {
+            throw std::runtime_error("SimpleVisualizer::writeFrame: Unsupported "
+                                     "functionality (too many variables in an element)!");
+        }
+        // write the field of this elements
+        for(size_t i = 0; i < fieldSize; ++i) { // go through all Cells of the field
+            tcfield = cfield + i * size_of_datastruct; // get the address of the current Cell
+            // go through all variable of the element
+            for(size_t var = 0; var < totalVars; ++var) {
+                // write down the variable
+                file << *((T*)(tcfield + offset) + var) << ' ';
+            }
         }
     }
 }
 
-template<typename T> void SimpleVisualizer::updateColorMap(T* field)
+template<typename T> void SimpleVisualizer::updateColorMap(void* field)
 {
-    size_t id_shift = ids[0];
-    size_t global;
-    size_t globalLocal;
+    byte* cfield = (byte*)field; // pointer to the first Cell
+    byte* tcfield = nullptr; // current Cell address
+    size_t offset = (*params)[0].offset;
+    size_t totalVars = (*params)[0].variables;
     for(size_t x = 0; x < N_X; ++x) {
         for(size_t y = 0; y < N_Y; ++y) {
-            global = (y * N_X + x) * nitems;
-            globalLocal = y * N_X + x;
-            colorMap->data()->setCell(x, y, (double)field[global + id_shift]);
+            if(totalVars == 1) {
+                tcfield = cfield + (y * N_X + x) * size_of_datastruct;
+                colorMap->data()->setCell(x, y, *((T*)(tcfield + offset)));
+            } else {
+                throw std::runtime_error("SimpleVisualizer::updateColorMap: Unsupported "
+                                         "functionality (too many variables in an element)!");
+            }
         }
     }
     *Log << "Updated the ColorMap";

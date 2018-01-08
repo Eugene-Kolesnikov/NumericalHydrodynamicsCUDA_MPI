@@ -251,7 +251,8 @@ DIST          = /Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/spec_pre.prf \
 		Visualizer.hpp \
 		Qcustomplot.hpp \
 		interface_visualization.h \
-		../../MpiController/src/FileLogger.hpp interface_visualization.cpp \
+		../../MpiController/src/FileLogger.hpp \
+		Visualizationproperty.hpp interface_visualization.cpp \
 		Mainwindow.cpp \
 		Qcustomplot.cpp \
 		Simplevisualizer.cpp \
@@ -688,7 +689,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents Mainwindow.hpp Simplevisualizer.hpp Visualizer.hpp Qcustomplot.hpp interface_visualization.h ../../MpiController/src/FileLogger.hpp $(DISTDIR)/
+	$(COPY_FILE) --parents Mainwindow.hpp Simplevisualizer.hpp Visualizer.hpp Qcustomplot.hpp interface_visualization.h ../../MpiController/src/FileLogger.hpp Visualizationproperty.hpp $(DISTDIR)/
 	$(COPY_FILE) --parents interface_visualization.cpp Mainwindow.cpp Qcustomplot.cpp Simplevisualizer.cpp Visualizer.cpp ../../MpiController/src/FileLogger.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents mainwindow.ui $(DISTDIR)/
 
@@ -784,7 +785,8 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/QApplication \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qapplication.h \
 		Visualizer.hpp \
-		../../MpiController/src/FileLogger.hpp
+		../../MpiController/src/FileLogger.hpp \
+		Visualizationproperty.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/interface_visualization.o interface_visualization.cpp
 
 ../build/Mainwindow.o: Mainwindow.cpp MainWindow.hpp \
@@ -815,12 +817,14 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qapplication.h \
 		Visualizer.hpp \
 		../../MpiController/src/FileLogger.hpp \
+		Visualizationproperty.hpp \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QDateTime \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qdatetime.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/Simplevisualizer.o Simplevisualizer.cpp
 
 ../build/Visualizer.o: Visualizer.cpp Visualizer.hpp \
-		../../MpiController/src/FileLogger.hpp
+		../../MpiController/src/FileLogger.hpp \
+		Visualizationproperty.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/Visualizer.o Visualizer.cpp
 
 ../build/FileLogger.o: ../../MpiController/src/FileLogger.cpp ../../MpiController/src/FileLogger.hpp

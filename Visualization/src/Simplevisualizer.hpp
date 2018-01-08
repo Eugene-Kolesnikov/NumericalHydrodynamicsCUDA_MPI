@@ -29,8 +29,8 @@ protected:
 
 protected:
     void writeEnvironment();
-    template<typename T> void writeFrame(T* field);
-    template<typename T> void updateColorMap(T* field);
+    template<typename T> void writeFrame(void* field);
+    template<typename T> void updateColorMap(void* field);
 
 protected:
     string report;

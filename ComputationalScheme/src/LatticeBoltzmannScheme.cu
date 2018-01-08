@@ -237,7 +237,7 @@ __device__ void streamingStep(Cell* C, Params* P)
 	size_t y = threadIdx.y;
 	/// Obtain values of mactoscopic parameters from populations of currounding cells
 	/// Compute density of the cell
-	C->r = C->F0 + sCell(x+1,y)->Fmx + sCell(x-1,y)->Fx + sCell(x,y+1)->Fmy + sCell(x,y-1)->Fy +
+	/*C->r = C->F0 + sCell(x+1,y)->Fmx + sCell(x-1,y)->Fx + sCell(x,y+1)->Fmy + sCell(x,y-1)->Fy +
 		sCell(x-1,y-1)->Fxy + sCell(x+1,y-1)->Fmxy + sCell(x-1,y+1)->Fxmy + sCell(x+1,y+1)->Fmxmy;
 	/// Compute velocity of the cell
 	C->u = (P->c0.x * C->F0 + P->cmx.x * sCell(x+1,y)->Fmx + P->cx.x * sCell(x-1,y)->Fx +
@@ -253,7 +253,7 @@ __device__ void streamingStep(Cell* C, Params* P)
 		dot_float2(P->cx, P->cx) * sCell(x-1,y)->Fx + dot_float2(P->cmy, P->cmy) * sCell(x,y+1)->Fmy +
 		dot_float2(P->cy, P->cy) * sCell(x,y-1)->Fy + dot_float2(P->cxy, P->cxy) * sCell(x-1,y-1)->Fxy +
 		dot_float2(P->cmxy, P->cmxy) * sCell(x+1,y-1)->Fmxy + dot_float2(P->cxmy, P->cxmy) * sCell(x-1,y+1)->Fxmy +
-		dot_float2(P->cmxmy, P->cmxmy) * sCell(x+1,y+1)->Fmxmy;
+		dot_float2(P->cmxmy, P->cmxmy) * sCell(x+1,y+1)->Fmxmy;*/
 }
 
 /**
@@ -272,7 +272,7 @@ __host__ __device__ STRUCT_DATA_TYPE computeFiEq(const STRUCT_DATA_TYPE& w, cons
 __device__ void collisionStep(Cell* C, Params* P)
 {
 	float2 u = make_float2(C->u,C->v);
-	C->F0 = C->F0 - (C->F0 - computeFiEq(P->W0, C->r, u, P->c0, P->Cs2)) / P->tau;
+	/*C->F0 = C->F0 - (C->F0 - computeFiEq(P->W0, C->r, u, P->c0, P->Cs2)) / P->tau;
 	C->Fx = C->Fx - (C->Fx - computeFiEq(P->Wx, C->r, u, P->cx, P->Cs2)) / P->tau;
 	C->Fmx = C->Fmx - (C->Fmx - computeFiEq(P->Wx, C->r, u, P->cmx, P->Cs2)) / P->tau;
 	C->Fy = C->Fy - (C->Fy - computeFiEq(P->Wx, C->r, u, P->cy, P->Cs2)) / P->tau;
@@ -280,7 +280,7 @@ __device__ void collisionStep(Cell* C, Params* P)
 	C->Fxy = C->Fxy - (C->Fxy - computeFiEq(P->Wxx, C->r, u, P->cxy, P->Cs2)) / P->tau;
 	C->Fmxy = C->Fmxy - (C->Fmxy - computeFiEq(P->Wxx, C->r, u, P->cmxy, P->Cs2)) / P->tau;
 	C->Fxmy = C->Fxmy - (C->Fxmy - computeFiEq(P->Wxx, C->r, u, P->cxmy, P->Cs2)) / P->tau;
-	C->Fmxmy = C->Fmxmy - (C->Fmxmy - computeFiEq(P->Wxx, C->r, u, P->cmxmy, P->Cs2)) / P->tau;
+	C->Fmxmy = C->Fmxmy - (C->Fmxmy - computeFiEq(P->Wxx, C->r, u, P->cmxmy, P->Cs2)) / P->tau;*/
 }
 
 /**
@@ -411,7 +411,7 @@ __global__ void updateGPUGlobalBorders_kernel(Cell* cu_field, Cell* cu_lr_halo,
 	size_t tid = threadIdx.x;
 	initBlockCellsBorders(cu_field, N_X, N_Y, type);
 	__syncthreads();
-	if(type == CU_LEFT_BORDER) {
+	/*if(type == CU_LEFT_BORDER) {
 		cu_lr_halo[tid].Fx = blockCells[tid + 1].Fmx;
 		cu_lr_halo[tid].Fxy = blockCells[tid].Fmxmy;
 		cu_lr_halo[tid].Fxmy = blockCells[tid + 2].Fmxy;
@@ -435,32 +435,7 @@ __global__ void updateGPUGlobalBorders_kernel(Cell* cu_field, Cell* cu_lr_halo,
 		cu_lrtb_halo[LEFT_BOTTOM_BORDER].Fxy = cu_field[(N_Y - 1) * N_X].Fmxmy;
 	} else if(type == CU_RIGHT_BOTTOM_BORDER) {
 		cu_lrtb_halo[RIGHT_BOTTOM_BORDER].Fmxy = cu_field[N_Y * N_X - 1].Fxmy;
-	}
-}
-
-const std::type_info& LatticeBoltzmannScheme::getDataTypeid()
-{
-    return typeid(STRUCT_DATA_TYPE);
-}
-
-size_t LatticeBoltzmannScheme::getSizeOfDatatype()
-{
-    return sizeof(STRUCT_DATA_TYPE);
-}
-
-size_t LatticeBoltzmannScheme::getNumberOfElements()
-{
-    return static_cast<size_t>(sizeof(Cell) / sizeof(STRUCT_DATA_TYPE));
-}
-
-std::list<std::pair<std::string,size_t>> LatticeBoltzmannScheme::getDrawParams()
-{
-	std::list<std::pair<std::string,size_t>> params;
-	params.push_back(std::make_pair<std::string,size_t>("Density",0));
-	params.push_back(std::make_pair<std::string,size_t>("X-Velocity",1));
-	params.push_back(std::make_pair<std::string,size_t>("Y-Velocity",2));
-	params.push_back(std::make_pair<std::string,size_t>("Pressure",3));
-	return params;
+	}*/
 }
 
 void* LatticeBoltzmannScheme::createField(size_t N_X, size_t N_Y)
@@ -510,7 +485,7 @@ ErrorStatus LatticeBoltzmannScheme::initField(void* field, size_t N_X, size_t N_
 				C->v = 0;
 			}
 			u = make_float2(C->u,C->v);
-			C->F0 = computeFiEq(P.W0, C->r, u, P.c0, P.Cs2);
+			/*C->F0 = computeFiEq(P.W0, C->r, u, P.c0, P.Cs2);
 			C->Fx = computeFiEq(P.Wx, C->r, u, P.cx, P.Cs2);
 			C->Fmx = computeFiEq(P.Wx, C->r, u, P.cmx, P.Cs2);
 			C->Fy = computeFiEq(P.Wx, C->r, u, P.cy, P.Cs2);
@@ -518,7 +493,7 @@ ErrorStatus LatticeBoltzmannScheme::initField(void* field, size_t N_X, size_t N_
 			C->Fxy = computeFiEq(P.Wxx, C->r, u, P.cxy, P.Cs2);
 			C->Fmxy = computeFiEq(P.Wxx, C->r, u, P.cmxy, P.Cs2);
 			C->Fxmy = computeFiEq(P.Wxx, C->r, u, P.cxmy, P.Cs2);
-			C->Fmxmy = computeFiEq(P.Wxx, C->r, u, P.cmxmy, P.Cs2);
+			C->Fmxmy = computeFiEq(P.Wxx, C->r, u, P.cmxmy, P.Cs2);*/
 		}
     }
 	return GPU_SUCCESS;

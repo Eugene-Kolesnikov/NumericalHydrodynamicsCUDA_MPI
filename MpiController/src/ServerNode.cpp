@@ -43,7 +43,7 @@ void ServerNode::initEnvironment()
         visualizer->setEnvironment((appPath + "../../../"), MPI_NODES_X, MPI_NODES_Y,
             CUDA_X_THREADS, CUDA_Y_THREADS, TAU, TOTAL_TIME, STEP_LENGTH,
             N_X, N_Y, X_MAX, Y_MAX, model->getScheme()->getDrawParams(),
-            model->getScheme()->getSizeOfDatatype(), model->getScheme()->getNumberOfElements());
+            model->getScheme()->getSizeOfDatastruct(), model->getScheme()->getNumberOfElements());
         Log << "Set the visualizer's environment";
         visualizer->initVisualizer();
         Log << "Initialized the visualizer";

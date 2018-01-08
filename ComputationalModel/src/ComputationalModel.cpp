@@ -49,13 +49,15 @@ void ComputationalModel::createMpiStructType()
                 "Wrong STRUCT_DATA_TYPE!");
     }
     size_t nitems = scheme->getNumberOfElements();
+    const size_t* sheme_offsets = scheme->getCellOffsets();
+    const size_t* scheme_blocklengths = scheme->getAmountOfArrayMembers();
     int* blocklengths = new int[nitems];
     MPI_Datatype* types = new MPI_Datatype[nitems];
     MPI_Aint* offsets = new MPI_Aint[nitems];
     for(size_t i = 0; i < nitems; ++i) {
-        blocklengths[i] = 1;
+        blocklengths[i] = scheme_blocklengths[i];
         types[i] = MPI_DATA_TYPE;
-        offsets[i] = i * size_of_datatype;
+        offsets[i] = sheme_offsets[i];
     }
     mpi_err_status = MPI_Type_create_struct(nitems, blocklengths, offsets,
             types, &MPI_CellType);

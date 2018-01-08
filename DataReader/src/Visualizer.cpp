@@ -88,8 +88,9 @@ bool Visualizer::readEnvironment()
     colorMap->data()->setRange(QCPRange(0, X_MAX), QCPRange(0, Y_MAX));
     ui->customPlot->rescaleAxes();
     std::string property;
+    int numberOfVariables;
     for(size_t i = 0; i < params; ++i) {
-        file >> property;
+        file >> property >> numberOfVariables;
         ui->comboBox->addItem(QString::fromStdString(property));
     }
     ui->comboBox->setCurrentIndex(0);

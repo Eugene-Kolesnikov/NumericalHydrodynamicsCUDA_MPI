@@ -2,19 +2,20 @@
 #define LATTICEBOLTZMANNSCHEME_HPP
 
 #include "GPUHeader.h"
-#include "LB_Cell.h"
+#include "CellConstruction.h"
 #include "ComputationalScheme.hpp"
 
+#define STRUCT_DATA_TYPE double
+
 class LatticeBoltzmannScheme : public ComputationalScheme {
+	GENERATE_CELL_STRUCTURE_WITH_SUPPORT_FUNCTIONS((r,1)(u,1)(v,1)(p,1)(F,9))
+    REGISTER_VISUALIZATION_PARAMETERS(("Density",0)("X-Velocity", 1)("Y-Velocity", 2)("Pressure",3))
+
 public:
 	LatticeBoltzmannScheme(): ComputationalScheme(){}
     virtual ~LatticeBoltzmannScheme(){}
 
 public:
-    virtual const std::type_info& getDataTypeid() override;
-    virtual size_t getSizeOfDatatype() override;
-    virtual size_t getNumberOfElements() override;
-	virtual std::list<std::pair<std::string,size_t>> getDrawParams() override;
     virtual void* createField(size_t N_X, size_t N_Y) override;
     virtual void* createPageLockedField(size_t N_X, size_t N_Y) override;
     virtual void* createGPUField(size_t N_X, size_t N_Y) override;
@@ -37,6 +38,8 @@ public:
 protected:
     STRUCT_DATA_TYPE marker = -1;
 };
+
+typedef LatticeBoltzmannScheme::Cell Cell;
 
 
 #endif // LATTICEBOLTZMANNSCHEME_HPP

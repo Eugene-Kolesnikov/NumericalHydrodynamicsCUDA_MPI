@@ -9,6 +9,7 @@
 #include <map>
 
 #include "../../ComputationalModel/src/GPU_Status.h"
+#include "../../Visualization/src/Visualizationproperty.hpp"
 
 #define CU_LEFT_BORDER (0)
 #define CU_RIGHT_BORDER (1)
@@ -33,25 +34,43 @@ public:
      * @brief Both node types
      * @return return typeid(STRUCT_DATA_TYPE);
      */
-    virtual const std::type_info& getDataTypeid() = 0;
+    virtual const std::type_info& getDataTypeid() const = 0;
 
     /**
      * @brief Both node types
      * @return sizeof(STRUCT_DATA_TYPE)
      */
-    virtual size_t getSizeOfDatatype() = 0;
+    virtual size_t getSizeOfDatatype() const = 0;
+
+    /**
+     * @brief Both node types
+     * @return sizeof(Cell)
+     */
+    virtual size_t getSizeOfDatastruct() const = 0;
 
     /**
      * @brief
-     * @return static_cast<size_t>(sizeof(Cell) / sizeof(STRUCT_DATA_TYPE));
+     * @return number of elements in the Cell struct
      */
-    virtual size_t getNumberOfElements() = 0;
+    virtual size_t getNumberOfElements() const = 0;
+
+    /**
+     * [getAmountOfArrayMembers description]
+     * @return [description]
+     */
+    virtual const size_t* getAmountOfArrayMembers() = 0;
+
+    /**
+     * [getCellOffsets description]
+     * @return [description]
+     */
+    virtual const size_t* getCellOffsets() = 0;
 
     /**
      * @brief
      * @return
      */
-    virtual std::list<std::pair<std::string,size_t>> getDrawParams() = 0;
+    virtual const std::vector<VisualizationProperty>* getDrawParams() = 0;
 
     /**
      *

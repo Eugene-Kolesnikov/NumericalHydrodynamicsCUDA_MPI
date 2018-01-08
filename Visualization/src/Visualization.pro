@@ -48,7 +48,8 @@ HEADERS += \
         Visualizer.hpp \
         Qcustomplot.hpp \
         interface_visualization.h \
-        ../../MpiController/src/FileLogger.hpp
+        ../../MpiController/src/FileLogger.hpp \
+    Visualizationproperty.hpp
 
 FORMS += \
         mainwindow.ui
