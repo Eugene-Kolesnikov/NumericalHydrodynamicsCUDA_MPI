@@ -21,16 +21,6 @@
 #include "../../MpiController/src/FileLogger.hpp"
 #include <dlfcn.h>
 
-#define LEFT_BORDER (0)
-#define RIGHT_BORDER (1)
-#define TOP_BORDER (2)
-#define BOTTOM_BORDER (3)
-
-#define LEFT_TOP_BORDER (0)
-#define RIGHT_TOP_BORDER (1)
-#define LEFT_BOTTOM_BORDER (2)
-#define RIGHT_BOTTOM_BORDER (3)
-
 class ComputationalModel {
 protected:
     /**

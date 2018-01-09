@@ -47,6 +47,8 @@ void ServerNode::initEnvironment()
         Log << "Set the visualizer's environment";
         visualizer->initVisualizer();
         Log << "Initialized the visualizer";
+        visualizer->renderFrame(model->getField());
+        Log << "Rendered the initial frame";
     } catch(const std::runtime_error& err) {
         if(Log.is_open())
             Log << _ERROR_ << std::string("(ServerNode:initEnvironment): ") + err.what();

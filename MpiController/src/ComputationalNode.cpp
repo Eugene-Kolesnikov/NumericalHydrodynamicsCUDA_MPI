@@ -1,10 +1,4 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
  * File:   ProcessNode.cpp
  * Author: eugene
  *
@@ -157,8 +151,9 @@ void ComputationalNode::loadInitSubFieldFromServer()
     int number_amount;
     MPI_Get_count(&status, model->MPI_CellType, &number_amount);
     if(number_amount != totalAmountCellsToTransfer) {
-        Log << _WARNING_ << ("Received " + std::to_string(number_amount) +
+        std::string err_buffer = ("Received " + std::to_string(number_amount) +
                 " amount of field cells instead of " + std::to_string(totalAmountCellsToTransfer));
+        throw std::runtime_error(err_buffer);
     }
     Log << "Successfully received data from the server node";
     MPI_Barrier(MPI_COMM_WORLD);
@@ -213,16 +208,16 @@ void ComputationalNode::shareHaloElements()
             getGlobalMPIid(localMPI_id_x, localMPI_id_y + 1);
     /// Sending left halo elements to the left neighbor and at the same time,
     /// receiving right halo elements from the right neighbor
-    sndRcvHaloElements(left_neighbor_id, right_neighbor_id, LEFT_BORDER, RIGHT_BORDER);
+    sndRcvHaloElements(left_neighbor_id, right_neighbor_id, CU_LEFT_BORDER, CU_RIGHT_BORDER);
     /// Sending right halo elements to the right neighbor and at the same time,
     /// receiving left halo elements from the left neighbor
-    sndRcvHaloElements(right_neighbor_id, left_neighbor_id, RIGHT_BORDER, LEFT_BORDER);
+    sndRcvHaloElements(right_neighbor_id, left_neighbor_id, CU_RIGHT_BORDER, CU_LEFT_BORDER);
     /// Sending top halo elements to the top neighbor and at the same time,
     /// receiving bottom halo elements from the bottom neighbor
-    sndRcvHaloElements(top_neighbor_id, bottom_neighbor_id, TOP_BORDER, BOTTOM_BORDER);
+    sndRcvHaloElements(top_neighbor_id, bottom_neighbor_id, CU_TOP_BORDER, CU_BOTTOM_BORDER);
     /// Sending bottom halo elements to the bottom neighbor and at the same time,
     /// receiving top halo elements from the top neighbor
-    sndRcvHaloElements(bottom_neighbor_id, top_neighbor_id, BOTTOM_BORDER, TOP_BORDER);
+    sndRcvHaloElements(bottom_neighbor_id, top_neighbor_id, CU_BOTTOM_BORDER, CU_TOP_BORDER);
 
     /// Sending and receiving diagonal halo elements
     int left_top_neighbor_id =
@@ -240,19 +235,19 @@ void ComputationalNode::shareHaloElements()
     /// Sending left-top halo element to the left-top neighbor and at the same time,
     /// receiving right-bottom halo element from the right-bottom neighbor
     sndRcvDiagHaloElements(left_top_neighbor_id, right_bottom_neighbor_id,
-            LEFT_TOP_BORDER, RIGHT_BOTTOM_BORDER);
+            CU_LEFT_TOP_BORDER, CU_RIGHT_BOTTOM_BORDER);
     /// Sending right-bottom halo element to the right-bottom neighbor and at the same time,
     /// receiving left-top halo element from the left-top neighbor
     sndRcvDiagHaloElements(right_bottom_neighbor_id, left_top_neighbor_id,
-            RIGHT_BOTTOM_BORDER, LEFT_TOP_BORDER);
+            CU_RIGHT_BOTTOM_BORDER, CU_LEFT_TOP_BORDER);
     /// Sending right-top halo element to the right-top neighbor and at the same time,
     /// receiving left-bottom halo element from the left-bottom neighbor
     sndRcvDiagHaloElements(right_top_neighbor_id, left_bottom_neighbor_id,
-            RIGHT_TOP_BORDER, LEFT_BOTTOM_BORDER);
+            CU_RIGHT_TOP_BORDER, CU_LEFT_BOTTOM_BORDER);
     /// Sending left-bottom halo element to the left-bottom neighbor and at the same time,
     /// receiving right-top halo element from the right-top neighbor
     sndRcvDiagHaloElements(left_bottom_neighbor_id, right_top_neighbor_id,
-            LEFT_BOTTOM_BORDER, RIGHT_TOP_BORDER);
+            CU_LEFT_BOTTOM_BORDER, CU_RIGHT_TOP_BORDER);
 }
 
 void ComputationalNode::sndRcvHaloElements(int snd_id, int rcv_id, int snd_border, int rcv_border)
@@ -262,7 +257,7 @@ void ComputationalNode::sndRcvHaloElements(int snd_id, int rcv_id, int snd_borde
     char err_buffer[MPI_MAX_ERROR_STRING];
     size_t sndLocalIdx, sndLocalIdy, rcvLocalIdx, rcvLocalIdy;
     size_t AmountCellsToTransfer;
-    if(snd_border == LEFT_BORDER || snd_border == RIGHT_BORDER) {
+    if(snd_border == CU_LEFT_BORDER || snd_border == CU_RIGHT_BORDER) {
         AmountCellsToTransfer = lN_Y;
     } else {
         AmountCellsToTransfer = lN_X;
@@ -298,9 +293,10 @@ void ComputationalNode::sndRcvHaloElements(int snd_id, int rcv_id, int snd_borde
     /// how many cells were actually received
     int number_amount;
     MPI_Get_count(&status, model->MPI_CellType, &number_amount);
-    if(number_amount != AmountCellsToTransfer) {
-        Log << _WARNING_ << ("Received " + std::to_string(number_amount) +
+    if(number_amount != AmountCellsToTransfer && rcv_id != -1) {
+        std::string err_buffer = ("Received " + std::to_string(number_amount) +
                 " amount of field cells instead of " + std::to_string(AmountCellsToTransfer));
+        throw std::runtime_error(err_buffer);
     }
     Log << "Data has been successfully sent and received.";
     /// Make sure that every ComputationalNode sent and received halo elements
@@ -351,9 +347,10 @@ void ComputationalNode::sndRcvDiagHaloElements(int snd_id, int rcv_id, int snd_b
     /// how many cells were actually received
     int number_amount;
     MPI_Get_count(&status, model->MPI_CellType, &number_amount);
-    if(number_amount != AmountCellsToTransfer) {
-        Log << _WARNING_ << ("Received " + std::to_string(number_amount) +
-                " amount of diagonal field cells instead of " + std::to_string(AmountCellsToTransfer));
+    if(number_amount != AmountCellsToTransfer && rcv_id != -1) {
+        std::string err_buffer = ("Received " + std::to_string(number_amount) +
+                " amount of field cells instead of " + std::to_string(AmountCellsToTransfer));
+        throw std::runtime_error(err_buffer);
     }
     Log << "Data has been successfully sent and received.";
     /// Make sure that every ComputationalNode sent and received halo elements

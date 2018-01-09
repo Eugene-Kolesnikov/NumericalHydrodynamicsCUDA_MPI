@@ -1,5 +1,7 @@
 #include "LatticeBoltzmannScheme.hpp"
 
+typedef LatticeBoltzmannScheme::Cell Cell;
+
 #include <string>
 #include <exception>
 #include <cmath>
@@ -583,9 +585,9 @@ ErrorStatus LatticeBoltzmannScheme::updateGPUGlobalBorders(void* cu_field, void*
 	/// Check if the kernel executed without errors
 	lastCudaError = cudaGetLastError();
 	if(lastCudaError != cudaSuccess) {
-		errorString = std::string("performGPUSimulationStep: ") +
+		errorString = std::string("updateGPUGlobalBorders: ") +
 			std::string(cudaGetErrorString(lastCudaError));
-		return GPU_SUCCESS;
+		return GPU_ERROR;
 	}
 	return GPU_SUCCESS;
 }

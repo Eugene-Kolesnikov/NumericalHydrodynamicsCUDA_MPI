@@ -36,6 +36,9 @@ public:
     virtual ErrorStatus deinitModel();
 
 protected:
+    ErrorStatus updateGPUHaloElements(size_t lr_size, size_t tb_size, size_t lrtb_size);
+
+protected:
     cudaStream_t streamInternal;
     cudaStream_t streamHaloBorder;
 
@@ -44,6 +47,9 @@ protected:
     void* cu_lr_halo;
     void* cu_tb_halo;
     void* cu_lrtb_halo;
+    void* snd_cu_lr_halo;
+    void* snd_cu_tb_halo;
+    void* snd_cu_lrtb_halo;
 
 protected:
     cudaDeviceProp devProp;

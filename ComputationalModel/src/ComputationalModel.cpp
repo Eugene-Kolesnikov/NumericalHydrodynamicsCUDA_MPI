@@ -34,7 +34,6 @@ ComputationalModel::~ComputationalModel()
 void ComputationalModel::createMpiStructType()
 {
     const std::type_info& data_typeid = scheme->getDataTypeid();
-    size_t size_of_datatype = scheme->getSizeOfDatatype();
     int mpi_err_status, resultlen;
     char err_buffer[MPI_MAX_ERROR_STRING];
     MPI_Datatype MPI_DATA_TYPE;
@@ -102,19 +101,18 @@ void* ComputationalModel::getCPUHaloPtr(size_t border_type)
     if(nodeType != NODE_TYPE::COMPUTATIONAL_NODE)
         throw std::runtime_error("ComputationalModel::getCPUHaloPtr: "
                 "This function should not be called by the Server Node");
-    size_t size_of_datatype = scheme->getSizeOfDatatype();
-    size_t nitems = scheme->getNumberOfElements();
-    if(border_type == LEFT_BORDER)
+    size_t size_of_datastruct = scheme->getSizeOfDatastruct();
+    if(border_type == CU_LEFT_BORDER)
         return lr_halo;
-    else if(border_type == RIGHT_BORDER) {
+    else if(border_type == CU_RIGHT_BORDER) {
         byte* lr_haloPtr = (byte*)lr_halo;
-        byte* r_haloPtr = lr_haloPtr + lN_Y * nitems * size_of_datatype;
+        byte* r_haloPtr = lr_haloPtr + lN_Y * size_of_datastruct;
         return (void*)r_haloPtr;
-    } else if(border_type == TOP_BORDER)
+    } else if(border_type == CU_TOP_BORDER)
         return tb_halo;
-    else if(border_type == BOTTOM_BORDER) {
+    else if(border_type == CU_BOTTOM_BORDER) {
         byte* tb_haloPtr = (byte*)tb_halo;
-        byte* b_haloPtr = tb_haloPtr + lN_X * nitems * size_of_datatype;
+        byte* b_haloPtr = tb_haloPtr + lN_X * size_of_datastruct;
         return (void*)b_haloPtr;
     } else
         throw std::runtime_error("ComputationalModel::getCPUHaloPtr: "
@@ -126,14 +124,13 @@ void* ComputationalModel::getCPUDiagHaloPtr(size_t border_type)
     if(nodeType != NODE_TYPE::COMPUTATIONAL_NODE)
         throw std::runtime_error("ComputationalModel::getCPUDiagHaloPtr: "
                 "This function should not be called by the Server Node");
-    size_t size_of_datatype = scheme->getSizeOfDatatype();
-    size_t nitems = scheme->getNumberOfElements();
-    if(border_type != LEFT_TOP_BORDER && border_type != RIGHT_TOP_BORDER &&
-            border_type != LEFT_BOTTOM_BORDER && border_type != RIGHT_BOTTOM_BORDER)
+    size_t size_of_datastruct = scheme->getSizeOfDatastruct();
+    if(border_type != CU_LEFT_TOP_BORDER && border_type != CU_RIGHT_TOP_BORDER &&
+            border_type != CU_LEFT_BOTTOM_BORDER && border_type != CU_RIGHT_BOTTOM_BORDER)
         throw std::runtime_error("ComputationalModel::getCPUDiagHaloPtr: "
                 "Wrong border_type");
     byte* lrtb_haloPtr = (byte*)lrtb_halo;
-    byte* haloPtr = lrtb_haloPtr + border_type * nitems * size_of_datatype;
+    byte* haloPtr = lrtb_haloPtr + (border_type - CU_LEFT_TOP_BORDER) * size_of_datastruct;
     return (void*)haloPtr;
 }
 
@@ -142,19 +139,18 @@ void* ComputationalModel::getTmpCPUHaloPtr(size_t border_type)
     if(nodeType != NODE_TYPE::COMPUTATIONAL_NODE)
         throw std::runtime_error("ComputationalModel::getTmpCPUHaloPtr: "
                 "This function should not be called by the Server Node");
-    size_t size_of_datatype = scheme->getSizeOfDatatype();
-    size_t nitems = scheme->getNumberOfElements();
-    if(border_type == LEFT_BORDER)
+    size_t size_of_datastruct = scheme->getSizeOfDatastruct();
+    if(border_type == CU_LEFT_BORDER)
         return rcv_lr_halo;
-    else if(border_type == RIGHT_BORDER) {
+    else if(border_type == CU_RIGHT_BORDER) {
         byte* rcv_lr_haloPtr = (byte*)rcv_lr_halo;
-        byte* rcv_r_haloPtr = rcv_lr_haloPtr + lN_Y * nitems * size_of_datatype;
+        byte* rcv_r_haloPtr = rcv_lr_haloPtr + lN_Y * size_of_datastruct;
         return (void*)rcv_r_haloPtr;
-    } else if(border_type == TOP_BORDER)
+    } else if(border_type == CU_TOP_BORDER)
         return rcv_tb_halo;
-    else if(border_type == BOTTOM_BORDER) {
+    else if(border_type == CU_BOTTOM_BORDER) {
         byte* rcv_tb_haloPtr = (byte*)rcv_tb_halo;
-        byte* rcv_b_haloPtr = rcv_tb_haloPtr + lN_X * nitems * size_of_datatype;
+        byte* rcv_b_haloPtr = rcv_tb_haloPtr + lN_X * size_of_datastruct;
         return (void*)rcv_b_haloPtr;
     } else
         throw std::runtime_error("ComputationalModel::getTmpCPUHaloPtr: "
@@ -166,14 +162,13 @@ void* ComputationalModel::getTmpCPUDiagHaloPtr(size_t border_type)
     if(nodeType != NODE_TYPE::COMPUTATIONAL_NODE)
         throw std::runtime_error("ComputationalModel::getTmpCPUDiagHaloPtr: "
                 "This function should not be called by the Server Node");
-    size_t size_of_datatype = scheme->getSizeOfDatatype();
-    size_t nitems = scheme->getNumberOfElements();
-    if(border_type != LEFT_TOP_BORDER && border_type != RIGHT_TOP_BORDER &&
-            border_type != LEFT_BOTTOM_BORDER && border_type != RIGHT_BOTTOM_BORDER)
+    size_t size_of_datastruct = scheme->getSizeOfDatastruct();
+    if(border_type != CU_LEFT_TOP_BORDER && border_type != CU_RIGHT_TOP_BORDER &&
+            border_type != CU_LEFT_BOTTOM_BORDER && border_type != CU_RIGHT_BOTTOM_BORDER)
         throw std::runtime_error("ComputationalModel::getTmpCPUDiagHaloPtr: "
                 "Wrong border_type");
     byte* rcv_lrtb_haloPtr = (byte*)rcv_lrtb_halo;
-    byte* rcv_haloPtr = rcv_lrtb_haloPtr + border_type * nitems * size_of_datatype;
+    byte* rcv_haloPtr = rcv_lrtb_haloPtr + (border_type - CU_LEFT_TOP_BORDER) * size_of_datastruct;
     return (void*)rcv_haloPtr;
 }
 
@@ -212,27 +207,27 @@ bool ComputationalModel::checkStopMarker()
 void ComputationalModel::setBorders(size_t mpi_node_x, size_t mpi_node_y)
 {
     if(mpi_node_x == 0) {
-        borders[LEFT_BORDER] = 1;
+        borders[CU_LEFT_BORDER] = 1;
     } else {
-        borders[LEFT_BORDER] = 0;
+        borders[CU_LEFT_BORDER] = 0;
     }
 
     if(mpi_node_x == (MPI_NODES_X - 1)) {
-        borders[RIGHT_BORDER] = 1;
+        borders[CU_RIGHT_BORDER] = 1;
     } else {
-        borders[RIGHT_BORDER] = 0;
+        borders[CU_RIGHT_BORDER] = 0;
     }
 
     if(mpi_node_y == 0) {
-        borders[TOP_BORDER] = 1;
+        borders[CU_TOP_BORDER] = 1;
     } else {
-        borders[TOP_BORDER] = 0;
+        borders[CU_TOP_BORDER] = 0;
     }
 
     if(mpi_node_y == (MPI_NODES_Y - 1)) {
-        borders[BOTTOM_BORDER] = 1;
+        borders[CU_BOTTOM_BORDER] = 1;
     } else {
-        borders[BOTTOM_BORDER] = 0;
+        borders[CU_BOTTOM_BORDER] = 0;
     }
 }
 
@@ -261,11 +256,9 @@ void ComputationalModel::memcpyField(size_t mpi_node_x, size_t mpi_node_y, TypeM
 {
     byte* fieldPtr = (byte*)field;
     byte* tmpCPUFieldPtr = (byte*)tmpCPUField;
-    size_t size_of_datatype = scheme->getSizeOfDatatype();
-    size_t nitems = scheme->getNumberOfElements();
+    size_t size_of_datastruct = scheme->getSizeOfDatastruct();
     size_t global, globalTmp, x0, y0, x1, y1;
     size_t global_shift, global_shiftTmp;
-    size_t global_shift_item, global_shiftTmp_item;
     // calculate the shift for the particular subfield
     x0 = static_cast<size_t>(N_X / MPI_NODES_X * mpi_node_x);
     y0 = static_cast<size_t>(N_Y / MPI_NODES_Y * mpi_node_y);
@@ -280,26 +273,20 @@ void ComputationalModel::memcpyField(size_t mpi_node_x, size_t mpi_node_y, TypeM
              * somewhere inside the global field */
             y1 = y0 + y;
             /** Calculate the global shifts for the 'global field' and 'subfield'
-             * using the fact that structure consists of nitems amount of
-             * elements which are size_of_datatype amount of bytes each. */
-            global_shift = (y1 * N_X + x1) * nitems * size_of_datatype;
-            global_shiftTmp = (y * lN_X + x) * nitems * size_of_datatype;
-            for(size_t i = 0; i < nitems; ++i) {
-                /// Go through all elements of the Cell
-                /** Add shifts for the elements inside the Cell structure */
-                global_shift_item = global_shift + i * size_of_datatype;
-                global_shiftTmp_item = global_shiftTmp + i * size_of_datatype;
-                for(size_t s = 0; s < size_of_datatype; ++s) {
-                    /// Go through all bytes of the STRUCT_DATA_TYPE
-                    /** Add shifts for the bytes of the STRUCT_DATA_TYPE */
-                    global = global_shift_item + s;
-                    globalTmp = global_shiftTmp_item + s;
-                    /// Update the byte
-                    if(cpyType == TmpCPUFieldToField)
-                        fieldPtr[global] = tmpCPUFieldPtr[globalTmp];
-                    else // FieldToTmpCPUField
-                        tmpCPUFieldPtr[globalTmp] = fieldPtr[global];
-                }
+             * using the fact that structure consists of size_of_datastruct
+             * amount of bytes each. */
+            global_shift = (y1 * N_X + x1) * size_of_datastruct;
+            global_shiftTmp = (y * lN_X + x) * size_of_datastruct;
+            for(size_t s = 0; s < size_of_datastruct; ++s) {
+                /// Go through all bytes of the Cell struct
+                /** Add shifts for the bytes of the Cell struct */
+                global = global_shift + s;
+                globalTmp = global_shiftTmp + s;
+                /// Update the byte
+                if(cpyType == TmpCPUFieldToField)
+                    fieldPtr[global] = tmpCPUFieldPtr[globalTmp];
+                else // FieldToTmpCPUField
+                    tmpCPUFieldPtr[globalTmp] = fieldPtr[global];
             }
         }
     }

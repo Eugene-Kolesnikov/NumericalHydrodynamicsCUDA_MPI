@@ -1,19 +1,24 @@
-#ifndef LATTICEBOLTZMANNSCHEME_HPP
-#define LATTICEBOLTZMANNSCHEME_HPP
+/*
+    TODO: Create a CPU and GPU version of ball movement to check the data transfer
+    between MPI nodes as well as node<->GPU
+ */
 
-#include "GPUHeader.h"
-#include "CellConstruction.h"
-#include "ComputationalScheme.hpp"
+#ifndef UNITTEST_MOVINGBALL
+#define UNITTEST_MOVINGBALL
+
+#include "../GPUHeader.h"
+#include "../CellConstruction.h"
+#include "../ComputationalScheme.hpp"
 
 #define STRUCT_DATA_TYPE double
 
-class LatticeBoltzmannScheme : public ComputationalScheme {
-	GENERATE_CELL_STRUCTURE_WITH_SUPPORT_FUNCTIONS((r,1)(u,1)(v,1)(p,1)(F,9))
-    REGISTER_VISUALIZATION_PARAMETERS(("Density",0)("X-Velocity", 1)("Y-Velocity", 2)("Pressure",3))
+class UnitTest_MovingBall : public ComputationalScheme {
+	GENERATE_CELL_STRUCTURE_WITH_SUPPORT_FUNCTIONS((r,1)(v,2))
+    REGISTER_VISUALIZATION_PARAMETERS(("Density",0))
 
 public:
-	LatticeBoltzmannScheme(): ComputationalScheme(){}
-    virtual ~LatticeBoltzmannScheme(){}
+	UnitTest_MovingBall(): ComputationalScheme(){}
+    virtual ~UnitTest_MovingBall(){}
 
 public:
     virtual void* createField(size_t N_X, size_t N_Y) override;
@@ -39,5 +44,4 @@ protected:
     STRUCT_DATA_TYPE marker = -1;
 };
 
-
-#endif // LATTICEBOLTZMANNSCHEME_HPP
+#endif // UNITTEST_MOVINGBALL
