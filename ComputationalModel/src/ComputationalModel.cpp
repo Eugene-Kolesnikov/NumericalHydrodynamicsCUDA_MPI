@@ -21,6 +21,12 @@ ComputationalModel::ComputationalModel(const char* comp, const char* grid):
     rcv_lr_halo = nullptr;
     rcv_tb_halo = nullptr;
     rcv_lrtb_halo = nullptr;
+    #ifdef __DEBUG__
+        dbg_field = nullptr;
+        dbg_lr_halo = nullptr;
+        dbg_tb_halo = nullptr;
+        dbg_lrtb_halo = nullptr;
+    #endif
 }
 
 ComputationalModel::~ComputationalModel()
@@ -291,6 +297,70 @@ void ComputationalModel::memcpyField(size_t mpi_node_x, size_t mpi_node_y, TypeM
         }
     }
 }
+
+#ifdef __DEBUG__
+void ComputationalModel::cpu_memcpy(void* rcv, void* snd, size_t N)
+{
+    byte* rcvPtr = (byte*)rcv;
+    byte* sndPtr = (byte*)snd;
+    size_t size_of_datastruct = scheme->getSizeOfDatastruct();
+    size_t shift, global;
+    for(size_t i = 0; i < N; ++i) {
+        /// Go through all elements of the array
+        shift = i * size_of_datastruct;
+        for(size_t s = 0; s < size_of_datastruct; ++s) {
+            /// Go through all bytes of the Cell struct
+            /** Add shifts for the bytes of the Cell struct */
+            global = shift + s;
+            /// Update the byte
+            rcvPtr[global] = sndPtr[global];
+        }
+    }
+}
+
+void* ComputationalModel::getDBGField() const
+{
+    return dbg_field;
+}
+
+void* ComputationalModel::getDBGHaloPtr(size_t border_type)
+{
+    if(nodeType != NODE_TYPE::COMPUTATIONAL_NODE)
+        throw std::runtime_error("ComputationalModel::getDBGHaloPtr: "
+                "This function should not be called by the Server Node");
+    size_t size_of_datastruct = scheme->getSizeOfDatastruct();
+    if(border_type == CU_LEFT_BORDER)
+        return dbg_lr_halo;
+    else if(border_type == CU_RIGHT_BORDER) {
+        byte* dbg_lr_haloPtr = (byte*)dbg_lr_halo;
+        byte* dbg_r_haloPtr = dbg_lr_haloPtr + lN_Y * size_of_datastruct;
+        return (void*)dbg_r_haloPtr;
+    } else if(border_type == CU_TOP_BORDER)
+        return dbg_tb_halo;
+    else if(border_type == CU_BOTTOM_BORDER) {
+        byte* dbg_tb_haloPtr = (byte*)dbg_tb_halo;
+        byte* dbg_b_haloPtr = dbg_tb_haloPtr + lN_X * size_of_datastruct;
+        return (void*)dbg_b_haloPtr;
+    } else
+        throw std::runtime_error("ComputationalModel::getDBGHaloPtr: "
+                "Wrong border_type");
+}
+
+void* ComputationalModel::getDBGDiagHaloPtr(size_t border_type)
+{
+    if(nodeType != NODE_TYPE::COMPUTATIONAL_NODE)
+        throw std::runtime_error("ComputationalModel::getDBGDiagHaloPtr: "
+                "This function should not be called by the Server Node");
+    size_t size_of_datastruct = scheme->getSizeOfDatastruct();
+    if(border_type != CU_LEFT_TOP_BORDER && border_type != CU_RIGHT_TOP_BORDER &&
+            border_type != CU_LEFT_BOTTOM_BORDER && border_type != CU_RIGHT_BOTTOM_BORDER)
+        throw std::runtime_error("ComputationalModel::getDBGDiagHaloPtr: "
+                "Wrong border_type");
+    byte* dbg_lrtb_haloPtr = (byte*)dbg_lrtb_halo;
+    byte* dbg_haloPtr = dbg_lrtb_haloPtr + (border_type - CU_LEFT_TOP_BORDER) * size_of_datastruct;
+    return (void*)dbg_haloPtr;
+}
+#endif
 
 std::string ComputationalModel::getErrorString()
 {

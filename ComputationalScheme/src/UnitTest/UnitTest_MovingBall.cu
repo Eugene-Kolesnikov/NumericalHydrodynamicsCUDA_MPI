@@ -7,6 +7,8 @@ __global__ void performGPUSimulationStep_kernel(Cell* cu_field, Cell* cu_lr_halo
 {
 	size_t tid_x = blockIdx.x * blockDim.x + threadIdx.x;
 	size_t tid_y = blockIdx.y * blockDim.y + threadIdx.y;
+	if(tid_x >= N_X || tid_y >= N_Y)
+		return;
     STRUCT_DATA_TYPE data = 1000;
 	Cell* C = nullptr;
     Cell* C1 = nullptr;
@@ -29,6 +31,18 @@ __global__ void updateGPUGlobalBorders_kernel(Cell* cu_field, Cell* cu_lr_halo,
 		cu_lr_halo[tid].r = cu_field[tid * N_X].r;
 	} else if(type == CU_RIGHT_BORDER) {
         cu_lr_halo[N_Y + tid].r = 0.0;
+	} else if(type == CU_TOP_BORDER) {
+		cu_tb_halo[tid].r = 0.0;
+	} else if(type == CU_BOTTOM_BORDER) {
+		cu_tb_halo[N_Y + tid].r = 0.0;
+	} else if(type == CU_LEFT_TOP_BORDER) {
+		cu_lrtb_halo[CU_LEFT_TOP_BORDER - CU_LEFT_TOP_BORDER].r = 0.0;
+	} else if(type == CU_RIGHT_TOP_BORDER) {
+		cu_lrtb_halo[CU_RIGHT_TOP_BORDER - CU_LEFT_TOP_BORDER].r = 0.0;
+	} else if(type == CU_LEFT_BOTTOM_BORDER) {
+		cu_lrtb_halo[CU_LEFT_BOTTOM_BORDER - CU_LEFT_TOP_BORDER].r = 0.0;
+	} else if(type == CU_RIGHT_BOTTOM_BORDER) {
+		cu_lrtb_halo[CU_RIGHT_BOTTOM_BORDER - CU_LEFT_TOP_BORDER].r = 0.0;
 	}
 }
 
@@ -151,3 +165,66 @@ void* UnitTest_MovingBall::getMarkerValue()
 {
     return (void*)(&marker);
 }
+
+#ifdef __DEBUG__
+ErrorStatus UnitTest_MovingBall::dbg_performSimulationStep(void* cu_field, void* cu_lr_halo,
+	void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y,
+	size_t CUDA_X_BLOCKS, size_t CUDA_Y_BLOCKS,
+	size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS, void* stream)
+{
+	size_t id = 0;
+	Cell* C = (Cell*) cu_field;
+	Cell* lr_halo = (Cell*) cu_lr_halo;
+	for(size_t i = 0; i < N_X; ++i) {
+		for(size_t j = 0; j < N_Y; ++j) {
+			id = j * N_X + i;
+			if(i == N_X - 1) {
+				C[id] = lr_halo[N_Y + j];
+			} else {
+				C[id] = C[id + 1];
+			}
+		}
+	}
+	return GPU_SUCCESS;
+}
+
+ErrorStatus UnitTest_MovingBall::dbg_updateGlobalBorders(void* cu_field, void* cu_lr_halo,
+	void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y,
+	size_t type, size_t CUDA_X_BLOCKS, size_t CUDA_Y_BLOCKS,
+	size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS, void* stream)
+{
+	Cell* C = (Cell*) cu_field;
+	Cell* lr_halo = (Cell*) cu_lr_halo;
+	Cell* tb_halo = (Cell*) cu_tb_halo;
+	Cell* lrtb_halo = (Cell*) cu_lrtb_halo;
+	if(type == CU_LEFT_BORDER || type == CU_RIGHT_BORDER) {
+		for(size_t j = 0; j < N_Y; ++j) {
+			if(type == CU_LEFT_BORDER) {
+				lr_halo[j].r = C[j * N_X].r;
+			} else if(type == CU_RIGHT_BORDER) {
+		        lr_halo[N_Y + j].r = 0.0;
+			}
+		}
+	}
+	if(type == CU_TOP_BORDER || type == CU_BOTTOM_BORDER) {
+		for(size_t i = 0; i < N_X; ++i) {
+			if(type == CU_TOP_BORDER) {
+			   tb_halo[i].r = 0.0;
+			} else if(type == CU_BOTTOM_BORDER) {
+			   tb_halo[N_Y + i].r = 0.0;
+			}
+		}
+	}
+	if(type == CU_LEFT_TOP_BORDER) {
+	   lrtb_halo[CU_LEFT_TOP_BORDER - CU_LEFT_TOP_BORDER].r = 0.0;
+	} else if(type == CU_RIGHT_TOP_BORDER) {
+	   lrtb_halo[CU_RIGHT_TOP_BORDER - CU_LEFT_TOP_BORDER].r = 0.0;
+	} else if(type == CU_LEFT_BOTTOM_BORDER) {
+	   lrtb_halo[CU_LEFT_BOTTOM_BORDER - CU_LEFT_TOP_BORDER].r = 0.0;
+	} else if(type == CU_RIGHT_BOTTOM_BORDER) {
+	   lrtb_halo[CU_RIGHT_BOTTOM_BORDER - CU_LEFT_TOP_BORDER].r = 0.0;
+	}
+
+	return GPU_SUCCESS;
+}
+#endif

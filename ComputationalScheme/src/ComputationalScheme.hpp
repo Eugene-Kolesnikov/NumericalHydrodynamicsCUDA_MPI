@@ -20,6 +20,11 @@
 #define CU_LEFT_BOTTOM_BORDER (6)
 #define CU_RIGHT_BOTTOM_BORDER (7)
 
+/*
+    TODO: Create a function 'allocateField(enum memoryType = {CPU, CPU_PageLocked, GPU})'
+    TODO: Create a function 'allocateArray(enum memoryType = {CPU, CPU_PageLocked, GPU})' for halos
+ */
+
 class ComputationalScheme {
 public:
     ComputationalScheme();
@@ -193,6 +198,17 @@ public:
      * value which indicates that the simulation has finished.
      */
     virtual void* getMarkerValue() = 0;
+
+#ifdef __DEBUG__
+    virtual ErrorStatus dbg_performSimulationStep(void* cu_field, void* cu_lr_halo,
+        void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y,
+        size_t CUDA_X_BLOCKS, size_t CUDA_Y_BLOCKS,
+        size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS, void* stream) = 0;
+    virtual ErrorStatus dbg_updateGlobalBorders(void* cu_field, void* cu_lr_halo,
+        void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y,
+        size_t type, size_t CUDA_X_BLOCKS, size_t CUDA_Y_BLOCKS,
+        size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS, void* stream) = 0;
+#endif
 
 public:
     /**

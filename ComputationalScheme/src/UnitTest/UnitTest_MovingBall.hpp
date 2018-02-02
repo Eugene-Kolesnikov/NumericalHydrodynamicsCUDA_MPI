@@ -13,7 +13,7 @@
 #define STRUCT_DATA_TYPE double
 
 class UnitTest_MovingBall : public ComputationalScheme {
-	GENERATE_CELL_STRUCTURE_WITH_SUPPORT_FUNCTIONS((r,1)(v,2))
+	GENERATE_CELL_STRUCTURE_WITH_SUPPORT_FUNCTIONS((r,1))
     REGISTER_VISUALIZATION_PARAMETERS(("Density",0))
 
 public:
@@ -39,6 +39,17 @@ public:
                 size_t type, size_t CUDA_X_BLOCKS, size_t CUDA_Y_BLOCKS,
                 size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS, void* stream) override;
     virtual void* getMarkerValue() override;
+
+	#ifdef __DEBUG__
+        virtual ErrorStatus dbg_performSimulationStep(void* cu_field, void* cu_lr_halo,
+            void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y,
+            size_t CUDA_X_BLOCKS, size_t CUDA_Y_BLOCKS,
+            size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS, void* stream) override;
+		virtual ErrorStatus dbg_updateGlobalBorders(void* cu_field, void* cu_lr_halo,
+            void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y,
+            size_t type, size_t CUDA_X_BLOCKS, size_t CUDA_Y_BLOCKS,
+            size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS, void* stream) override;
+    #endif
 
 protected:
     STRUCT_DATA_TYPE marker = -1;

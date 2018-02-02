@@ -21,6 +21,11 @@
 #include "../../MpiController/src/FileLogger.hpp"
 #include <dlfcn.h>
 
+/**
+ * TODO: Replace 'void* getTmpCPUHaloPtr(size_t border_type)', 'void* getTmpCPUDiagHaloPtr(size_t border_type)'
+ * with one function getTmpCPUHaloPtr(enum HaloType {border, diagonal}, size_t border_type).
+ */
+
 class ComputationalModel {
 protected:
     /**
@@ -319,6 +324,13 @@ public:
      */
     void memcpyField(size_t mpi_node_x, size_t mpi_node_y, TypeMemCpy cpyType);
 
+#ifdef __DEBUG__
+    void cpu_memcpy(void* rcv, void* snd, size_t N);
+    void* getDBGField() const;
+    void* getDBGHaloPtr(size_t border_type);
+    void* getDBGDiagHaloPtr(size_t border_type);
+#endif
+
     /**
      * [getErrorString description]
      * @return [description]
@@ -364,6 +376,13 @@ protected:
 
 protected:
     std::string errorString;
+
+#ifdef __DEBUG__
+    void* dbg_field;
+    void* dbg_lr_halo;
+    void* dbg_tb_halo;
+    void* dbg_lrtb_halo;
+#endif
 };
 
 #endif /* COMPUTATIONALMODEL_HPP */

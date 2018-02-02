@@ -209,18 +209,21 @@ void MPI_Node::setLocalMPI_ids(const size_t globalId, size_t& localIdx, size_t& 
 
 void MPI_Node::setLocalMPI_ids(const int globalId, int& localIdx, int& localIdy)
 {
-    if(globalId < 0) {
-        localIdx = MPI_NODES_X;
-        localIdy = MPI_NODES_Y;
+    if(globalId == -1) {
+        localIdx = -1;
+        localIdy = -1;
     } else {
         localIdy = static_cast<size_t>(floor(globalId / MPI_NODES_X));
         localIdx = globalId - localIdy * MPI_NODES_X;
     }
 }
 
-size_t MPI_Node::getGlobalMPIid(size_t mpi_id_x, size_t mpi_id_y)
+int MPI_Node::getGlobalMPIid(int mpi_id_x, int mpi_id_y)
 {
-    return mpi_id_y * MPI_NODES_X + mpi_id_x;
+    if(mpi_id_x != -1 && mpi_id_y != -1)
+        return mpi_id_y * MPI_NODES_X + mpi_id_x;
+    else
+        return -1;
 }
 
 void MPI_Node::finalBarrierSync()

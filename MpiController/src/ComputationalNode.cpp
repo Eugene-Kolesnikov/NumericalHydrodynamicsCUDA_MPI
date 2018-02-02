@@ -58,6 +58,7 @@ void ComputationalNode::initEnvironment()
 void ComputationalNode::runNode()
 {
     try {
+        HANDLE_GPUERROR(model->gpuSync());
         double curTime = 0.0; /// current time
         size_t perfSteps = 0; /// performed steps
         /// perform the computational loop from time 0 to TOTAL_TIME
@@ -196,16 +197,16 @@ void ComputationalNode::shareHaloElements()
      */
     int left_neighbor_id =
         (localMPI_id_x == 0) ? MPI_PROC_NULL :
-            getGlobalMPIid(localMPI_id_x - 1, localMPI_id_y);
+            getGlobalMPIid((int)localMPI_id_x - 1, (int)localMPI_id_y);
     int right_neighbor_id =
         (localMPI_id_x == (MPI_NODES_X - 1)) ? MPI_PROC_NULL :
-            getGlobalMPIid(localMPI_id_x + 1, localMPI_id_y);
+            getGlobalMPIid((int)localMPI_id_x + 1, (int)localMPI_id_y);
     int top_neighbor_id =
         (localMPI_id_y == 0) ? MPI_PROC_NULL :
-            getGlobalMPIid(localMPI_id_x, localMPI_id_y - 1);
+            getGlobalMPIid((int)localMPI_id_x, (int)localMPI_id_y - 1);
     int bottom_neighbor_id =
         (localMPI_id_y == (MPI_NODES_Y - 1)) ? MPI_PROC_NULL :
-            getGlobalMPIid(localMPI_id_x, localMPI_id_y + 1);
+            getGlobalMPIid((int)localMPI_id_x, (int)localMPI_id_y + 1);
     /// Sending left halo elements to the left neighbor and at the same time,
     /// receiving right halo elements from the right neighbor
     sndRcvHaloElements(left_neighbor_id, right_neighbor_id, CU_LEFT_BORDER, CU_RIGHT_BORDER);
@@ -222,16 +223,16 @@ void ComputationalNode::shareHaloElements()
     /// Sending and receiving diagonal halo elements
     int left_top_neighbor_id =
         (localMPI_id_x == 0 || localMPI_id_y == 0) ? MPI_PROC_NULL :
-            getGlobalMPIid(localMPI_id_x - 1, localMPI_id_y - 1);
+            getGlobalMPIid((int)localMPI_id_x - 1, (int)localMPI_id_y - 1);
     int right_top_neighbor_id =
         (localMPI_id_x == (MPI_NODES_X - 1) || localMPI_id_y == 0) ? MPI_PROC_NULL :
-            getGlobalMPIid(localMPI_id_x + 1, localMPI_id_y - 1);
+            getGlobalMPIid((int)localMPI_id_x + 1, (int)localMPI_id_y - 1);
     int left_bottom_neighbor_id =
         (localMPI_id_x == 0 || localMPI_id_y == (MPI_NODES_Y - 1)) ? MPI_PROC_NULL :
-            getGlobalMPIid(localMPI_id_x - 1, localMPI_id_y + 1);
+            getGlobalMPIid((int)localMPI_id_x - 1, (int)localMPI_id_y + 1);
     int right_bottom_neighbor_id =
         (localMPI_id_x == (MPI_NODES_X - 1) || localMPI_id_y == (MPI_NODES_Y - 1)) ? MPI_PROC_NULL :
-            getGlobalMPIid(localMPI_id_x + 1, localMPI_id_y + 1);
+            getGlobalMPIid((int)localMPI_id_x + 1, (int)localMPI_id_y + 1);
     /// Sending left-top halo element to the left-top neighbor and at the same time,
     /// receiving right-bottom halo element from the right-bottom neighbor
     sndRcvDiagHaloElements(left_top_neighbor_id, right_bottom_neighbor_id,
@@ -255,7 +256,7 @@ void ComputationalNode::sndRcvHaloElements(int snd_id, int rcv_id, int snd_borde
     MPI_Status status;
     int mpi_err_status, resultlen;
     char err_buffer[MPI_MAX_ERROR_STRING];
-    size_t sndLocalIdx, sndLocalIdy, rcvLocalIdx, rcvLocalIdy;
+    int sndLocalIdx, sndLocalIdy, rcvLocalIdx, rcvLocalIdy;
     size_t AmountCellsToTransfer;
     if(snd_border == CU_LEFT_BORDER || snd_border == CU_RIGHT_BORDER) {
         AmountCellsToTransfer = lN_Y;
@@ -307,6 +308,38 @@ void ComputationalNode::sndRcvHaloElements(int snd_id, int rcv_id, int snd_borde
         throw std::runtime_error(err_buffer);
     }
     Log << "Barrier synchronization has been successfully performed";
+
+#ifdef __DEBUG__
+    void* dbgHaloPtr = model->getDBGHaloPtr(snd_border);
+    /// Sending halo elements to the snd_id ComputationalNode and at the same time,
+    /// receiving halo elements from the rcv_id ComputationalNode.
+    mpi_err_status = MPI_Sendrecv(rcvHaloPtr, AmountCellsToTransfer, model->MPI_CellType,
+            rcv_id, globalMPI_id, dbgHaloPtr, AmountCellsToTransfer, model->MPI_CellType,
+            snd_id, snd_id, MPI_COMM_WORLD, &status);
+    /// Check if the MPI transfer was successful
+    if(mpi_err_status != MPI_SUCCESS) {
+        MPI_Error_string(mpi_err_status, err_buffer, &resultlen);
+        throw std::runtime_error(std::string("__DEBUG__: ") + std::string(err_buffer));
+    }
+    /// After receiving the message, check the status to determine
+    /// how many cells were actually received
+    MPI_Get_count(&status, model->MPI_CellType, &number_amount);
+    if(number_amount != AmountCellsToTransfer && snd_id != -1) {
+        std::string err_buffer = ("__DEBUG__: Received " + std::to_string(number_amount) +
+                " amount of field cells instead of " + std::to_string(AmountCellsToTransfer));
+        throw std::runtime_error(err_buffer);
+    }
+    mpi_err_status = MPI_Barrier(MPI_COMM_COMPUTATIONAL);
+    /// Check if the MPI barrier synchronization was successful
+    if(mpi_err_status != MPI_SUCCESS) {
+        MPI_Error_string(mpi_err_status, err_buffer, &resultlen);
+        throw std::runtime_error(std::string("__DEBUG__: ") + std::string(err_buffer));
+    }
+    if(snd_id != -1) {
+        CHECK_CPU_CPU_ARRAYS_EQUALITY_BYTES(dbgHaloPtr, sndHaloPtr,
+            AmountCellsToTransfer * model->getScheme()->getSizeOfDatastruct(), Log);
+    }
+#endif
 }
 
 void ComputationalNode::sndRcvDiagHaloElements(int snd_id, int rcv_id, int snd_border, int rcv_border)
@@ -314,7 +347,7 @@ void ComputationalNode::sndRcvDiagHaloElements(int snd_id, int rcv_id, int snd_b
     MPI_Status status;
     int mpi_err_status, resultlen;
     char err_buffer[MPI_MAX_ERROR_STRING];
-    size_t sndLocalIdx, sndLocalIdy, rcvLocalIdx, rcvLocalIdy;
+    int sndLocalIdx, sndLocalIdy, rcvLocalIdx, rcvLocalIdy;
     size_t AmountCellsToTransfer = 1;
     setLocalMPI_ids(snd_id, sndLocalIdx, sndLocalIdy);
     setLocalMPI_ids(rcv_id, rcvLocalIdx, rcvLocalIdy);
@@ -361,6 +394,37 @@ void ComputationalNode::sndRcvDiagHaloElements(int snd_id, int rcv_id, int snd_b
         throw std::runtime_error(err_buffer);
     }
     Log << "Barrier synchronization has been successfully performed";
+#ifdef __DEBUG__
+    void* dbgDiagHaloPtr = model->getDBGDiagHaloPtr(snd_border);
+    /// Sending halo elements to the snd_id ComputationalNode and at the same time,
+    /// receiving halo elements from the rcv_id ComputationalNode.
+    mpi_err_status = MPI_Sendrecv(rcvDiagHaloPtr, AmountCellsToTransfer, model->MPI_CellType,
+            rcv_id, globalMPI_id, dbgDiagHaloPtr, AmountCellsToTransfer, model->MPI_CellType,
+            snd_id, snd_id, MPI_COMM_WORLD, &status);
+    /// Check if the MPI transfer was successful
+    if(mpi_err_status != MPI_SUCCESS) {
+        MPI_Error_string(mpi_err_status, err_buffer, &resultlen);
+        throw std::runtime_error(std::string("__DEBUG__: ") + std::string(err_buffer));
+    }
+    /// After receiving the message, check the status to determine
+    /// how many cells were actually received
+    MPI_Get_count(&status, model->MPI_CellType, &number_amount);
+    if(number_amount != AmountCellsToTransfer && snd_id != -1) {
+        std::string err_buffer = ("__DEBUG__: Received " + std::to_string(number_amount) +
+                " amount of field cells instead of " + std::to_string(AmountCellsToTransfer));
+        throw std::runtime_error(err_buffer);
+    }
+    mpi_err_status = MPI_Barrier(MPI_COMM_COMPUTATIONAL);
+    /// Check if the MPI barrier synchronization was successful
+    if(mpi_err_status != MPI_SUCCESS) {
+        MPI_Error_string(mpi_err_status, err_buffer, &resultlen);
+        throw std::runtime_error(std::string("__DEBUG__: ") + std::string(err_buffer));
+    }
+    if(snd_id != -1) {
+        CHECK_CPU_CPU_ARRAYS_EQUALITY_BYTES(dbgDiagHaloPtr, sndDiagHaloPtr,
+            AmountCellsToTransfer * model->getScheme()->getSizeOfDatastruct(), Log);
+    }
+#endif
 }
 
 void ComputationalNode::setStopMarker()

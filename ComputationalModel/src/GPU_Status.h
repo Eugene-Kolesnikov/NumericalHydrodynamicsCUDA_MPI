@@ -1,6 +1,8 @@
 #ifndef GPU_STATUS_H
 #define GPU_STATUS_H
 
+#include "DebugHeader.hpp"
+
 typedef int ErrorStatus;
 #define GPU_SUCCESS (0)
 #define GPU_ERROR (-1)

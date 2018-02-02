@@ -5,18 +5,20 @@
 namespace logging {
 
 FileLogger::FileLogger(size_t globalMPI_id)
-      :numWarnings(0), numErrors(0), mpi_id(globalMPI_id)
+      :numWarnings(0), numErrors(0), numDebugMsgs(0), mpi_id(globalMPI_id)
 {
 }
 
 FileLogger::~FileLogger () {
     if (myFile.is_open()) {
+        myFile << "Errors: " << numErrors
+            << "\nWarnings: " << numWarnings
+            << "\nDebug msgs: " << numDebugMsgs << std::endl;
         myFile.close();
     }
 }
 
 FileLogger &operator << (FileLogger &logger, const FileLogger::e_logType l_type) {
-    std::time_t result = std::time(nullptr);
     switch (l_type) {
         case logging::FileLogger::e_logType::LOG_ERROR:
             logger.myFile << "[ERROR]: ";
@@ -25,6 +27,10 @@ FileLogger &operator << (FileLogger &logger, const FileLogger::e_logType l_type)
         case logging::FileLogger::e_logType::LOG_WARNING:
             logger.myFile << "[WARNING]: ";
             ++logger.numWarnings;
+            break;
+        case logging::FileLogger::e_logType::LOG_DEBUG:
+            logger.myFile << "[DEBUG]: ";
+            ++logger.numDebugMsgs;
             break;
         default:
             logger.myFile << "[INFO]: ";
@@ -68,7 +74,7 @@ void FileLogger::openLogFile(std::string appPath)
                << getTime(std::localtime(&result))
                << std::endl;
     } else {
-        std::string error_msg = "Node (" + std::to_string(mpi_id) + 
+        std::string error_msg = "Node (" + std::to_string(mpi_id) +
                 "): Can't create a log file!";
         throw std::runtime_error(error_msg);
     }

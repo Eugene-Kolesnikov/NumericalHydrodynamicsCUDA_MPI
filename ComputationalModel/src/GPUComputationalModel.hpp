@@ -37,6 +37,9 @@ public:
 
 protected:
     ErrorStatus updateGPUHaloElements(size_t lr_size, size_t tb_size, size_t lrtb_size);
+#ifdef __DEBUG__
+    ErrorStatus updateDBGHaloElements(size_t lr_size, size_t tb_size, size_t lrtb_size);
+#endif
 
 protected:
     cudaStream_t streamInternal;
