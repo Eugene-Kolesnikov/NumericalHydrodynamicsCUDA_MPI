@@ -118,9 +118,10 @@ ErrorStatus UnitTest_MovingBall::performCPUSimulationStep(void* tmpCPUField, voi
 
 ErrorStatus UnitTest_MovingBall::performGPUSimulationStep(void* cu_field, void* cu_lr_halo,
         void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y,
-        size_t CUDA_X_BLOCKS, size_t CUDA_Y_BLOCKS, size_t CUDA_X_THREADS,
-        size_t CUDA_Y_THREADS, void* stream)
+		size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS, void* stream)
 {
+	size_t CUDA_X_BLOCKS = (size_t)((double)N_X / (double)CUDA_X_THREADS);
+	size_t CUDA_Y_BLOCKS = (size_t)((double)N_Y / (double)CUDA_Y_THREADS);
 	size_t SharedMemoryPerBlock = 0;
     cudaStream_t* cuStream = (cudaStream_t*)stream;
 	/// Launch the CUDA kernel
@@ -140,15 +141,27 @@ ErrorStatus UnitTest_MovingBall::performGPUSimulationStep(void* cu_field, void* 
 
 ErrorStatus UnitTest_MovingBall::updateGPUGlobalBorders(void* cu_field, void* cu_lr_halo,
             void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y,
-            size_t type, size_t CUDA_X_BLOCKS, size_t CUDA_Y_BLOCKS,
-            size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS, void* stream)
+            size_t type, size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS, void* stream)
 {
+	static int k = 0;
 	/// Calculate the amount of shared memory that is required for the kernel
 	size_t sharedMemory = 0;
 	cudaStream_t* cuStream = (cudaStream_t*)stream;
+	size_t BLOCKS, THREADS;
+	if(type == CU_TOP_BORDER || type == CU_BOTTOM_BORDER) {
+		BLOCKS = (size_t)((double)N_X / (double)CUDA_X_THREADS);
+		THREADS = CUDA_X_THREADS;
+	}
+	else if(type == CU_LEFT_BORDER || type == CU_RIGHT_BORDER) {
+		BLOCKS = (size_t)((double)N_Y / (double)CUDA_Y_THREADS);
+		THREADS = CUDA_Y_THREADS;
+	} else {
+		BLOCKS = 1;
+		THREADS = 1;
+	}
 	/// Launch the CUDA kernel
-	updateGPUGlobalBorders_kernel <<< dim3(CUDA_X_BLOCKS, CUDA_Y_BLOCKS, 1),
-		dim3(CUDA_X_THREADS, CUDA_Y_THREADS, 1), sharedMemory,
+	updateGPUGlobalBorders_kernel <<< dim3(BLOCKS, 1, 1),
+		dim3(THREADS, 1, 1), sharedMemory,
 		*cuStream >>> ((Cell*)cu_field, (Cell*)cu_lr_halo, (Cell*)cu_tb_halo,
             (Cell*)cu_lrtb_halo, N_X, N_Y, type);
 	/// Check if the kernel executed without errors
@@ -168,9 +181,7 @@ void* UnitTest_MovingBall::getMarkerValue()
 
 #ifdef __DEBUG__
 ErrorStatus UnitTest_MovingBall::dbg_performSimulationStep(void* cu_field, void* cu_lr_halo,
-	void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y,
-	size_t CUDA_X_BLOCKS, size_t CUDA_Y_BLOCKS,
-	size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS, void* stream)
+	void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y, void* stream)
 {
 	size_t id = 0;
 	Cell* C = (Cell*) cu_field;
@@ -190,8 +201,7 @@ ErrorStatus UnitTest_MovingBall::dbg_performSimulationStep(void* cu_field, void*
 
 ErrorStatus UnitTest_MovingBall::dbg_updateGlobalBorders(void* cu_field, void* cu_lr_halo,
 	void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y,
-	size_t type, size_t CUDA_X_BLOCKS, size_t CUDA_Y_BLOCKS,
-	size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS, void* stream)
+	size_t type, size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS, void* stream)
 {
 	Cell* C = (Cell*) cu_field;
 	Cell* lr_halo = (Cell*) cu_lr_halo;

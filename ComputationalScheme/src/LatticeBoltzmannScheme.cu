@@ -528,15 +528,14 @@ ErrorStatus LatticeBoltzmannScheme::performCPUSimulationStep(void* tmpCPUField, 
 
 ErrorStatus LatticeBoltzmannScheme::performGPUSimulationStep(void* cu_field, void* cu_lr_halo,
         void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y,
-        size_t CUDA_X_BLOCKS, size_t CUDA_Y_BLOCKS, size_t CUDA_X_THREADS,
-        size_t CUDA_Y_THREADS, void* stream)
+		size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS, void* stream)
 {
 	return GPU_SUCCESS;
-	size_t SHARED_X = CUDA_X_THREADS + 2;
+	/*size_t SHARED_X = CUDA_X_THREADS + 2;
 	size_t SHARED_Y = CUDA_Y_THREADS + 2;
 	size_t SharedMemoryPerBlock = SHARED_X * SHARED_Y * sizeof(Cell);
 	float blocksPerSM = ceil((float)CUDA_X_BLOCKS * (float)CUDA_Y_BLOCKS / (float)amountSMs);
-	size_t totalSharedMemoryPerBlock = ceil((float)totalSharedMemoryPerSM / blocksPerSM);
+	size_t totalSharedMemoryPerBlock = ceil((float)totalSharedMemoryPerSM / blocksPerSM);*/
 	/// Check if there is enough shared memory
 	/*if(totalSharedMemoryPerBlock < SharedMemoryPerBlock) {
 		errorString = std::string("Trying to allocate too much CUDA shared memory: ") +
@@ -544,7 +543,7 @@ ErrorStatus LatticeBoltzmannScheme::performGPUSimulationStep(void* cu_field, voi
 			std::to_string(SharedMemoryPerBlock) + std::string(" bytes per block is requested!");
 		return GPU_ERROR;
 	}*/
-    cudaStream_t* cuStream = (cudaStream_t*)stream;
+    /*cudaStream_t* cuStream = (cudaStream_t*)stream;
 	/// Launch the CUDA kernel
 	performGPUSimulationStep_kernel <<< dim3(CUDA_X_BLOCKS, CUDA_Y_BLOCKS, 1),
 		dim3(CUDA_X_THREADS, CUDA_Y_THREADS, 1), SharedMemoryPerBlock,
@@ -557,15 +556,15 @@ ErrorStatus LatticeBoltzmannScheme::performGPUSimulationStep(void* cu_field, voi
 			std::string(cudaGetErrorString(lastCudaError));
 		return GPU_ERROR;
 	}
-	return GPU_SUCCESS;
+	return GPU_SUCCESS;*/
 }
 
 ErrorStatus LatticeBoltzmannScheme::updateGPUGlobalBorders(void* cu_field, void* cu_lr_halo,
             void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y,
-            size_t type, size_t CUDA_X_BLOCKS, size_t CUDA_Y_BLOCKS,
-            size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS, void* stream)
+            size_t type, size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS, void* stream)
 {
-	/// Calculate the amount of shared memory that is required for the kernel
+	return GPU_SUCCESS;
+	/*/// Calculate the amount of shared memory that is required for the kernel
 	size_t sharedMemory = 0;
 	if(type == CU_LEFT_BORDER) {
 		sharedMemory = (N_Y + 2) * sizeof(Cell);
@@ -589,7 +588,7 @@ ErrorStatus LatticeBoltzmannScheme::updateGPUGlobalBorders(void* cu_field, void*
 			std::string(cudaGetErrorString(lastCudaError));
 		return GPU_ERROR;
 	}
-	return GPU_SUCCESS;
+	return GPU_SUCCESS;*/
 }
 
 void* LatticeBoltzmannScheme::getMarkerValue()

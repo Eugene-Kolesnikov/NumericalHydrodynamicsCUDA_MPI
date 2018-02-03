@@ -148,21 +148,17 @@ ErrorStatus GPUComputationalModel::performSimulationStep()
             CHECK_CPU_GPU_ARRAYS_EQUALITY_BYTES(dbg_lr_halo, cu_lr_halo, 0, numberOfBytes, *Log);
         }
     #endif
-	size_t CUDA_X_BLOCKS = (size_t)((double)lN_X / (double)CUDA_X_THREADS);
-	size_t CUDA_Y_BLOCKS = (size_t)((double)lN_Y / (double)CUDA_Y_THREADS);
-	/*CM_HANDLE_GPUERROR(scheme->performGPUSimulationStep(cu_field, cu_lr_halo,
-        cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y,
-		CUDA_X_BLOCKS, CUDA_Y_BLOCKS, CUDA_X_THREADS, CUDA_Y_THREADS,
-		&streamInternal));*/
+	CM_HANDLE_GPUERROR(scheme->performGPUSimulationStep(cu_field, cu_lr_halo,
+        cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CUDA_X_THREADS, CUDA_Y_THREADS,
+		&streamInternal));
     #ifdef __DEBUG__
         size_t numberOfBytes = lN_X * lN_Y * scheme->getSizeOfDatastruct();
         scheme->dbg_performSimulationStep(dbg_field, dbg_lr_halo,
-            dbg_tb_halo, dbg_lrtb_halo, lN_X, lN_Y,
-    		CUDA_X_BLOCKS, CUDA_Y_BLOCKS, CUDA_X_THREADS, CUDA_Y_THREADS,
+            dbg_tb_halo, dbg_lrtb_halo, lN_X, lN_Y, CUDA_X_THREADS, CUDA_Y_THREADS,
     		&streamInternal);
         /**********************************************************************/
-        HANDLE_CUERROR(cudaMemcpyAsync(cu_field, dbg_field, lN_X*lN_Y * scheme->getSizeOfDatastruct(), cudaMemcpyHostToDevice, streamInternal));
-        gpuSync();
+        //HANDLE_CUERROR(cudaMemcpyAsync(cu_field, dbg_field, lN_X*lN_Y * scheme->getSizeOfDatastruct(), cudaMemcpyHostToDevice, streamInternal));
+        //gpuSync();
         /**********************************************************************/
         CHECK_CPU_GPU_ARRAYS_EQUALITY_BYTES(dbg_field, cu_field, 0, numberOfBytes, *Log);
         //_DEBUG_PRINT_FIELDS_CPU_GPU(dbg_field, cu_field, lN_X, lN_Y, scheme->getSizeOfDatastruct(), *Log);
@@ -209,62 +205,57 @@ ErrorStatus GPUComputationalModel::updateHaloBorderElements(size_t mpi_node_x, s
         CHECK_CPU_GPU_ARRAYS_EQUALITY_BYTES(dbg_lrtb_halo, cu_lrtb_halo, 0, lrtb_size * sizeOfStruct, *Log);
     #endif
 	/// Update global borders
-	size_t CUDA_X_BLOCKS;
 	if(mpi_node_x == 0) {
 		/// Update global left border
-		CUDA_X_BLOCKS = (size_t)(lN_Y / CUDA_Y_THREADS);
 		CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
             cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_LEFT_BORDER,
-			CUDA_X_BLOCKS, 1, CUDA_Y_THREADS, 1, &streamHaloBorder));
+			CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder));
         #ifdef __DEBUG__
             size_t numberOfBytes = lN_Y * sizeOfStruct;
             scheme->dbg_updateGlobalBorders(dbg_field, dbg_lr_halo,
                 dbg_tb_halo, dbg_lrtb_halo, lN_X, lN_Y, CU_LEFT_BORDER,
-    			CUDA_X_BLOCKS, 1, CUDA_Y_THREADS, 1, &streamHaloBorder);
+    			CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder);
             CHECK_CPU_GPU_ARRAYS_EQUALITY_BYTES(dbg_lr_halo, cu_lr_halo, 0, numberOfBytes, *Log);
         #endif
 	}
     if(mpi_node_x == (MPI_NODES_X - 1)) {
 		/// Update global right border
-		CUDA_X_BLOCKS = (size_t)(lN_Y / CUDA_Y_THREADS);
 		CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
             cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_RIGHT_BORDER,
-			CUDA_X_BLOCKS, 1, CUDA_Y_THREADS, 1, &streamHaloBorder));
+			CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder));
         #ifdef __DEBUG__
             size_t numberOfBytes = lN_Y * sizeOfStruct;
             scheme->dbg_updateGlobalBorders(dbg_field, dbg_lr_halo,
                 dbg_tb_halo, dbg_lrtb_halo, lN_X, lN_Y, CU_RIGHT_BORDER,
-    			CUDA_X_BLOCKS, 1, CUDA_Y_THREADS, 1, &streamHaloBorder);
+    			CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder);
             CHECK_CPU_GPU_ARRAYS_EQUALITY_BYTES(dbg_lr_halo, cu_lr_halo,
                 lN_Y * sizeOfStruct, numberOfBytes, *Log);
         #endif
 	}
 	if(mpi_node_y == 0) {
 		/// Update global top border
-		CUDA_X_BLOCKS = (size_t)(lN_X / CUDA_X_THREADS);
 		CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
             cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_TOP_BORDER,
-			CUDA_X_BLOCKS, 1, CUDA_X_THREADS, 1, &streamHaloBorder));
+			CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder));
         #ifdef __DEBUG__
             size_t numberOfBytes = lN_X * sizeOfStruct;
             scheme->dbg_updateGlobalBorders(dbg_field, dbg_lr_halo,
                 dbg_tb_halo, dbg_lrtb_halo, lN_X, lN_Y, CU_TOP_BORDER,
-    			CUDA_X_BLOCKS, 1, CUDA_X_THREADS, 1, &streamHaloBorder);
+    			CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder);
             CHECK_CPU_GPU_ARRAYS_EQUALITY_BYTES(dbg_tb_halo, cu_tb_halo, 0,
                 numberOfBytes, *Log);
         #endif
 	}
     if(mpi_node_y == (MPI_NODES_Y - 1)) {
 		/// Update global bottom border
-		CUDA_X_BLOCKS = (size_t)(lN_X / CUDA_X_THREADS);
 		CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
             cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_BOTTOM_BORDER,
-			CUDA_X_BLOCKS, 1, CUDA_X_THREADS, 1, &streamHaloBorder));
+			CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder));
         #ifdef __DEBUG__
             size_t numberOfBytes = lN_X * sizeOfStruct;
             scheme->dbg_updateGlobalBorders(dbg_field, dbg_lr_halo,
                 dbg_tb_halo, dbg_lrtb_halo, lN_X, lN_Y, CU_BOTTOM_BORDER,
-    			CUDA_X_BLOCKS, 1, CUDA_X_THREADS, 1, &streamHaloBorder);
+    			CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder);
             CHECK_CPU_GPU_ARRAYS_EQUALITY_BYTES(dbg_tb_halo, cu_tb_halo,
                 lN_X * sizeOfStruct, numberOfBytes, *Log);
         #endif
@@ -276,22 +267,22 @@ ErrorStatus GPUComputationalModel::updateHaloBorderElements(size_t mpi_node_x, s
         /// Update the left-top diagonal element
     	CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
             cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_LEFT_TOP_BORDER,
-    		1, 1, 1, 1, &streamHaloBorder));
+    		CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder));
         #ifdef __DEBUG__
             scheme->dbg_updateGlobalBorders(dbg_field, dbg_lr_halo,
                 dbg_tb_halo, dbg_lrtb_halo, lN_X, lN_Y, CU_LEFT_TOP_BORDER,
-        		1, 1, 1, 1, &streamHaloBorder);
+        		CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder);
             CHECK_CPU_GPU_ARRAYS_EQUALITY_BYTES(dbg_lrtb_halo, cu_lrtb_halo,
                 (CU_LEFT_TOP_BORDER - CU_LEFT_TOP_BORDER) * sizeOfStruct, sizeOfStruct, *Log);
         #endif
         /// Update the right-top diagonal element
         CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
             cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_RIGHT_TOP_BORDER,
-    		1, 1, 1, 1, &streamHaloBorder));
+    		CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder));
         #ifdef __DEBUG__
             scheme->dbg_updateGlobalBorders(dbg_field, dbg_lr_halo,
                 dbg_tb_halo, dbg_lrtb_halo, lN_X, lN_Y, CU_RIGHT_TOP_BORDER,
-        		1, 1, 1, 1, &streamHaloBorder);
+        		CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder);
             CHECK_CPU_GPU_ARRAYS_EQUALITY_BYTES(dbg_lrtb_halo, cu_lrtb_halo,
                 (CU_RIGHT_TOP_BORDER - CU_LEFT_TOP_BORDER) * sizeOfStruct, sizeOfStruct, *Log);
         #endif
@@ -302,22 +293,22 @@ ErrorStatus GPUComputationalModel::updateHaloBorderElements(size_t mpi_node_x, s
         /// Update the left-bottom diagonal element
     	CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
             cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_LEFT_BOTTOM_BORDER,
-    		1, 1, 1, 1, &streamHaloBorder));
+    		CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder));
         #ifdef __DEBUG__
             scheme->dbg_updateGlobalBorders(dbg_field, dbg_lr_halo,
                 dbg_tb_halo, dbg_lrtb_halo, lN_X, lN_Y, CU_LEFT_BOTTOM_BORDER,
-        		1, 1, 1, 1, &streamHaloBorder);
+        		CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder);
             CHECK_CPU_GPU_ARRAYS_EQUALITY_BYTES(dbg_lrtb_halo, cu_lrtb_halo,
                 (CU_LEFT_BOTTOM_BORDER - CU_LEFT_TOP_BORDER) * sizeOfStruct, sizeOfStruct, *Log);
         #endif
         /// Update the right-bottom diagonal element
         CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
             cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_RIGHT_BOTTOM_BORDER,
-    		1, 1, 1, 1, &streamHaloBorder));
+    		CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder));
         #ifdef __DEBUG__
             scheme->dbg_updateGlobalBorders(dbg_field, dbg_lr_halo,
                 dbg_tb_halo, dbg_lrtb_halo, lN_X, lN_Y, CU_RIGHT_BOTTOM_BORDER,
-        		1, 1, 1, 1, &streamHaloBorder);
+        		CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder);
             CHECK_CPU_GPU_ARRAYS_EQUALITY_BYTES(dbg_lrtb_halo, cu_lrtb_halo,
                 (CU_RIGHT_BOTTOM_BORDER - CU_LEFT_TOP_BORDER) * sizeOfStruct, sizeOfStruct, *Log);
         #endif
@@ -330,11 +321,11 @@ ErrorStatus GPUComputationalModel::updateHaloBorderElements(size_t mpi_node_x, s
             /// Since the first block has already updated the left-top diagonal element
             CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
                 cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_LEFT_TOP_BORDER,
-        		1, 1, 1, 1, &streamHaloBorder));
+        		CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder));
             #ifdef __DEBUG__
                 scheme->dbg_updateGlobalBorders(dbg_field, dbg_lr_halo,
                     dbg_tb_halo, dbg_lrtb_halo, lN_X, lN_Y, CU_LEFT_TOP_BORDER,
-            		1, 1, 1, 1, &streamHaloBorder);
+            		CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder);
                 CHECK_CPU_GPU_ARRAYS_EQUALITY_BYTES(dbg_lrtb_halo, cu_lrtb_halo,
                     (CU_LEFT_TOP_BORDER - CU_LEFT_TOP_BORDER) * sizeOfStruct, sizeOfStruct, *Log);
             #endif
@@ -343,11 +334,11 @@ ErrorStatus GPUComputationalModel::updateHaloBorderElements(size_t mpi_node_x, s
             /// Since the last block has already updated the left-bottom diagonal element
             CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
                 cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_LEFT_BOTTOM_BORDER,
-        		1, 1, 1, 1, &streamHaloBorder));
+        		CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder));
             #ifdef __DEBUG__
                 scheme->dbg_updateGlobalBorders(dbg_field, dbg_lr_halo,
                     dbg_tb_halo, dbg_lrtb_halo, lN_X, lN_Y, CU_LEFT_BOTTOM_BORDER,
-            		1, 1, 1, 1, &streamHaloBorder);
+            		CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder);
                 CHECK_CPU_GPU_ARRAYS_EQUALITY_BYTES(dbg_lrtb_halo, cu_lrtb_halo,
                     (CU_LEFT_BOTTOM_BORDER - CU_LEFT_TOP_BORDER) * sizeOfStruct, sizeOfStruct, *Log);
             #endif
@@ -361,11 +352,11 @@ ErrorStatus GPUComputationalModel::updateHaloBorderElements(size_t mpi_node_x, s
             /// Since the first block has already updated the right-top diagonal element
             CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
                 cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_RIGHT_TOP_BORDER,
-        		1, 1, 1, 1, &streamHaloBorder));
+        		CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder));
             #ifdef __DEBUG__
                 scheme->dbg_updateGlobalBorders(dbg_field, dbg_lr_halo,
                     dbg_tb_halo, dbg_lrtb_halo, lN_X, lN_Y, CU_RIGHT_TOP_BORDER,
-            		1, 1, 1, 1, &streamHaloBorder);
+            		CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder);
                 CHECK_CPU_GPU_ARRAYS_EQUALITY_BYTES(dbg_lrtb_halo, cu_lrtb_halo,
                     (CU_RIGHT_TOP_BORDER - CU_LEFT_TOP_BORDER) * sizeOfStruct, sizeOfStruct, *Log);
             #endif
@@ -375,11 +366,11 @@ ErrorStatus GPUComputationalModel::updateHaloBorderElements(size_t mpi_node_x, s
             /// Since the last block has already updated the right-bottom diagonal element
             CM_HANDLE_GPUERROR(scheme->updateGPUGlobalBorders(cu_field, cu_lr_halo,
                 cu_tb_halo, cu_lrtb_halo, lN_X, lN_Y, CU_RIGHT_BOTTOM_BORDER,
-        		1, 1, 1, 1, &streamHaloBorder));
+        		CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder));
             #ifdef __DEBUG__
                 scheme->dbg_updateGlobalBorders(dbg_field, dbg_lr_halo,
                     dbg_tb_halo, dbg_lrtb_halo, lN_X, lN_Y, CU_RIGHT_BOTTOM_BORDER,
-            		1, 1, 1, 1, &streamHaloBorder);
+            		CUDA_X_THREADS, CUDA_Y_THREADS, &streamHaloBorder);
                 CHECK_CPU_GPU_ARRAYS_EQUALITY_BYTES(dbg_lrtb_halo, cu_lrtb_halo,
                     (CU_RIGHT_BOTTOM_BORDER - CU_LEFT_TOP_BORDER) * sizeOfStruct, sizeOfStruct, *Log);
             #endif
@@ -534,6 +525,8 @@ __device__ void copyHaloData(byte* to, byte* from, size_t sizeOfStruct)
     copyHaloData(to, from, sizeOfStruct);
 }*/
 
+// TODO: Make a faster version of 'updateGPUHaloElements_kernel'
+// Probably, separate computation of each border. Most likely, improve the above version.
 __global__ void updateGPUHaloElements_kernel(byte* cu_field, byte* snd_cu_lr_halo,
     byte* snd_cu_tb_halo, byte* snd_cu_lrtb_halo, size_t N_X, size_t N_Y, size_t lr_size,
     size_t tb_size, size_t lrtb_size, size_t totalThreads, size_t sizeOfStruct)

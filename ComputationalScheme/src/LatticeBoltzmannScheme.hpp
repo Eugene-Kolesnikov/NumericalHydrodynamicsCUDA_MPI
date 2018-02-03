@@ -9,7 +9,7 @@
 
 class LatticeBoltzmannScheme : public ComputationalScheme {
 	GENERATE_CELL_STRUCTURE_WITH_SUPPORT_FUNCTIONS((r,1)(u,1)(v,1)(p,1)(F,9))
-    REGISTER_VISUALIZATION_PARAMETERS(("Density",0)("X-Velocity", 1)("Y-Velocity", 2)("Pressure",3))
+    REGISTER_VISUALIZATION_PARAMETERS(("Density",0)("X-Velocity",1)("Y-Velocity",2)("Pressure",3))
 
 public:
 	LatticeBoltzmannScheme(): ComputationalScheme(){}
@@ -27,12 +27,11 @@ public:
         void* tb_halo, void* lrtb_halo, size_t N_X, size_t N_Y) override;
     virtual ErrorStatus performGPUSimulationStep(void* cu_field, void* cu_lr_halo,
             void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y,
-            size_t CUDA_X_BLOCKS, size_t CUDA_Y_BLOCKS, size_t CUDA_X_THREADS,
-            size_t CUDA_Y_THREADS, void* stream) override;
+			size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS, void* stream) override;
     virtual ErrorStatus updateGPUGlobalBorders(void* cu_field, void* cu_lr_halo,
                 void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y,
-                size_t type, size_t CUDA_X_BLOCKS, size_t CUDA_Y_BLOCKS,
-                size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS, void* stream) override;
+                size_t type, size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS,
+				void* stream) override;
     virtual void* getMarkerValue() override;
 
 protected:

@@ -6,7 +6,7 @@
  * If the debugging must be excluded from the program, the line
  * '#define __DEBUG__' must be commented.
  */
-#define __DEBUG__
+//#define __DEBUG__
 
 /**
  * __DEBUG__RELOAD_CORRECT is a marker which tells if the correct value from
