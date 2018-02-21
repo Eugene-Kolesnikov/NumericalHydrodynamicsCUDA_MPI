@@ -1,4 +1,4 @@
-#include "UnitTest_MovingBall.hpp"
+#include <ComputationalScheme/include/UnitTest/UnitTest_MovingBall.hpp>
 
 typedef UnitTest_MovingBall::Cell Cell;
 
@@ -65,7 +65,8 @@ void* UnitTest_MovingBall::createGPUField(size_t N_X, size_t N_Y)
     return (void*)ptr;
 }
 
-ErrorStatus UnitTest_MovingBall::initField(void* field, size_t N_X, size_t N_Y)
+ErrorStatus UnitTest_MovingBall::initField(void* field, size_t N_X, size_t N_Y,
+	double X_MAX, double Y_MAX)
 { // Initialization is on the CPU side
     Cell* cfield = (Cell*)field;
 	Cell* C = nullptr;
@@ -116,6 +117,12 @@ ErrorStatus UnitTest_MovingBall::performCPUSimulationStep(void* tmpCPUField, voi
 	return GPU_SUCCESS;
 }
 
+ErrorStatus UnitTest_MovingBall::updateCPUGlobalBorders(void* tmpCPUField, void* lr_halo,
+	void* tb_halo, void* lrtb_halo, size_t N_X, size_t N_Y, size_t type)
+{
+	return GPU_SUCCESS;
+}
+
 ErrorStatus UnitTest_MovingBall::performGPUSimulationStep(void* cu_field, void* cu_lr_halo,
         void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y,
 		size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS, void* stream)
@@ -143,7 +150,6 @@ ErrorStatus UnitTest_MovingBall::updateGPUGlobalBorders(void* cu_field, void* cu
             void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y,
             size_t type, size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS, void* stream)
 {
-	static int k = 0;
 	/// Calculate the amount of shared memory that is required for the kernel
 	size_t sharedMemory = 0;
 	cudaStream_t* cuStream = (cudaStream_t*)stream;
@@ -181,7 +187,8 @@ void* UnitTest_MovingBall::getMarkerValue()
 
 #ifdef __DEBUG__
 ErrorStatus UnitTest_MovingBall::dbg_performSimulationStep(void* cu_field, void* cu_lr_halo,
-	void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y, void* stream)
+	void* cu_tb_halo, void* cu_lrtb_halo, size_t N_X, size_t N_Y,
+	size_t CUDA_X_THREADS, size_t CUDA_Y_THREADS,  void* stream)
 {
 	size_t id = 0;
 	Cell* C = (Cell*) cu_field;

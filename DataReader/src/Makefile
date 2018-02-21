@@ -15,7 +15,7 @@ CXX           = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefau
 DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_NO_DEBUG -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.10 -Wall -W -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -stdlib=libc++ -O2 -std=gnu++11 $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.10 -Wall -W -fPIC $(DEFINES)
-INCPATH       = -I. -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtPrintSupport.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtGui.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers -I../build -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/AGL.framework/Headers -I../build -I/Users/eugene/Qt/5.10.0/clang_64/mkspecs/macx-clang -F/Users/eugene/Qt/5.10.0/clang_64/lib
+INCPATH       = -I. -I../.. -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtPrintSupport.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtGui.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers -I../build -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/AGL.framework/Headers -I../build -I/Users/eugene/Qt/5.10.0/clang_64/mkspecs/macx-clang -F/Users/eugene/Qt/5.10.0/clang_64/lib
 QMAKE         = /Users/eugene/Qt/5.10.0/clang_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -52,7 +52,7 @@ OBJECTS_DIR   = ../build/
 
 SOURCES       = main.cpp \
 		Datareader.cpp \
-		Qcustomplot.cpp \
+		../../utilities/QCustomPlot/src/Qcustomplot.cpp \
 		Visualizer.cpp ../build/moc_Datareader.cpp \
 		../build/moc_Qcustomplot.cpp
 OBJECTS       = ../build/main.o \
@@ -242,11 +242,11 @@ DIST          = /Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/spec_pre.prf \
 		/Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/exceptions.prf \
 		/Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/yacc.prf \
 		/Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/lex.prf \
-		DataReader.pro Datareader.hpp \
-		Qcustomplot.hpp \
-		Visualizer.hpp main.cpp \
+		DataReader.pro ../include/Datareader.hpp \
+		../../utilities/QCustomPlot/include/Qcustomplot.hpp \
+		../include/Visualizer.hpp main.cpp \
 		Datareader.cpp \
-		Qcustomplot.cpp \
+		../../utilities/QCustomPlot/src/Qcustomplot.cpp \
 		Visualizer.cpp
 QMAKE_TARGET  = DataReader
 DESTDIR       = ../build/
@@ -668,8 +668,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents Datareader.hpp Qcustomplot.hpp Visualizer.hpp $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp Datareader.cpp Qcustomplot.cpp Visualizer.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../include/Datareader.hpp ../../utilities/QCustomPlot/include/Qcustomplot.hpp ../include/Visualizer.hpp $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp Datareader.cpp ../../utilities/QCustomPlot/src/Qcustomplot.cpp Visualizer.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents datareader.ui $(DISTDIR)/
 
 
@@ -707,27 +707,27 @@ compiler_moc_header_clean:
 	-$(DEL_FILE) ../build/moc_Datareader.cpp ../build/moc_Qcustomplot.cpp
 ../build/moc_Datareader.cpp: /Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/QMainWindow \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qmainwindow.h \
-		Qcustomplot.hpp \
+		../../utilities/QCustomPlot/include/Qcustomplot.hpp \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qmath.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qnumeric.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QtNumeric \
-		Visualizer.hpp \
-		Datareader.hpp \
+		../../DataReader/include/Visualizer.hpp \
+		../../DataReader/include/Datareader.hpp \
 		../build/ui_datareader.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QString \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qstring.h \
-		Datareader.hpp \
+		../include/Datareader.hpp \
 		../build/moc_predefs.h \
 		/Users/eugene/Qt/5.10.0/clang_64/bin/moc
-	/Users/eugene/Qt/5.10.0/clang_64/bin/moc $(DEFINES) --include ../build/moc_predefs.h -I/Users/eugene/Qt/5.10.0/clang_64/mkspecs/macx-clang -I'/Users/eugene/Google Drive/ETH Zurich/NumericalHydrodynamicsCUDA_MPI/DataReader/src' -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtPrintSupport.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtGui.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/8.1.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/usr/include -F/Users/eugene/Qt/5.10.0/clang_64/lib Datareader.hpp -o ../build/moc_Datareader.cpp
+	/Users/eugene/Qt/5.10.0/clang_64/bin/moc $(DEFINES) --include ../build/moc_predefs.h -I/Users/eugene/Qt/5.10.0/clang_64/mkspecs/macx-clang -I'/Users/eugene/Google Drive/ETH Zurich/NumericalHydrodynamicsCUDA_MPI/DataReader/src' -I'/Users/eugene/Google Drive/ETH Zurich/NumericalHydrodynamicsCUDA_MPI' -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtPrintSupport.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtGui.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/8.1.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/usr/include -F/Users/eugene/Qt/5.10.0/clang_64/lib ../include/Datareader.hpp -o ../build/moc_Datareader.cpp
 
 ../build/moc_Qcustomplot.cpp: /Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qmath.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qnumeric.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QtNumeric \
-		Qcustomplot.hpp \
+		../../utilities/QCustomPlot/include/Qcustomplot.hpp \
 		../build/moc_predefs.h \
 		/Users/eugene/Qt/5.10.0/clang_64/bin/moc
-	/Users/eugene/Qt/5.10.0/clang_64/bin/moc $(DEFINES) --include ../build/moc_predefs.h -I/Users/eugene/Qt/5.10.0/clang_64/mkspecs/macx-clang -I'/Users/eugene/Google Drive/ETH Zurich/NumericalHydrodynamicsCUDA_MPI/DataReader/src' -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtPrintSupport.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtGui.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/8.1.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/usr/include -F/Users/eugene/Qt/5.10.0/clang_64/lib Qcustomplot.hpp -o ../build/moc_Qcustomplot.cpp
+	/Users/eugene/Qt/5.10.0/clang_64/bin/moc $(DEFINES) --include ../build/moc_predefs.h -I/Users/eugene/Qt/5.10.0/clang_64/mkspecs/macx-clang -I'/Users/eugene/Google Drive/ETH Zurich/NumericalHydrodynamicsCUDA_MPI/DataReader/src' -I'/Users/eugene/Google Drive/ETH Zurich/NumericalHydrodynamicsCUDA_MPI' -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtPrintSupport.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtGui.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/8.1.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/usr/include -F/Users/eugene/Qt/5.10.0/clang_64/lib ../../utilities/QCustomPlot/include/Qcustomplot.hpp -o ../build/moc_Qcustomplot.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -738,7 +738,7 @@ compiler_uic_clean:
 	-$(DEL_FILE) ../build/ui_datareader.h
 ../build/ui_datareader.h: datareader.ui \
 		/Users/eugene/Qt/5.10.0/clang_64/bin/uic \
-		Qcustomplot.hpp \
+		../../utilities/QCustomPlot/include/Qcustomplot.hpp \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qmath.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qnumeric.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QtNumeric
@@ -756,14 +756,14 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 
 ####### Compile
 
-../build/main.o: main.cpp Datareader.hpp \
+../build/main.o: main.cpp ../../DataReader/include/Datareader.hpp \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/QMainWindow \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qmainwindow.h \
-		Qcustomplot.hpp \
+		../../utilities/QCustomPlot/include/Qcustomplot.hpp \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qmath.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qnumeric.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QtNumeric \
-		Visualizer.hpp \
+		../../DataReader/include/Visualizer.hpp \
 		../build/ui_datareader.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QString \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qstring.h \
@@ -771,14 +771,14 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qapplication.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/main.o main.cpp
 
-../build/Datareader.o: Datareader.cpp Datareader.hpp \
+../build/Datareader.o: Datareader.cpp ../../DataReader/include/Datareader.hpp \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/QMainWindow \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qmainwindow.h \
-		Qcustomplot.hpp \
+		../../utilities/QCustomPlot/include/Qcustomplot.hpp \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qmath.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qnumeric.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QtNumeric \
-		Visualizer.hpp \
+		../../DataReader/include/Visualizer.hpp \
 		../build/ui_datareader.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QString \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qstring.h \
@@ -788,17 +788,17 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qmessagebox.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/Datareader.o Datareader.cpp
 
-../build/Qcustomplot.o: Qcustomplot.cpp Qcustomplot.hpp \
+../build/Qcustomplot.o: ../../utilities/QCustomPlot/src/Qcustomplot.cpp ../../utilities/QCustomPlot/include/Qcustomplot.hpp \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qmath.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qnumeric.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QtNumeric
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/Qcustomplot.o Qcustomplot.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/Qcustomplot.o ../../utilities/QCustomPlot/src/Qcustomplot.cpp
 
-../build/Visualizer.o: Visualizer.cpp Visualizer.hpp \
-		Datareader.hpp \
+../build/Visualizer.o: Visualizer.cpp ../../DataReader/include/Visualizer.hpp \
+		../../DataReader/include/Datareader.hpp \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/QMainWindow \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qmainwindow.h \
-		Qcustomplot.hpp \
+		../../utilities/QCustomPlot/include/Qcustomplot.hpp \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qmath.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qnumeric.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QtNumeric \

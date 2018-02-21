@@ -1,4 +1,4 @@
-#include "xmlwriter.h"
+#include <ConfigParser/include/xmlwriter.h>
 
 XMLWriter::XMLWriter(QFile* filepath)
 {

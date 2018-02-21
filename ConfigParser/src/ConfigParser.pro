@@ -4,6 +4,8 @@ QT += xml
 
 TEMPLATE = lib
 
+INCLUDEPATH += ./../../
+
 DEFINES += CONFIG_PARSER_LIB
 
 DESTDIR = ../build
@@ -12,12 +14,12 @@ MOC_DIR = $$DESTDIR
 RCC_DIR = $$DESTDIR
 UI_DIR = $$DESTDIR
 
-SOURCES += main.cpp \
-    parser_interface.cpp \
+SOURCES += \
+    interface.cpp \
     xmlreader.cpp \
     xmlwriter.cpp
 
 HEADERS += \
-    parser_interface.h \
-    xmlreader.h \
-    xmlwriter.h
+    ../include/interface.h \
+    ../include/xmlreader.h \
+    ../include/xmlwriter.h

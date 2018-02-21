@@ -1,4 +1,4 @@
-#include "Simplevisualizer.hpp"
+#include <Visualization/include/Simplevisualizer.hpp>
 #include <QDateTime>
 #include <exception>
 #include <typeinfo>
@@ -33,7 +33,7 @@ void SimpleVisualizer::openReportFile()
 {
     std::string time = QDateTime::currentDateTime().toString().toStdString();
     report = appPath + "report." + time + ".data";
-    file.open(report.c_str(), std::fstream::out);
+    file.open(report.c_str(), std::ios::out | std::ios::binary);
     if(file.is_open() == false)
         throw std::runtime_error("Can't create the report file!");
     *Log << "Opened report file";

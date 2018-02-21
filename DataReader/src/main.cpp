@@ -1,4 +1,4 @@
-#include "Datareader.hpp"
+#include <DataReader/include/Datareader.hpp>
 #include <QApplication>
 
 int main(int argc, char *argv[])

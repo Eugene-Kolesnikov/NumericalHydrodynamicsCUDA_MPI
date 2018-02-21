@@ -5,7 +5,8 @@
  */
 
 #include <mpi.h>
-#include "ComputationalModel.hpp"
+#include <ComputationalScheme/include/interface.h>
+#include <ComputationalModel/include/ComputationalModel.hpp>
 
 ComputationalModel::ComputationalModel(const char* comp, const char* grid):
     schemeModel(comp), gridModel(grid)
@@ -86,7 +87,7 @@ void ComputationalModel::initializeField()
     if(nodeType != NODE_TYPE::SERVER_NODE)
         throw std::runtime_error("ComputationalModel::initializeField: "
                 "This function should not be called by a Computational Node");
-    scheme->initField(field, N_X, N_Y);
+    scheme->initField(field, N_X, N_Y, X_MAX, Y_MAX);
 }
 
 void* ComputationalModel::getTmpCPUFieldStoragePtr()
@@ -240,7 +241,7 @@ void ComputationalModel::setBorders(size_t mpi_node_x, size_t mpi_node_y)
 void ComputationalModel::initScheme()
 {
     /// Create a path to the lib
-    std::string libpath = appPath + "libComputationalScheme.1.0.0.dylib";
+    std::string libpath = appPath + "libComputationalScheme.1.0.0.so";
     /// Open the library
     compSchemeLibHandle = dlopen(libpath.c_str(), RTLD_LOCAL | RTLD_LAZY);
     if (compSchemeLibHandle == nullptr)
@@ -306,6 +307,7 @@ void ComputationalModel::cpu_memcpy(void* rcv, void* snd, size_t N)
     size_t size_of_datastruct = scheme->getSizeOfDatastruct();
     size_t shift, global;
     for(size_t i = 0; i < N; ++i) {
+        *Log << std::to_string(i);
         /// Go through all elements of the array
         shift = i * size_of_datastruct;
         for(size_t s = 0; s < size_of_datastruct; ++s) {

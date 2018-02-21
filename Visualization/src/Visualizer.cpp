@@ -1,4 +1,4 @@
-#include "Visualizer.hpp"
+#include <Visualization/include/Visualizer.hpp>
 
 Visualizer::Visualizer(logging::FileLogger* _Log): Log(_Log)
 {

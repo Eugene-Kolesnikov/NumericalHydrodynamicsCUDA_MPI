@@ -1,4 +1,4 @@
-#include "Datareader.hpp"
+#include <DataReader/include/Datareader.hpp>
 #include "ui_datareader.h"
 #include <QFileDialog>
 #include <QMessageBox>

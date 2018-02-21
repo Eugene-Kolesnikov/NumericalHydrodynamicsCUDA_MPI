@@ -12,7 +12,7 @@ TARGET = Visualization
 
 DEFINES += VISUALIZATION_LIB
 
-INCLUDE +=
+INCLUDEPATH += ./../../
 
 TEMPLATE = lib
 VERSION = 2.0.0
@@ -35,21 +35,21 @@ RCC_DIR = $$DESTDIR
 UI_DIR = $$DESTDIR
 
 SOURCES += \
-        interface_visualization.cpp \
+        interface.cpp \
         Mainwindow.cpp \
-        Qcustomplot.cpp \
+        ../../utilities/QCustomPlot/src/Qcustomplot.cpp \
         Simplevisualizer.cpp \
         Visualizer.cpp \
-        ../../MpiController/src/FileLogger.cpp
+        ../../utilities/Logger/src/FileLogger.cpp
 
 HEADERS += \
-        Mainwindow.hpp \
-        Simplevisualizer.hpp \
-        Visualizer.hpp \
-        Qcustomplot.hpp \
-        interface_visualization.h \
-        ../../MpiController/src/FileLogger.hpp \
-    Visualizationproperty.hpp
+        ../include/Mainwindow.hpp \
+        ../include/Simplevisualizer.hpp \
+        ../include/Visualizer.hpp \
+        ../../utilities/QCustomPlot/include/Qcustomplot.hpp \
+        ../include/interface.h \
+        ../../utilities/Logger/include/FileLogger.hpp \
+        ../include/Visualizationproperty.hpp
 
 FORMS += \
         mainwindow.ui

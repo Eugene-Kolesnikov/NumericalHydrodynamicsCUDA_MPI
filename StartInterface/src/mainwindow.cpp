@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include <StartInterface/include/mainwindow.h>
 #include "ui_mainwindow.h"
 #include <list>
 #include <map>
@@ -26,7 +26,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::connectParserLib()
 {
-    std::string libpath = QCoreApplication::applicationDirPath().toStdString() + "/libConfigParser.1.0.0.dylib";
+    std::string libpath = QCoreApplication::applicationDirPath().toStdString() + "/../../../libConfigParser.1.0.0.dylib";
     parserLibHandle = dlopen(libpath.c_str(),
                              RTLD_LOCAL | RTLD_LAZY);
     if (!parserLibHandle) {
@@ -43,7 +43,7 @@ void MainWindow::connectParserLib()
 void MainWindow::readPrevConfig()
 {
     using namespace std;
-    string filepath = QCoreApplication::applicationDirPath().toStdString() + "/CONFIG";
+    string filepath = QCoreApplication::applicationDirPath().toStdString() + "/CONFIG.xml";
     void* lst = readConfig(filepath.c_str());
     if(lst == nullptr)
         return;
@@ -106,20 +106,17 @@ void MainWindow::startSimulation()
     params.push_back(make_pair<string,double>("USG",1));
     params.push_back(make_pair<string,double>("STAG",0));
     params.push_back(make_pair<string,double>("RND_TR",0));
-    string filepath = QCoreApplication::applicationDirPath().toStdString() + "/";
+    string filepath = QCoreApplication::applicationDirPath().toStdString() + "/../../../";
     try {
-        createConfig((void*)&params, (filepath + "CONFIG").c_str());
+        createConfig((void*)&params, (filepath + "CONFIG.xml").c_str());
     } catch(runtime_error err) {
         throw std::runtime_error(err.what());
     }
     size_t mpi_nodes = ui->mpi_nodes_x->text().toUInt() * ui->mpi_nodes_y->text().toUInt() + 1;
-    string system_call = "mpiexec -l -np " + std::to_string(mpi_nodes) +
-            " " + filepath + "simulation_app " + filepath;
     QProcess process;
-    //process.start(system_call.c_str());
     process.start("/usr/local/bin/mpiexec",
         QStringList() << "-l" << "-np" << std::to_string(mpi_nodes).c_str()
-            << (filepath + "simulation_app").c_str() << filepath.c_str());
+            << (filepath + "MPISimulationProgram").c_str() << filepath.c_str());
     bool success = process.waitForStarted();
     if(!success) {
         std::string error_msg = "Cannot start the program: " + process.readAllStandardError().toStdString();

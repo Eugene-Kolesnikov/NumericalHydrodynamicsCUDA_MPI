@@ -15,7 +15,7 @@ CXX           = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefau
 DEFINES       = -DCONFIG_PARSER_LIB -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_XML_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.10 -Wall -W -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -stdlib=libc++ -O2 -std=gnu++11 $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.10 -Wall -W -fPIC $(DEFINES)
-INCPATH       = -I. -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtGui.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtXml.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers -I../build -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/AGL.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/mkspecs/macx-clang -F/Users/eugene/Qt/5.10.0/clang_64/lib
+INCPATH       = -I. -I../.. -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtGui.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtXml.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers -I../build -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/AGL.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/mkspecs/macx-clang -F/Users/eugene/Qt/5.10.0/clang_64/lib
 QMAKE         = /Users/eugene/Qt/5.10.0/clang_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -50,12 +50,10 @@ OBJECTS_DIR   = ../build/
 
 ####### Files
 
-SOURCES       = main.cpp \
-		parser_interface.cpp \
+SOURCES       = interface.cpp \
 		xmlreader.cpp \
 		xmlwriter.cpp 
-OBJECTS       = ../build/main.o \
-		../build/parser_interface.o \
+OBJECTS       = ../build/interface.o \
 		../build/xmlreader.o \
 		../build/xmlwriter.o
 DIST          = /Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/spec_pre.prf \
@@ -238,10 +236,9 @@ DIST          = /Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/spec_pre.prf \
 		/Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/exceptions.prf \
 		/Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/yacc.prf \
 		/Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/lex.prf \
-		ConfigParser.pro parser_interface.h \
-		xmlreader.h \
-		xmlwriter.h main.cpp \
-		parser_interface.cpp \
+		ConfigParser.pro ../include/interface.h \
+		../include/xmlreader.h \
+		../include/xmlwriter.h interface.cpp \
 		xmlreader.cpp \
 		xmlwriter.cpp
 QMAKE_TARGET  = ConfigParser
@@ -671,8 +668,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents parser_interface.h xmlreader.h xmlwriter.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp parser_interface.cpp xmlreader.cpp xmlwriter.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../include/interface.h ../include/xmlreader.h ../include/xmlwriter.h $(DISTDIR)/
+	$(COPY_FILE) --parents interface.cpp xmlreader.cpp xmlwriter.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -723,27 +720,24 @@ compiler_clean: compiler_moc_predefs_clean
 
 ####### Compile
 
-../build/main.o: main.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/main.o main.cpp
-
-../build/parser_interface.o: parser_interface.cpp parser_interface.h \
-		xmlreader.h \
+../build/interface.o: interface.cpp ../../ConfigParser/include/interface.h \
+		../../ConfigParser/include/xmlreader.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QFile \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qfile.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QXmlStreamReader \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qxmlstream.h \
-		xmlwriter.h \
+		../../ConfigParser/include/xmlwriter.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QXmlStreamWriter
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/parser_interface.o parser_interface.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/interface.o interface.cpp
 
-../build/xmlreader.o: xmlreader.cpp xmlreader.h \
+../build/xmlreader.o: xmlreader.cpp ../../ConfigParser/include/xmlreader.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QFile \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qfile.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QXmlStreamReader \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qxmlstream.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/xmlreader.o xmlreader.cpp
 
-../build/xmlwriter.o: xmlwriter.cpp xmlwriter.h \
+../build/xmlwriter.o: xmlwriter.cpp ../../ConfigParser/include/xmlwriter.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QFile \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qfile.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QXmlStreamWriter \

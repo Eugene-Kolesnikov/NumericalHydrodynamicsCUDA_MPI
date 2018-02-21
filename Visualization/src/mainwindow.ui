@@ -405,7 +405,7 @@
   <customwidget>
    <class>QCustomPlot</class>
    <extends>QWidget</extends>
-   <header>Qcustomplot.hpp</header>
+   <header>../../utilities/QCustomPlot/include/Qcustomplot.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

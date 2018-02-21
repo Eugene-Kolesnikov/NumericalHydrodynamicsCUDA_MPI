@@ -15,7 +15,7 @@ CXX           = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefau
 DEFINES       = -DVISUALIZATION_LIB -DQT_DEPRECATED_WARNINGS -DQT_NO_DEBUG -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.10 -Wall -W -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -stdlib=libc++ -O2 -std=gnu++11 $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.10 -Wall -W -fPIC $(DEFINES)
-INCPATH       = -I. -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtPrintSupport.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtGui.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers -I../build -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/AGL.framework/Headers -I../build -I/Users/eugene/Qt/5.10.0/clang_64/mkspecs/macx-clang -F/Users/eugene/Qt/5.10.0/clang_64/lib
+INCPATH       = -I. -I../.. -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtPrintSupport.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtGui.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers -I../build -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/AGL.framework/Headers -I../build -I/Users/eugene/Qt/5.10.0/clang_64/mkspecs/macx-clang -F/Users/eugene/Qt/5.10.0/clang_64/lib
 QMAKE         = /Users/eugene/Qt/5.10.0/clang_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -50,14 +50,14 @@ OBJECTS_DIR   = ../build/
 
 ####### Files
 
-SOURCES       = interface_visualization.cpp \
+SOURCES       = interface.cpp \
 		Mainwindow.cpp \
-		Qcustomplot.cpp \
+		../../utilities/QCustomPlot/src/Qcustomplot.cpp \
 		Simplevisualizer.cpp \
 		Visualizer.cpp \
-		../../MpiController/src/FileLogger.cpp ../build/moc_Mainwindow.cpp \
+		../../utilities/Logger/src/FileLogger.cpp ../build/moc_Mainwindow.cpp \
 		../build/moc_Qcustomplot.cpp
-OBJECTS       = ../build/interface_visualization.o \
+OBJECTS       = ../build/interface.o \
 		../build/Mainwindow.o \
 		../build/Qcustomplot.o \
 		../build/Simplevisualizer.o \
@@ -246,18 +246,18 @@ DIST          = /Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/spec_pre.prf \
 		/Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/exceptions.prf \
 		/Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/yacc.prf \
 		/Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/lex.prf \
-		Visualization.pro Mainwindow.hpp \
-		Simplevisualizer.hpp \
-		Visualizer.hpp \
-		Qcustomplot.hpp \
-		interface_visualization.h \
-		../../MpiController/src/FileLogger.hpp \
-		Visualizationproperty.hpp interface_visualization.cpp \
+		Visualization.pro ../include/Mainwindow.hpp \
+		../include/Simplevisualizer.hpp \
+		../include/Visualizer.hpp \
+		../../utilities/QCustomPlot/include/Qcustomplot.hpp \
+		../include/interface.h \
+		../../utilities/Logger/include/FileLogger.hpp \
+		../include/Visualizationproperty.hpp interface.cpp \
 		Mainwindow.cpp \
-		Qcustomplot.cpp \
+		../../utilities/QCustomPlot/src/Qcustomplot.cpp \
 		Simplevisualizer.cpp \
 		Visualizer.cpp \
-		../../MpiController/src/FileLogger.cpp
+		../../utilities/Logger/src/FileLogger.cpp
 QMAKE_TARGET  = Visualization
 DESTDIR       = ../build/
 TARGET        = libVisualization.2.0.0.dylib
@@ -689,8 +689,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents Mainwindow.hpp Simplevisualizer.hpp Visualizer.hpp Qcustomplot.hpp interface_visualization.h ../../MpiController/src/FileLogger.hpp Visualizationproperty.hpp $(DISTDIR)/
-	$(COPY_FILE) --parents interface_visualization.cpp Mainwindow.cpp Qcustomplot.cpp Simplevisualizer.cpp Visualizer.cpp ../../MpiController/src/FileLogger.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../include/Mainwindow.hpp ../include/Simplevisualizer.hpp ../include/Visualizer.hpp ../../utilities/QCustomPlot/include/Qcustomplot.hpp ../include/interface.h ../../utilities/Logger/include/FileLogger.hpp ../include/Visualizationproperty.hpp $(DISTDIR)/
+	$(COPY_FILE) --parents interface.cpp Mainwindow.cpp ../../utilities/QCustomPlot/src/Qcustomplot.cpp Simplevisualizer.cpp Visualizer.cpp ../../utilities/Logger/src/FileLogger.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents mainwindow.ui $(DISTDIR)/
 
 
@@ -729,22 +729,22 @@ compiler_moc_header_clean:
 	-$(DEL_FILE) ../build/moc_Mainwindow.cpp ../build/moc_Qcustomplot.cpp
 ../build/moc_Mainwindow.cpp: /Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/QMainWindow \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qmainwindow.h \
-		Qcustomplot.hpp \
+		../../utilities/QCustomPlot/include/Qcustomplot.hpp \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qmath.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qnumeric.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QtNumeric \
-		Mainwindow.hpp \
+		../include/Mainwindow.hpp \
 		../build/moc_predefs.h \
 		/Users/eugene/Qt/5.10.0/clang_64/bin/moc
-	/Users/eugene/Qt/5.10.0/clang_64/bin/moc $(DEFINES) --include ../build/moc_predefs.h -I/Users/eugene/Qt/5.10.0/clang_64/mkspecs/macx-clang -I'/Users/eugene/Google Drive/ETH Zurich/NumericalHydrodynamicsCUDA_MPI/Visualization/src' -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtPrintSupport.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtGui.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/8.1.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/usr/include -F/Users/eugene/Qt/5.10.0/clang_64/lib Mainwindow.hpp -o ../build/moc_Mainwindow.cpp
+	/Users/eugene/Qt/5.10.0/clang_64/bin/moc $(DEFINES) --include ../build/moc_predefs.h -I/Users/eugene/Qt/5.10.0/clang_64/mkspecs/macx-clang -I'/Users/eugene/Google Drive/ETH Zurich/NumericalHydrodynamicsCUDA_MPI/Visualization/src' -I'/Users/eugene/Google Drive/ETH Zurich/NumericalHydrodynamicsCUDA_MPI' -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtPrintSupport.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtGui.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/8.1.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/usr/include -F/Users/eugene/Qt/5.10.0/clang_64/lib ../include/Mainwindow.hpp -o ../build/moc_Mainwindow.cpp
 
 ../build/moc_Qcustomplot.cpp: /Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qmath.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qnumeric.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QtNumeric \
-		Qcustomplot.hpp \
+		../../utilities/QCustomPlot/include/Qcustomplot.hpp \
 		../build/moc_predefs.h \
 		/Users/eugene/Qt/5.10.0/clang_64/bin/moc
-	/Users/eugene/Qt/5.10.0/clang_64/bin/moc $(DEFINES) --include ../build/moc_predefs.h -I/Users/eugene/Qt/5.10.0/clang_64/mkspecs/macx-clang -I'/Users/eugene/Google Drive/ETH Zurich/NumericalHydrodynamicsCUDA_MPI/Visualization/src' -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtPrintSupport.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtGui.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/8.1.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/usr/include -F/Users/eugene/Qt/5.10.0/clang_64/lib Qcustomplot.hpp -o ../build/moc_Qcustomplot.cpp
+	/Users/eugene/Qt/5.10.0/clang_64/bin/moc $(DEFINES) --include ../build/moc_predefs.h -I/Users/eugene/Qt/5.10.0/clang_64/mkspecs/macx-clang -I'/Users/eugene/Google Drive/ETH Zurich/NumericalHydrodynamicsCUDA_MPI/Visualization/src' -I'/Users/eugene/Google Drive/ETH Zurich/NumericalHydrodynamicsCUDA_MPI' -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtPrintSupport.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtGui.framework/Headers -I/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/8.1.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/usr/include -F/Users/eugene/Qt/5.10.0/clang_64/lib ../../utilities/QCustomPlot/include/Qcustomplot.hpp -o ../build/moc_Qcustomplot.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -755,7 +755,7 @@ compiler_uic_clean:
 	-$(DEL_FILE) ../build/ui_mainwindow.h
 ../build/ui_mainwindow.h: mainwindow.ui \
 		/Users/eugene/Qt/5.10.0/clang_64/bin/uic \
-		Qcustomplot.hpp \
+		../../utilities/QCustomPlot/include/Qcustomplot.hpp \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qmath.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qnumeric.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QtNumeric
@@ -773,62 +773,62 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 
 ####### Compile
 
-../build/interface_visualization.o: interface_visualization.cpp interface_visualization.h \
-		Simplevisualizer.hpp \
-		MainWindow.hpp \
+../build/interface.o: interface.cpp ../../Visualization/include/interface.h \
+		../../Visualization/include/Simplevisualizer.hpp \
+		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/QApplication \
+		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qapplication.h \
+		../../Visualization/include/MainWindow.hpp \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/QMainWindow \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qmainwindow.h \
-		Qcustomplot.hpp \
+		../../utilities/QCustomPlot/include/Qcustomplot.hpp \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qmath.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qnumeric.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QtNumeric \
-		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/QApplication \
-		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qapplication.h \
-		Visualizer.hpp \
-		../../MpiController/src/FileLogger.hpp \
-		Visualizationproperty.hpp
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/interface_visualization.o interface_visualization.cpp
+		../../Visualization/include/Visualizer.hpp \
+		../../utilities/Logger/include/FileLogger.hpp \
+		../../Visualization/include/Visualizationproperty.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/interface.o interface.cpp
 
-../build/Mainwindow.o: Mainwindow.cpp MainWindow.hpp \
+../build/Mainwindow.o: Mainwindow.cpp ../../Visualization/include/MainWindow.hpp \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/QMainWindow \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qmainwindow.h \
-		Qcustomplot.hpp \
+		../../utilities/QCustomPlot/include/Qcustomplot.hpp \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qmath.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qnumeric.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QtNumeric \
 		../build/ui_mainwindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/Mainwindow.o Mainwindow.cpp
 
-../build/Qcustomplot.o: Qcustomplot.cpp Qcustomplot.hpp \
+../build/Qcustomplot.o: ../../utilities/QCustomPlot/src/Qcustomplot.cpp ../../utilities/QCustomPlot/include/Qcustomplot.hpp \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qmath.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qnumeric.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QtNumeric
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/Qcustomplot.o Qcustomplot.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/Qcustomplot.o ../../utilities/QCustomPlot/src/Qcustomplot.cpp
 
-../build/Simplevisualizer.o: Simplevisualizer.cpp Simplevisualizer.hpp \
-		MainWindow.hpp \
+../build/Simplevisualizer.o: Simplevisualizer.cpp ../../Visualization/include/Simplevisualizer.hpp \
+		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/QApplication \
+		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qapplication.h \
+		../../Visualization/include/MainWindow.hpp \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/QMainWindow \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qmainwindow.h \
-		Qcustomplot.hpp \
+		../../utilities/QCustomPlot/include/Qcustomplot.hpp \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qmath.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qnumeric.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QtNumeric \
-		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/QApplication \
-		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qapplication.h \
-		Visualizer.hpp \
-		../../MpiController/src/FileLogger.hpp \
-		Visualizationproperty.hpp \
+		../../Visualization/include/Visualizer.hpp \
+		../../utilities/Logger/include/FileLogger.hpp \
+		../../Visualization/include/Visualizationproperty.hpp \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QDateTime \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qdatetime.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/Simplevisualizer.o Simplevisualizer.cpp
 
-../build/Visualizer.o: Visualizer.cpp Visualizer.hpp \
-		../../MpiController/src/FileLogger.hpp \
-		Visualizationproperty.hpp
+../build/Visualizer.o: Visualizer.cpp ../../Visualization/include/Visualizer.hpp \
+		../../utilities/Logger/include/FileLogger.hpp \
+		../../Visualization/include/Visualizationproperty.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/Visualizer.o Visualizer.cpp
 
-../build/FileLogger.o: ../../MpiController/src/FileLogger.cpp ../../MpiController/src/FileLogger.hpp
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/FileLogger.o ../../MpiController/src/FileLogger.cpp
+../build/FileLogger.o: ../../utilities/Logger/src/FileLogger.cpp ../../utilities/Logger/include/FileLogger.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/FileLogger.o ../../utilities/Logger/src/FileLogger.cpp
 
 ../build/moc_Mainwindow.o: ../build/moc_Mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/moc_Mainwindow.o ../build/moc_Mainwindow.cpp

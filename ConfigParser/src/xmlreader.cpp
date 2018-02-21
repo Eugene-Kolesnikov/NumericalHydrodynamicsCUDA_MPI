@@ -1,4 +1,4 @@
-#include "xmlreader.h"
+#include <ConfigParser/include/xmlreader.h>
 #include <cstdio>
 
 XMLReader::XMLReader(QFile* filepath)

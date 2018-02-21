@@ -1,4 +1,4 @@
-#include "ComputationalScheme.hpp"
+#include <ComputationalScheme/include/ComputationalScheme.hpp>
 #include <exception>
 
 ComputationalScheme::ComputationalScheme()

@@ -8,8 +8,10 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = StartInterface
+TARGET = Numerical2DSolver
 TEMPLATE = app
+
+INCLUDEPATH += ./../../
 
 CONFIG += console
 
@@ -35,7 +37,7 @@ SOURCES += \
         mainwindow.cpp
 
 HEADERS += \
-    mainwindow.h
+        ../include/mainwindow.h
 
 FORMS += \
         mainwindow.ui

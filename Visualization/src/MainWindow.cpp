@@ -1,4 +1,4 @@
-#include "MainWindow.hpp"
+#include <Visualization/include/MainWindow.hpp>
 #include "ui_mainwindow.h"
 #include <cmath>
 
