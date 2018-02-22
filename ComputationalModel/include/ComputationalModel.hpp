@@ -19,6 +19,8 @@
 #include <ComputationalModel/include/GPU_Status.h>
 #include <ComputationalScheme/include/ComputationalScheme.hpp>
 #include <utilities/Logger/include/FileLogger.hpp>
+#include <utilities/libLoader/include/libLoader.hpp>
+#include <utilities/Register/SystemRegister.hpp>
 #include <dlfcn.h>
 
 /**
@@ -362,8 +364,7 @@ protected:
     std::string gridModel;
 
 protected:
-    void* compSchemeLibHandle;
-    void* (*createScheme)(const char* scheme, const char* grid);
+    DLHandler compSchemeLibHandler;
     ComputationalScheme* scheme;
 
 protected:

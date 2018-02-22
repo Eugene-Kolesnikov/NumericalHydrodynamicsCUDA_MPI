@@ -18,6 +18,8 @@ OBJECTS = \
 	src/GPU/GPUComputationalModel.o \
 	src/ComputationalModel.o \
 	../utilities/Logger/src/FileLogger.o \
+	../utilities/libLoader/src/libLoader.o \
+	../utilities/Register/SystemRegister.o \
 	../ComputationalScheme/src/ComputationalScheme.o
 
 all: $(OBJECTS)

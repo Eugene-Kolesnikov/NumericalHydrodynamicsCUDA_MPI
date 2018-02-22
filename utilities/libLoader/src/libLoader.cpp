@@ -2,25 +2,16 @@
 
 void* libLoader::open(const std::string &path)
 {
-    void* handle = dlopen(path.c_str(), RTLD_NOW);
+    DLHandler handle = dlopen(path.c_str(), RTLD_NOW);
     if (handle == nullptr)
         throw std::runtime_error(dlerror());
     return handle;
 }
 
-void libLoader::close(void* handler)
+void libLoader::close(DLHandler handler)
 {
-    if(dlclose(handler))
+    if(handler != nullptr && dlclose(handler))
         throw std::runtime_error("Dynamic library was not closed properly!");
-}
-
-template<typename T> T libLoader::resolve(void* handler, const std::string& func)
-{
-    void* funcPtr = dlsym(handler, func.c_str());
-    if(funcPtr == nullptr) {
-        throw std::runtime_error("Can't load the function from the Computational scheme library!");
-    }
-    return funcPtr;
 }
 
 /** Example of using:

@@ -1,4 +1,5 @@
 #include <StartInterface/include/mainwindow.h>
+#include <ConfigParser/include/interface.h>
 #include "ui_mainwindow.h"
 #include <list>
 #include <map>
@@ -17,34 +18,29 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(ui->startbtn, SIGNAL(released()),this, SLOT(startSimulation()));
+    parserLibHandler = nullptr;
+    CaseConfigFile = "CONFIG.xml";
 }
 
 MainWindow::~MainWindow()
 {
+    libLoader::close(parserLibHandler);
     delete ui;
 }
 
 void MainWindow::connectParserLib()
 {
-    std::string libpath = QCoreApplication::applicationDirPath().toStdString() + "/../../../libConfigParser.1.0.0.dylib";
-    parserLibHandle = dlopen(libpath.c_str(),
-                             RTLD_LOCAL | RTLD_LAZY);
-    if (!parserLibHandle) {
-        throw std::runtime_error(dlerror());
-    } else {
-        printf("Opened the parser dynamic library.\n");
-    }
-    createConfig = (void (*)(void*, const char*))dlsym(parserLibHandle, "createConfig");
-    readConfig = (void* (*)(const char*))dlsym(parserLibHandle, "readConfig");
-    if(!readConfig || !createConfig)
-        throw std::runtime_error("Can't load functions from the dynamic library!");
+    std::string libpath = QCoreApplication::applicationDirPath().toStdString() + "/../../../" + SystemRegister::ConfigParser::name;
+    parserLibHandler = libLoader::open(libpath);
 }
 
 void MainWindow::readPrevConfig()
 {
     using namespace std;
     string filepath = QCoreApplication::applicationDirPath().toStdString() + "/CONFIG.xml";
-    void* lst = readConfig(filepath.c_str());
+    auto _readConfig = libLoader::resolve<decltype(&readConfig)>(parserLibHandler,
+        SystemRegister::ConfigParser::interface[SystemRegister::ConfigParser::interfaceFunctions::readConfig]);
+    void* lst = _readConfig(filepath.c_str());
     if(lst == nullptr)
         return;
     list<pair<string,double>>* params = (list<pair<string,double>>*)lst;
@@ -108,7 +104,9 @@ void MainWindow::startSimulation()
     params.push_back(make_pair<string,double>("RND_TR",0));
     string filepath = QCoreApplication::applicationDirPath().toStdString() + "/../../../";
     try {
-        createConfig((void*)&params, (filepath + "CONFIG.xml").c_str());
+        auto _createConfig = libLoader::resolve<decltype(&createConfig)>(parserLibHandler,
+            SystemRegister::ConfigParser::interface[SystemRegister::ConfigParser::interfaceFunctions::createConfig]);
+        _createConfig((void*)&params, (filepath + CaseConfigFile).c_str());
     } catch(runtime_error err) {
         throw std::runtime_error(err.what());
     }

@@ -34,10 +34,14 @@ UI_DIR = $$DESTDIR
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+        ../../utilities/libLoader/src/libLoader.cpp \
+        ../../utilities/Register/SystemRegister.cpp
 
 HEADERS += \
-        ../include/mainwindow.h
+        ../include/mainwindow.h \
+        ../../utilities/libLoader/include/libLoader.hpp \
+        ../../utilities/Register/SystemRegister.hpp
 
 FORMS += \
         mainwindow.ui

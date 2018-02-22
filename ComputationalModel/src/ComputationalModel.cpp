@@ -11,8 +11,7 @@
 ComputationalModel::ComputationalModel(const char* comp, const char* grid):
     schemeModel(comp), gridModel(grid)
 {
-    compSchemeLibHandle = nullptr;
-    createScheme = nullptr;
+    compSchemeLibHandler = nullptr;
     scheme = nullptr;
     field = nullptr;
     tmpCPUField = nullptr;
@@ -34,8 +33,7 @@ ComputationalModel::~ComputationalModel()
 {
     if(scheme != nullptr)
         delete scheme;
-    if(compSchemeLibHandle != nullptr)
-        dlclose(compSchemeLibHandle);
+    libLoader::close(compSchemeLibHandler);
 }
 
 void ComputationalModel::createMpiStructType()
@@ -241,21 +239,14 @@ void ComputationalModel::setBorders(size_t mpi_node_x, size_t mpi_node_y)
 void ComputationalModel::initScheme()
 {
     /// Create a path to the lib
-    std::string libpath = appPath + "libComputationalScheme.1.0.0.so";
+    std::string libpath = appPath + SystemRegister::CompScheme::name;
     /// Open the library
-    compSchemeLibHandle = dlopen(libpath.c_str(), RTLD_LOCAL | RTLD_LAZY);
-    if (compSchemeLibHandle == nullptr)
-        throw std::runtime_error(dlerror());
-    else
-        (*Log) << "Opened the computational scheme dynamic library";
+    compSchemeLibHandler = libLoader::open(libpath);
+    (*Log) << "Opened the computational scheme dynamic library";
     /// Load the function
-    createScheme = (void* (*)(const char*,const char*))dlsym(compSchemeLibHandle, "createScheme");
-    if(createScheme == nullptr) {
-        throw std::runtime_error("Can't load the function from the Computational scheme library!");
-    }
-
+    auto _createScheme = libLoader::resolve<decltype(&createScheme)>(compSchemeLibHandler, SystemRegister::CompScheme::interface);
     /// Initialize the scheme with the loaded function
-    scheme = (ComputationalScheme*)createScheme(schemeModel.c_str(), gridModel.c_str());
+    scheme = reinterpret_cast<ComputationalScheme*>(_createScheme(schemeModel.c_str(), gridModel.c_str()));
     (*Log) << "Computational scheme has been successfully created";
 }
 

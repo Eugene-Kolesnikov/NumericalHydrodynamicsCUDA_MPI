@@ -1,9 +1,11 @@
 ##Tasks:
 1. [x] `Change projects' names`.
 * [x] Put the compiled files in a separate folder and change extentions of dynamic libraries to `.so`.
-* [ ] Rearrange source code tree by adding `include` folders and add links to makefiles to be able to call `#include <ComputationalModel/include/computationalModel_interface.h>`.
+* [x] Rearrange source code tree by adding `include` folders and add links to makefiles to be able to call `#include <ComputationalModel/include/computationalModel_interface.h>`.
 * [x] Add `extern "C"` to interfaces.
+* [ ] Use `libLoader` to load dynamic libs (Computational Model)
 * [ ] Add a separate xml file `SystemConfig` with names of dynamic libraries.
+* [ ] Add `Register`
 * [ ] Create different git branches for 'LB development' and 'MIC (Eulerian-Lagrangian) model development'.
 * [ ] `Program modifications`.
 * [x] Understand how to link C++ classes

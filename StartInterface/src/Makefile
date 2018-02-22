@@ -51,9 +51,13 @@ OBJECTS_DIR   = ../build/
 ####### Files
 
 SOURCES       = main.cpp \
-		mainwindow.cpp ../build/moc_mainwindow.cpp
+		mainwindow.cpp \
+		../../utilities/libLoader/src/libLoader.cpp \
+		../../utilities/Register/SystemRegister.cpp ../build/moc_mainwindow.cpp
 OBJECTS       = ../build/main.o \
 		../build/mainwindow.o \
+		../build/libLoader.o \
+		../build/SystemRegister.o \
 		../build/moc_mainwindow.o
 DIST          = /Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/spec_pre.prf \
 		/Users/eugene/Qt/5.10.0/clang_64/mkspecs/qdevice.pri \
@@ -236,8 +240,12 @@ DIST          = /Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/spec_pre.prf \
 		/Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/exceptions.prf \
 		/Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/yacc.prf \
 		/Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/lex.prf \
-		StartInterface.pro ../include/mainwindow.h main.cpp \
-		mainwindow.cpp
+		StartInterface.pro ../include/mainwindow.h \
+		../../utilities/libLoader/include/libLoader.hpp \
+		../../utilities/Register/SystemRegister.hpp main.cpp \
+		mainwindow.cpp \
+		../../utilities/libLoader/src/libLoader.cpp \
+		../../utilities/Register/SystemRegister.cpp
 QMAKE_TARGET  = Numerical2DSolver
 DESTDIR       = ../build/
 TARGET        = ../build/Numerical2DSolver.app/Contents/MacOS/Numerical2DSolver
@@ -656,8 +664,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../include/mainwindow.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp mainwindow.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../include/mainwindow.h ../../utilities/libLoader/include/libLoader.hpp ../../utilities/Register/SystemRegister.hpp $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp mainwindow.cpp ../../utilities/libLoader/src/libLoader.cpp ../../utilities/Register/SystemRegister.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents mainwindow.ui $(DISTDIR)/
 
 
@@ -695,6 +703,8 @@ compiler_moc_header_clean:
 	-$(DEL_FILE) ../build/moc_mainwindow.cpp
 ../build/moc_mainwindow.cpp: /Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/QMainWindow \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qmainwindow.h \
+		../../utilities/libLoader/include/libLoader.hpp \
+		../../utilities/Register/SystemRegister.hpp \
 		../include/mainwindow.h \
 		../build/moc_predefs.h \
 		/Users/eugene/Qt/5.10.0/clang_64/bin/moc
@@ -726,6 +736,8 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 ../build/main.o: main.cpp ../../StartInterface/include/mainwindow.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/QMainWindow \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qmainwindow.h \
+		../../utilities/libLoader/include/libLoader.hpp \
+		../../utilities/Register/SystemRegister.hpp \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/QApplication \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qapplication.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/main.o main.cpp
@@ -733,6 +745,9 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 ../build/mainwindow.o: mainwindow.cpp ../../StartInterface/include/mainwindow.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/QMainWindow \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qmainwindow.h \
+		../../utilities/libLoader/include/libLoader.hpp \
+		../../utilities/Register/SystemRegister.hpp \
+		../../ConfigParser/include/interface.h \
 		../build/ui_mainwindow.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QDir \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qdir.h \
@@ -741,6 +756,12 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/QMessageBox \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtWidgets.framework/Headers/qmessagebox.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/mainwindow.o mainwindow.cpp
+
+../build/libLoader.o: ../../utilities/libLoader/src/libLoader.cpp ../../utilities/libLoader/include/libLoader.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/libLoader.o ../../utilities/libLoader/src/libLoader.cpp
+
+../build/SystemRegister.o: ../../utilities/Register/SystemRegister.cpp ../../utilities/Register/SystemRegister.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/SystemRegister.o ../../utilities/Register/SystemRegister.cpp
 
 ../build/moc_mainwindow.o: ../build/moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/moc_mainwindow.o ../build/moc_mainwindow.cpp

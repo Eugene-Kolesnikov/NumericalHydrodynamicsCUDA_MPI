@@ -19,17 +19,15 @@
 ServerNode::ServerNode(size_t globalRank, size_t totalNodes, std::string app_path, int* _argc, char** _argv):
     MPI_Node(globalRank, totalNodes, app_path, _argc, _argv)
 {
-    m_visualizationLibHandle = nullptr;
+    visLibHandler = nullptr;
     visualizer = nullptr;
-    createVisualizer = nullptr;
 }
 
 ServerNode::~ServerNode()
 {
     if(visualizer != nullptr)
         delete visualizer;
-    if(m_visualizationLibHandle != nullptr)
-        dlclose(m_visualizationLibHandle);
+    libLoader::close(visLibHandler);
 }
 
 void ServerNode::initEnvironment()
@@ -86,18 +84,11 @@ void ServerNode::runNode()
 
 void ServerNode::loadVisualizationLib()
 {
-    std::string libpath = appPath + "libVisualization.2.0.0.dylib";
-    void* m_visualizationLibHandle = dlopen(libpath.c_str(), RTLD_LOCAL | RTLD_LAZY);
-    if (m_visualizationLibHandle == nullptr) {
-        throw std::runtime_error(dlerror());
-    } else {
-        Log << "Opened the dynamic visualization library";
-    }
-    createVisualizer = (void* (*)(int*, char**, void*))dlsym(m_visualizationLibHandle, "createVisualizer");
-    if(createVisualizer == nullptr) {
-        throw std::runtime_error("Can't load functions from the visualization library!");
-    }
-    visualizer = (Visualizer*)createVisualizer(argc, argv, &Log);
+    std::string libpath = appPath + SystemRegister::VisLib::name;
+    visLibHandler = libLoader::open(libpath);
+    auto _createVisualizer = libLoader::resolve<decltype(&createVisualizer)>(visLibHandler, SystemRegister::VisLib::interface);
+    Log << "Opened the dynamic visualization library";
+    visualizer = reinterpret_cast<Visualizer*>(_createVisualizer(argc, argv, &Log));
     Log << "Created a visualizer";
 }
 

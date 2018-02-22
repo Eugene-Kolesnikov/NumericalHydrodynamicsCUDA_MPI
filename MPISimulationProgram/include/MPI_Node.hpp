@@ -19,6 +19,8 @@
 #include <utilities/Logger/include/FileLogger.hpp>
 #include <ComputationalModel/include/GPU_Status.h>
 #include <ComputationalModel/include/ComputationalModel.hpp>
+#include <utilities/libLoader/include/libLoader.hpp>
+#include <utilities/Register/SystemRegister.hpp>
 
 class MPI_Node {
 public:
@@ -31,6 +33,7 @@ public:
 
 protected:
     void loadXMLParserLib();
+    void parseSystemRegister();
     void parseConfigFile();
     bool checkParsedParameters();
     void loadComputationalModelLib();
@@ -41,9 +44,7 @@ protected:
     void finalBarrierSync();
 
 protected:
-    void* parserLibHandle;
-    void (*createConfig)(void* params, const char* filepath);
-    void* (*readConfig)(const char* filepath);
+    DLHandler parserLibHandler;
 
 protected:
     std::string appPath;
@@ -54,8 +55,7 @@ protected:
     size_t localMPI_id_y;
 
 protected:
-    void* compModelLibHandle;
-    void* (*createComputationalModel)(const char* compModel, const char* gridModel);
+    DLHandler compModelLibHandler;
     ComputationalModel* model;
 
 protected: // Configuration parameters

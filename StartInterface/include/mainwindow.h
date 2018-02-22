@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <utilities/libLoader/include/libLoader.hpp>
+#include <utilities/Register/SystemRegister.hpp>
+#include <string>
 
 namespace Ui {
 class MainWindow;
@@ -23,9 +26,8 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    void (*createConfig)(void* params, const char* filepath);
-    void* (*readConfig)(const char* filepath);
-    void* parserLibHandle;
+    DLHandler parserLibHandler;
+    std::string CaseConfigFile;
 };
 
 #endif // MAINWINDOW_H

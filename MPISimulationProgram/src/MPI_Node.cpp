@@ -17,6 +17,7 @@
 #include <map>
 #include <ComputationalModel/include/interface.h>
 #include <ComputationalModel/include/ComputationalModel.hpp>
+#include <ConfigParser/include/interface.h>
 #include <cmath> // floor
 
 
@@ -41,11 +42,8 @@ MPI_Node::MPI_Node(size_t globalRank, size_t totalNodes, std::string app_path, i
 
     model = nullptr;
 
-    parserLibHandle = nullptr;
-    createConfig = nullptr;
-    readConfig = nullptr;
-    compModelLibHandle = nullptr;
-    createComputationalModel = nullptr;
+    parserLibHandler = nullptr;
+    compModelLibHandler = nullptr;
 
     argc = _argc;
     argv = _argv;
@@ -53,18 +51,17 @@ MPI_Node::MPI_Node(size_t globalRank, size_t totalNodes, std::string app_path, i
 
 MPI_Node::~MPI_Node()
 {
-    if(parserLibHandle != nullptr)
-        dlclose(parserLibHandle);
+    libLoader::close(parserLibHandler);
     if(model != nullptr)
         delete model;
-    if(compModelLibHandle != nullptr) // ??????????
-        dlclose(compModelLibHandle);
+    libLoader::close(compModelLibHandler);
 }
 
 void MPI_Node::initEnvironment()
 {
     Log.openLogFile(appPath);
     loadXMLParserLib();
+    parseSystemRegister();
     loadComputationalModelLib();
     parseConfigFile();
     model->createMpiStructType();
@@ -73,24 +70,29 @@ void MPI_Node::initEnvironment()
 void MPI_Node::loadXMLParserLib()
 {
     /// Create a path to the lib
-    std::string libpath = appPath + "libConfigParser.1.0.0.dylib";
-    parserLibHandle = dlopen(libpath.c_str(), RTLD_LOCAL | RTLD_LAZY);
-    if (parserLibHandle == nullptr) {
-        throw std::runtime_error(dlerror());
-    } else {
-        Log << "Opened the parser dynamic library";
-    }
-    createConfig = (void (*)(void*, const char*))dlsym(parserLibHandle, "createConfig");
-    readConfig = (void* (*)(const char*))dlsym(parserLibHandle, "readConfig");
-    if(readConfig == nullptr || createConfig == nullptr) {
-        throw std::runtime_error("Can't load functions from the XML parser library!");
-    }
+    std::string libpath = appPath + SystemRegister::ConfigParser::name;
+    parserLibHandler = libLoader::open(libpath);
+    Log << "Opened the config parser dynamic library";
+}
+
+/// TODO: Change the function to parsing a system configuration file
+void MPI_Node::parseSystemRegister()
+{
+    SystemRegister::ConfigFile = "CONFIG.xml";
+    SystemRegister::VisLib::name = "libVisualization.2.0.0.dylib";
+    SystemRegister::VisLib::interface = "createVisualizer";
+    SystemRegister::CompModel::name = "libComputationalModel.1.0.0.so";
+    SystemRegister::CompModel::interface = "createComputationalModel";
+    SystemRegister::CompScheme::name = "libComputationalScheme.1.0.0.so";
+    SystemRegister::CompScheme::interface = "createScheme";
 }
 
 void MPI_Node::parseConfigFile()
 {
-    std::string filepath = appPath + "CONFIG.xml";
-    void* lst = readConfig(filepath.c_str());
+    auto _readConfig = libLoader::resolve<decltype(&readConfig)>(parserLibHandler,
+        SystemRegister::ConfigParser::interface[SystemRegister::ConfigParser::interfaceFunctions::readConfig]);
+    std::string filepath = appPath + SystemRegister::ConfigFile;
+    void* lst = _readConfig(filepath.c_str());
     if(lst == nullptr)
         throw std::runtime_error("Configuration file is empty!");
     using namespace std;
@@ -140,7 +142,8 @@ void MPI_Node::parseConfigFile()
                 "specified in the configuration file!");
     }
 
-    model = (ComputationalModel*)createComputationalModel(compModel.c_str(), gridModel.c_str());
+    auto _createComputationalModel = libLoader::resolve<decltype(&createComputationalModel)>(compModelLibHandler, SystemRegister::CompModel::interface);
+    model = reinterpret_cast<ComputationalModel*>(_createComputationalModel(compModel.c_str(), gridModel.c_str()));
     Log << "Computational model has been successfully created";
 
     if(checkParsedParameters() == false) {
@@ -170,18 +173,9 @@ bool MPI_Node::checkParsedParameters()
 
 void MPI_Node::loadComputationalModelLib()
 {
-    std::string libpath = appPath + "libComputationalModel.1.0.0.so";
-    compModelLibHandle = dlopen(libpath.c_str(), RTLD_LOCAL | RTLD_LAZY);
-    if (compModelLibHandle == nullptr) {
-        throw std::runtime_error(dlerror());
-    } else {
-        Log << "Opened the computational model dynamic library";
-    }
-    createComputationalModel =
-            (void* (*)(const char*, const char*))dlsym(compModelLibHandle, "createComputationalModel");
-    if(createComputationalModel == nullptr) {
-        throw std::runtime_error("Can't load the function from the Computational model library!");
-    }
+    std::string libpath = appPath + SystemRegister::CompModel::name;
+    compModelLibHandler = libLoader::open(libpath);
+    Log << "Opened the computational model dynamic library";
 }
 
 void MPI_Node::setComputationalModelEnv(ComputationalModel::NODE_TYPE node_type)

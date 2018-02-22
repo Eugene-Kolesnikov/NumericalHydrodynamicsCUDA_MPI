@@ -34,8 +34,7 @@ protected:
     void loadUpdatedSubfields();
 
 protected:
-    void* m_visualizationLibHandle;
-    void* (*createVisualizer)(int* argc, char** argv, void* Log);
+    DLHandler visLibHandler;
     Visualizer* visualizer;
 };
 

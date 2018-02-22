@@ -14,6 +14,8 @@ OBJECTS = \
 	src/ServerNode.o \
 	src/ComputationalNode.o \
 	../utilities/Logger/src/FileLogger.o \
+	../utilities/libLoader/src/libLoader.o \
+	../utilities/Register/SystemRegister.o \
 	../ComputationalModel/src/ComputationalModel.o \
 	../Visualization/src/Visualizer.o
 
