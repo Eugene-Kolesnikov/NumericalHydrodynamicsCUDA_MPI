@@ -6,12 +6,14 @@
 #include <list>
 #include <map>
 #include <string>
+#include <ConfigParser/include/interface.h>
 
 class XMLWriter
 {
 public:
     XMLWriter(QFile* filepath);
-    void writeConfig(std::list<std::pair<std::string,double>>* params);
+    void writeCaseConfig(CaseRegister* reg);
+    void writeSystemConfig();
 
 protected:
     QFile* file;

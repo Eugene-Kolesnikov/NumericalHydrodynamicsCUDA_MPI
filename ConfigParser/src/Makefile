@@ -238,7 +238,8 @@ DIST          = /Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/spec_pre.prf \
 		/Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/lex.prf \
 		ConfigParser.pro ../include/interface.h \
 		../include/xmlreader.h \
-		../include/xmlwriter.h interface.cpp \
+		../include/xmlwriter.h \
+		../../utilities/Register/SystemRegister.hpp interface.cpp \
 		xmlreader.cpp \
 		xmlwriter.cpp
 QMAKE_TARGET  = ConfigParser
@@ -668,7 +669,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /Users/eugene/Qt/5.10.0/clang_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../include/interface.h ../include/xmlreader.h ../include/xmlwriter.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../include/interface.h ../include/xmlreader.h ../include/xmlwriter.h ../../utilities/Register/SystemRegister.hpp $(DISTDIR)/
 	$(COPY_FILE) --parents interface.cpp xmlreader.cpp xmlwriter.cpp $(DISTDIR)/
 
 
@@ -721,6 +722,8 @@ compiler_clean: compiler_moc_predefs_clean
 ####### Compile
 
 ../build/interface.o: interface.cpp ../../ConfigParser/include/interface.h \
+		../../utilities/Register/include/Plugin.hpp \
+		../../utilities/Register/include/CaseRegister.hpp \
 		../../ConfigParser/include/xmlreader.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QFile \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qfile.h \
@@ -734,14 +737,20 @@ compiler_clean: compiler_moc_predefs_clean
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QFile \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qfile.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QXmlStreamReader \
-		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qxmlstream.h
+		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qxmlstream.h \
+		../../ConfigParser/include/interface.h \
+		../../utilities/Register/include/Plugin.hpp \
+		../../utilities/Register/include/CaseRegister.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/xmlreader.o xmlreader.cpp
 
 ../build/xmlwriter.o: xmlwriter.cpp ../../ConfigParser/include/xmlwriter.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QFile \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qfile.h \
 		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/QXmlStreamWriter \
-		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qxmlstream.h
+		/Users/eugene/Qt/5.10.0/clang_64/lib/QtCore.framework/Headers/qxmlstream.h \
+		../../ConfigParser/include/interface.h \
+		../../utilities/Register/include/Plugin.hpp \
+		../../utilities/Register/include/CaseRegister.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/xmlwriter.o xmlwriter.cpp
 
 ####### Install

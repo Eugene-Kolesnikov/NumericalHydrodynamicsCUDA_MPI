@@ -22,4 +22,5 @@ SOURCES += \
 HEADERS += \
     ../include/interface.h \
     ../include/xmlreader.h \
-    ../include/xmlwriter.h
+    ../include/xmlwriter.h \
+    ../../utilities/Register/SystemRegister.hpp
